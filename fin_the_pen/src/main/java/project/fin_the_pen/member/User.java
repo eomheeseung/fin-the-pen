@@ -1,5 +1,8 @@
 package project.fin_the_pen.member;
 
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -7,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 @Entity
+@Data
 public class User {
     @Id
     @Column(name = "id")

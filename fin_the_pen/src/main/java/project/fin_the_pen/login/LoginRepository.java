@@ -14,9 +14,9 @@ import java.util.Date;
 public class LoginRepository {
     @PersistenceContext
     EntityManager entityManager;
+    UserDTO adminDTO = new UserDTO();
 
     private void init() {
-        UserDTO adminDTO = new UserDTO();
         adminDTO.setUserId("admin");
         adminDTO.setPassword("admin1234");
         adminDTO.setUserName("관리자");
@@ -25,4 +25,14 @@ public class LoginRepository {
         adminDTO.setRegisterDate(new Date());
     }
 
+    public void save() {
+        init();
+        User user = new User();
+        user.setUserId(adminDTO.getUserId());
+        user.setPassword(adminDTO.getPassword());
+        user.setUserName(adminDTO.getUserName());
+        user.setDate(adminDTO.getDate());
+        user.setRegisterDate(adminDTO.getRegisterDate());
+        entityManager.persist(user);
+    }
 }

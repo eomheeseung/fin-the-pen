@@ -1,10 +1,10 @@
 package project.fin_the_pen.member;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
@@ -13,8 +13,9 @@ import java.util.Date;
 @Data
 public class User {
     @Id
+    @GeneratedValue
     @Column(name = "id")
-    private String id;
+    private Integer id;
 
     @NotEmpty
     @Column(name = "user_id")
@@ -28,11 +29,9 @@ public class User {
     @Column(name = "name")
     private String userName;
 
-    @NotEmpty
     @Column(name = "date")
     private Date date;
 
-    @NotEmpty
     @Column(name = "register_date")
     private Date registerDate;
 }

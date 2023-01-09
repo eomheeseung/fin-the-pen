@@ -1,4 +1,4 @@
-package project.fin_the_pen.login;
+package project.fin_the_pen.repository;
 
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.member.User;
@@ -6,9 +6,8 @@ import project.fin_the_pen.member.UserDTO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContexts;
-import java.text.Format;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public class LoginRepository {
@@ -34,5 +33,10 @@ public class LoginRepository {
         user.setDate(adminDTO.getDate());
         user.setRegisterDate(adminDTO.getRegisterDate());
         entityManager.persist(user);
+    }
+
+    public List<User> findAll() {
+        List<User> findUserAll = entityManager.createQuery("select u from User u", User.class).getResultList();
+        return findUserAll;
     }
 }

@@ -1,15 +1,17 @@
-package project.fin_the_pen.repository;
+package project.fin_the_pen.login.repository;
 
 import org.springframework.stereotype.Repository;
-import project.fin_the_pen.member.User;
-import project.fin_the_pen.member.UserDTO;
+import project.fin_the_pen.data.member.User;
+import project.fin_the_pen.data.member.UserDTO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
 @Repository
+@Transactional
 public class LoginRepository {
     @PersistenceContext
     EntityManager entityManager;
@@ -32,6 +34,10 @@ public class LoginRepository {
         user.setUserName(adminDTO.getUserName());
         user.setDate(adminDTO.getDate());
         user.setRegisterDate(adminDTO.getRegisterDate());
+        entityManager.persist(user);
+    }
+
+    public void joinRegister(User user) {
         entityManager.persist(user);
     }
 

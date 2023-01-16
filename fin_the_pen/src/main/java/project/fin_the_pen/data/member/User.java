@@ -1,6 +1,7 @@
 package project.fin_the_pen.data.member;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Entity
 @Data
 public class User {
+    // TODO date 객체 사용
     @Id
     @GeneratedValue
     @Column(name = "id")
@@ -29,9 +31,19 @@ public class User {
     @Column(name = "name")
     private String userName;
 
+    @Column(name = "baby")
+    private Date baby;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "date")
     private Date date;
 
     @Column(name = "register_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date registerDate;
+
+    @Column(name = "user_role")
+    private String userRole;
 }

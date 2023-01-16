@@ -5,12 +5,13 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class UserDTO {
-    private int id;
+public class UserDAO {
     private String userId;
+    private String password;
     private String userName;
-    private Date baby;
+    private Date date;
     private Date registerDate;
+    private Date baby;
     private String userRole;
     private String phoneNumber;
 

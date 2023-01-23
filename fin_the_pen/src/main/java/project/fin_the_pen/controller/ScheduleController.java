@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.data.schedule.ScheduleDAO;
 import project.fin_the_pen.service.ScheduleService;
-
 import javax.servlet.http.HttpSession;
 
 @RestController

@@ -16,6 +16,7 @@ public class LoginRepository {
     @PersistenceContext
     EntityManager entityManager;
 
+    // TODO 사용자가 회원가입할 때 id,pw를 중복검사
     public void joinRegister(UserDAO userDAO) {
         User user = new User();
         user.setUserId(userDAO.getUserId());

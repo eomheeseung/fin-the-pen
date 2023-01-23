@@ -19,7 +19,6 @@ public class LoginService {
         this.loginRepository = loginRepository;
     }
 
-
     public void joinUser(UserDAO userDAO) {
         loginRepository.joinRegister(userDAO);
     }

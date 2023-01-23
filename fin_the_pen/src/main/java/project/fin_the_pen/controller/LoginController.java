@@ -28,6 +28,15 @@ public class LoginController {
         return userDAO;
     }
 
+    //TODO API 로그인 연동
+    @PostMapping("/fin-the-pen-web/sign-up")
+    public UserDAO signIn(@RequestBody UserDAO userDAO) {
+        userDAO.setRegisterDate(Calendar.getInstance().getTime());
+        loginService.joinUser(userDAO);
+        log.info("user: " + userDAO.getUserName() + " 등록");
+        return userDAO;
+    }
+
     @GetMapping("findUser")
     @ResponseBody
     public User findUser() {
@@ -39,6 +48,15 @@ public class LoginController {
     @ResponseBody
     public UserDTO login(@RequestParam String userId, @RequestParam String password, HttpServletRequest request) {
         currentUser = loginService.findByUser(userId, password);
+        grantSession(request);
+        return currentUser;
+    }
+
+    //TODO API 로그인
+    @PostMapping("/fin-the-pen-web/sign-in")
+    @ResponseBody
+    public UserDTO apiLogin(@RequestBody UserDAO userDAO,HttpServletRequest request) {
+        currentUser = loginService.findByUser(userDAO.getUserId(), userDAO.getPassword());
         grantSession(request);
         return currentUser;
     }

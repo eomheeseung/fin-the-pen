@@ -3,8 +3,8 @@ package project.fin_the_pen.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.data.member.User;
-import project.fin_the_pen.data.member.UserDAO;
-import project.fin_the_pen.data.member.UserDTO;
+import project.fin_the_pen.data.member.UserRequestDTO;
+import project.fin_the_pen.data.member.UserResponseDTO;
 import project.fin_the_pen.repository.LoginRepository;
 
 import java.util.List;
@@ -19,8 +19,8 @@ public class LoginService {
         this.loginRepository = loginRepository;
     }
 
-    public void joinUser(UserDAO userDAO) {
-        loginRepository.joinRegister(userDAO);
+    public void joinUser(UserRequestDTO userRequestDTO) {
+        loginRepository.joinRegister(userRequestDTO);
     }
 
     public Optional<User> TempFindUser() {
@@ -28,8 +28,8 @@ public class LoginService {
         return all.stream().filter(user -> user.getName().equals("테스터")).findFirst();
     }
 
-    public UserDTO findByUser(String id, String password) {
-        UserDTO currentUser = loginRepository.findByUser(id, password);
+    public UserResponseDTO findByUser(String id, String password) {
+        UserResponseDTO currentUser = loginRepository.findByUser(id, password);
         return currentUser;
     }
 }

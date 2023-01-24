@@ -2,8 +2,8 @@ package project.fin_the_pen.repository;
 
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.data.member.User;
-import project.fin_the_pen.data.member.UserDAO;
-import project.fin_the_pen.data.member.UserDTO;
+import project.fin_the_pen.data.member.UserRequestDTO;
+import project.fin_the_pen.data.member.UserResponseDTO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,13 +17,13 @@ public class LoginRepository {
     EntityManager entityManager;
 
     // TODO 사용자가 회원가입할 때 id,pw를 중복검사
-    public void joinRegister(UserDAO userDAO) {
+    public void joinRegister(UserRequestDTO userRequestDTO) {
         User user = new User();
-        user.setUserId(userDAO.getUser_id());
-        user.setName(userDAO.getName());
-        user.setPassword(userDAO.getPassword());
-        user.setPhoneNumber(userDAO.getPhone_number());
-        user.setRegisterDate(userDAO.getRegisterDate());
+        user.setUserId(userRequestDTO.getUser_id());
+        user.setName(userRequestDTO.getName());
+        user.setPassword(userRequestDTO.getPassword());
+        user.setPhoneNumber(userRequestDTO.getPhone_number());
+        user.setRegisterDate(userRequestDTO.getRegisterDate());
         entityManager.persist(user);
     }
 
@@ -32,14 +32,14 @@ public class LoginRepository {
         return findUserAll;
     }
 
-    public UserDTO findByUser(String id, String password) {
+    public UserResponseDTO findByUser(String id, String password) {
         User user = entityManager
                 .createQuery("select u from User u where u.userId = :findId and u.password =: findPw", User.class)
                 .setParameter("findId", id)
                 .setParameter("findPw", password)
                 .getSingleResult();
 
-        UserDTO currentUser = new UserDTO();
+        UserResponseDTO currentUser = new UserResponseDTO();
         currentUser.setId(user.getId());
         currentUser.setUser_id(user.getUserId());
         currentUser.setName(user.getName());

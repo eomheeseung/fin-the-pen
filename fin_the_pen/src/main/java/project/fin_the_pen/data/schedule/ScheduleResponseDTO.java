@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class ScheduleDAO {
+public class ScheduleResponseDTO {
 //    private int eventKey;
     private String userId;
     private String eventName;

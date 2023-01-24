@@ -2,7 +2,7 @@ package project.fin_the_pen.repository;
 
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.data.schedule.Schedule;
-import project.fin_the_pen.data.schedule.ScheduleDAO;
+import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,20 +15,21 @@ public class ScheduleRepository {
     EntityManager entityManager;
 
     //TODO 일정을 가져올 수 있어야 함
-    public void registerSchedule(ScheduleDAO scheduleDAO) {
+    public void registerSchedule(ScheduleRequestDTO scheduleRequestDTO) {
         Schedule schedule = new Schedule();
 
-        schedule.setCategories(scheduleDAO.getCategories());
-        schedule.setExclusion(scheduleDAO.isExclusion());
-        schedule.setPeriod(scheduleDAO.getPeriod());
-        schedule.setEndTime(scheduleDAO.getEndTime());
-        schedule.setStartDateTime(scheduleDAO.getStartDateTime());
-        schedule.setEventDate(scheduleDAO.getEventDate());
-        schedule.setExpected_spending(scheduleDAO.getExpected_spending());
-        schedule.setCategories(scheduleDAO.getCategories());
-        schedule.setType(scheduleDAO.getType());
-        schedule.setUserId(scheduleDAO.getUserId());
+        schedule.setCategories(scheduleRequestDTO.getCategories());
+        schedule.setExclusion(scheduleRequestDTO.isExclusion());
+        schedule.setPeriod(scheduleRequestDTO.getPeriod());
+        schedule.setEndTime(scheduleRequestDTO.getEndTime());
+        schedule.setStartDateTime(scheduleRequestDTO.getStartDateTime());
+        schedule.setEventDate(scheduleRequestDTO.getEventDate());
+        schedule.setExpected_spending(scheduleRequestDTO.getExpected_spending());
+        schedule.setCategories(scheduleRequestDTO.getCategories());
+        schedule.setType(scheduleRequestDTO.getType());
+        schedule.setUserId(scheduleRequestDTO.getUserId());
 
         entityManager.persist(schedule);
+        entityManager.flush();
     }
 }

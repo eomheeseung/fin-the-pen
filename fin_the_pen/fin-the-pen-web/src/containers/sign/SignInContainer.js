@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/material';
+import axios from 'axios';
 import { setHeaderOpenFalse, setHeaderOpenTrue } from '../../utils/redux/common/commonSlice';
 import { mockLogin, selectStatus, selectUser } from '../../utils/redux/user/userSlice';
 import PATH from '../../utils/constants/path';
@@ -42,10 +43,27 @@ export default function SignInContainer() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    alert(JSON.stringify({
-      email: data.get('email'),
+    const sign = {
+      user_id: data.get('email'),
       password: data.get('password'),
-    }));
+    };
+    alert(JSON.stringify(sign));
+    /**
+     * @eomheeseung
+     *
+     * axios로 로그인 요청하기
+     * POST 방식으로 위 sign 객체를 서버에 전달하려고 합니다.
+     * 하단에 있는 요청 주소는 수정해주셔야 합니다.
+     *
+     */
+    axios.post('/fin-the-pen-web/sign-in', sign)
+      .then((response) => {
+        // 처리 결과
+        alert(response);
+      }).catch((error) => {
+        // error 발생 시
+        alert(`err : ${error}`);
+      });
   };
 
   const guestLogin = () => {

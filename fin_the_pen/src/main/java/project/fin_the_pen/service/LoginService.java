@@ -25,7 +25,7 @@ public class LoginService {
 
     public Optional<User> TempFindUser() {
         List<User> all = loginRepository.findAll();
-        return all.stream().filter(user -> user.getUserName().equals("테스터")).findFirst();
+        return all.stream().filter(user -> user.getName().equals("테스터")).findFirst();
     }
 
     public UserDTO findByUser(String id, String password) {

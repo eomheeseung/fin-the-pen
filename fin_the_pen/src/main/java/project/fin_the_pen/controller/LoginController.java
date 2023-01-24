@@ -9,7 +9,9 @@ import project.fin_the_pen.data.member.UserDTO;
 import project.fin_the_pen.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Optional;
 
@@ -24,18 +26,19 @@ public class LoginController {
     public UserDAO join(@RequestBody UserDAO userDAO) {
         userDAO.setRegisterDate(Calendar.getInstance().getTime());
         loginService.joinUser(userDAO);
-        log.info("user: " + userDAO.getUserName() + " 등록");
+        log.info("user: " + userDAO.getName() + " 등록");
         return userDAO;
     }
 
     //TODO API 로그인 연동
     @PostMapping("/fin-the-pen-web/sign-up")
-    public UserDAO signIn(@RequestBody UserDAO userDAO) {
+    public boolean signIn(@RequestBody UserDAO userDAO, HttpServletResponse response) throws IOException {
         userDAO.setRegisterDate(Calendar.getInstance().getTime());
         loginService.joinUser(userDAO);
-        log.info("user: " + userDAO.getUserName() + " 등록");
-        return userDAO;
+        log.info("user: " + userDAO.getName() + " 등록");
+        return true;
     }
+
 
     @GetMapping("findUser")
     @ResponseBody
@@ -56,7 +59,7 @@ public class LoginController {
     @PostMapping("/fin-the-pen-web/sign-in")
     @ResponseBody
     public UserDTO apiLogin(@RequestBody UserDAO userDAO,HttpServletRequest request) {
-        currentUser = loginService.findByUser(userDAO.getUserId(), userDAO.getPassword());
+        currentUser = loginService.findByUser(userDAO.getUser_id(), userDAO.getPassword());
         grantSession(request);
         return currentUser;
     }
@@ -68,6 +71,6 @@ public class LoginController {
     }
     private void grantSession(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        session.setAttribute("session", currentUser.getUserId());
+        session.setAttribute("session", currentUser.getUser_id());
     }
 }

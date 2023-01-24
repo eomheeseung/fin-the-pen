@@ -15,13 +15,13 @@ function AnalysisGraph({ data, total }) {
       arcLinkLabelsThickness={2}
       arcLinkLabelsColor={{ from: 'color' }}
       arcLabel={(e) => { const percent = (parseInt(e.value, 10) / total) * 100; return `${e.id} (${percent.toFixed(1)}%)`; }}
-      arcLabelsSkipAngle={7}
+      arcLabelsSkipAngle={45}
       arcLabelsTextColor={{
         from: 'color',
         modifiers: [
           [
             'darker',
-            '2',
+            '3',
           ],
         ],
       }}

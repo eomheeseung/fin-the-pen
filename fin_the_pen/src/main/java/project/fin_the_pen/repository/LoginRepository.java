@@ -19,10 +19,10 @@ public class LoginRepository {
     // TODO 사용자가 회원가입할 때 id,pw를 중복검사
     public void joinRegister(UserDAO userDAO) {
         User user = new User();
-        user.setUserId(userDAO.getUserId());
-        user.setUserName(userDAO.getUserName());
+        user.setUserId(userDAO.getUser_id());
+        user.setName(userDAO.getName());
         user.setPassword(userDAO.getPassword());
-        user.setPhoneNumber(userDAO.getPhoneNumber());
+        user.setPhoneNumber(userDAO.getPhone_number());
         user.setRegisterDate(userDAO.getRegisterDate());
         entityManager.persist(user);
     }
@@ -34,19 +34,19 @@ public class LoginRepository {
 
     public UserDTO findByUser(String id, String password) {
         User user = entityManager
-                .createQuery("select u from User u where u.userId = :findId and u.password =: findPw",User.class)
+                .createQuery("select u from User u where u.userId = :findId and u.password =: findPw", User.class)
                 .setParameter("findId", id)
                 .setParameter("findPw", password)
                 .getSingleResult();
 
         UserDTO currentUser = new UserDTO();
         currentUser.setId(user.getId());
-        currentUser.setUserId(user.getUserId());
-        currentUser.setUserName(user.getUserName());
+        currentUser.setUser_id(user.getUserId());
+        currentUser.setName(user.getName());
         currentUser.setBaby(user.getBaby());
         currentUser.setRegisterDate(user.getRegisterDate());
         currentUser.setUserRole(user.getUserRole());
-        currentUser.setPhoneNumber(user.getPhoneNumber());
+        currentUser.setPhone_number(user.getPhoneNumber());
 
         return currentUser;
     }

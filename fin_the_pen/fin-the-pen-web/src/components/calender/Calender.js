@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable react/jsx-props-no-spreading */
 import { Box, Stack, TextField } from '@mui/material';
 import { grey } from '@mui/material/colors';
@@ -29,6 +30,31 @@ function Calender({ dateHeight }) {
     dispatch(selectedDate(moment(new Date())));
   }, []);
 
+  const makeMarkerData = (daySchedules) => {
+    const emptyData = Array(6).fill().map(() => ({ color: '#FFFFFF' }));
+    const categoryForMarker = INCOME.nested.concat(EXPENDITURE.nested)
+      .filter((c) => (daySchedules.findIndex(
+        (s) => s.category.nestedType === c.type,
+      ) !== -1));
+
+    switch (categoryForMarker.length) {
+      case 1:
+        return [emptyData[0], ...categoryForMarker, ...emptyData.slice(-5)];
+      case 2:
+        return [...emptyData.slice(-4), ...categoryForMarker, emptyData[0]];
+      case 3:
+        return [...categoryForMarker, ...emptyData.slice(-4)];
+      case 4:
+        return [...emptyData.slice(-3), ...categoryForMarker];
+      case 5:
+        return [...categoryForMarker.slice(0, 3), emptyData[0], ...categoryForMarker.slice(-2), emptyData[0]];
+      case 6:
+        return [categoryForMarker[0], emptyData[0], ...categoryForMarker.slice(1)];
+      default:
+        return categoryForMarker;
+    }
+  };
+
   const renderDayInPicker = (day, _value, DayComponentProps) => {
     const daySchedules = schedules.filter((e) => e.date === day.format('YYYY-MM-DD'));
 
@@ -37,13 +63,7 @@ function Calender({ dateHeight }) {
 
     if (fixedWithdrawal.length > 0) {
       if (nonFixedWithdrwal.length > 0) {
-        const categoryForMarker = INCOME.nested.concat(EXPENDITURE.nested)
-          .map((c) => (daySchedules.findIndex(
-            (s) => s.category.nestedType === c.type,
-          ) === -1
-            ? { ...c, color: '#FFFFFF' }
-            : c
-          ));
+        const categoryForMarker = makeMarkerData(daySchedules);
         return (
           <Box sx={{ width: DATE_SIZE, marginX: 'auto' }} key={DayComponentProps.key}>
             <Stack>
@@ -69,13 +89,7 @@ function Calender({ dateHeight }) {
     }
 
     if (nonFixedWithdrwal.length > 0) {
-      const categoryForMarker = INCOME.nested.concat(EXPENDITURE.nested)
-        .map((c) => (daySchedules.findIndex(
-          (s) => s.category.nestedType === c.type,
-        ) === -1
-          ? { ...c, color: '#FFFFFF' }
-          : c
-        ));
+      const categoryForMarker = makeMarkerData(daySchedules);
       return (
         <Box sx={{ width: DATE_SIZE, marginX: 'auto' }} key={DayComponentProps.key}>
           <Stack>

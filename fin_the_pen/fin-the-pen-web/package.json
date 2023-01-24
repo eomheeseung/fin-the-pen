@@ -3,6 +3,7 @@
   "name": "fin-the-pen-web",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
@@ -43,8 +44,6 @@
       "react-app/jest"
     ]
   },
-  "proxy": "http://localhost:8080",
-
   "browserslist": {
     "production": [
       ">0.2%",

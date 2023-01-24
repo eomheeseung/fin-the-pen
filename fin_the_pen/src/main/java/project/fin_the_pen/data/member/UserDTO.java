@@ -7,11 +7,11 @@ import java.util.Date;
 @Data
 public class UserDTO {
     private int id;
-    private String userId;
-    private String userName;
+    private String user_id;
+    private String name;
     private Date baby;
     private Date registerDate;
     private String userRole;
-    private String phoneNumber;
+    private String phone_number;
 
 }

@@ -37,7 +37,7 @@ function SignUpContainer() {
      * 하단에 있는 요청 주소는 수정해주셔야 합니다.
      *
      */
-    axios.post('회원가입을_위한_API_주소', user)
+    axios.post('/fin-the-pen-web/sign-up', user)
       .then((response) => {
         // 처리 결과
         alert(response);

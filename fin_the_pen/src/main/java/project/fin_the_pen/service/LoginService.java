@@ -19,9 +19,12 @@ public class LoginService {
         this.loginRepository = loginRepository;
     }
 
-    public void joinUser(UserRequestDTO userRequestDTO) {
-        loginRepository.joinRegister(userRequestDTO);
+    public boolean joinUser(UserRequestDTO userRequestDTO) {
+        if (loginRepository.joinRegister(userRequestDTO)) {
+            return true;
+        } else return false;
     }
+
 
     public Optional<User> TempFindUser() {
         List<User> all = loginRepository.findAll();

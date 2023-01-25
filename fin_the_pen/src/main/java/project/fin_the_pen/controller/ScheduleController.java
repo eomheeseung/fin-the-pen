@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.service.ScheduleService;
+
 import javax.servlet.http.HttpSession;
 
 @RestController
@@ -15,12 +16,11 @@ import javax.servlet.http.HttpSession;
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-    @PostMapping("registerSchedule")
+    @PostMapping("/fin-the-pen-web")
     public ScheduleRequestDTO registerSchedule(@RequestBody ScheduleRequestDTO scheduleRequestDTO, HttpSession session) {
         scheduleRequestDTO.setUserId(session.getAttribute("session").toString());
         scheduleService.registerSchedule(scheduleRequestDTO);
-        log.info(scheduleRequestDTO.getUserId());
-        log.info(scheduleRequestDTO.getEventName());
+        log.info("일정 - " + scheduleRequestDTO.getUserId() + "의 일정 이름: " + scheduleRequestDTO.getEventName());
         return scheduleRequestDTO;
     }
 }

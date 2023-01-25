@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class Schedule {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_id")
     private int eventKey;
 

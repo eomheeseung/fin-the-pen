@@ -10,6 +10,7 @@ import project.fin_the_pen.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Optional;
 
@@ -28,12 +29,16 @@ public class LoginController {
         return userRequestDTO;
     }
 
-    //TODO API 로그인 연동
+    //TODO API 회원가입 연동
     @PostMapping("/fin-the-pen-web/sign-up")
     public boolean signIn(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());
-        loginService.joinUser(userRequestDTO);
-        log.info("user: " + userRequestDTO.getName() + " 등록");
+        // 이 경우 아이디 비밀번호가 중복되므로 회원가입창으로 리다이렉트
+        if (!loginService.joinUser(userRequestDTO)) {
+            log.info("회원가입 - 중복된 아이디, 패드워드 존재");
+            return false;
+        }
+        log.info("회원가입 - user: " + userRequestDTO.getName() + " 등록, 로그인 성공");
         return true;
     }
 
@@ -56,10 +61,14 @@ public class LoginController {
     //TODO API 로그인
     @PostMapping("/fin-the-pen-web/sign-in")
     @ResponseBody
-    public UserResponseDTO apiLogin(@RequestBody UserRequestDTO userRequestDTO, HttpServletRequest request) {
-        currentUser = loginService.findByUser(userRequestDTO.getUser_id(), userRequestDTO.getPassword());
-        grantSession(request);
-
+    public UserResponseDTO apiLogin(@RequestBody UserRequestDTO userRequestDTO, HttpServletRequest request) throws IOException {
+        try {
+            currentUser = loginService.findByUser(userRequestDTO.getUser_id(), userRequestDTO.getPassword());
+            grantSession(request);
+        } catch (NullPointerException e) {
+            log.info("로그인 - 존재하지 않는 사용자 입니다.");
+            return null;
+        }
         return currentUser;
     }
 

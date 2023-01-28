@@ -42,7 +42,7 @@ function AnalysisContainer() {
 
     // eslint-disable-next-line array-callback-return
     expenditureCategories.map((c, index) => {
-      const schByCategory = schedules.filter((s) => s.category.title === c.title);
+      const schByCategory = schedules.filter((s) => s.category === c.title);
       const cnt = schByCategory.length;
       if (cnt > 0) {
         // eslint-disable-next-line function-paren-newline

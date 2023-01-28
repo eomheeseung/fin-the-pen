@@ -33,7 +33,7 @@ function AnalysisListItem({
           </Stack>
         </Grid>
         <Grid xs={5} item>
-          <Box>{category.value.toLocaleString('ko-KR')}</Box>
+          <Box display="flex" justifyContent="flex-end" mr={2}>{category.value.toLocaleString('ko-KR')}</Box>
         </Grid>
       </Grid>
     </ListItem>

@@ -4,6 +4,7 @@ import {
 import moment from 'moment';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { CATEGORIES } from '../../../utils/constants/categories';
 import { SCHEDULE_DRAWER_MODE } from '../../../utils/constants/schedule';
 import { selectDate, selectSchedules } from '../../../utils/redux/schedule/scheduleSlice';
 import ScheduleDrawer from '../ScheduleDrawer';
@@ -37,10 +38,11 @@ function ScheduleList() {
       )}
       {
         schedules
-          .filter((el) => el.date === date)
-          .map((el) => (
+          .filter((schedule) => schedule.date === date)
+          .map((schedule) => (
             <ScheduleCard
-              schedule={el}
+              schedule={schedule}
+              category={(CATEGORIES.find((c) => c.title === schedule.category) || { color: '#C8A2C8' })}
               key={Math.random()}
               handleModal={handleModal}
             />

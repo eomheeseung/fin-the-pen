@@ -7,7 +7,7 @@ import { LocalizationProvider, PickersDay, StaticDatePicker } from '@mui/x-date-
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import moment from 'moment';
 import { DEADLINE, REPEAT } from '../../../../utils/constants/repeat';
-import { ADD_SCHEDULE } from '../../../../utils/constants/schedule';
+import { SCHEDULE_DRAWER } from '../../../../utils/constants/schedule';
 
 function RepeatInput({
   schedule, updateRepeat, openDatePickerModal,
@@ -63,11 +63,11 @@ function RepeatInput({
         sx={{ width: '100%', marginTop: 1 }}
       >
         <FormControl fullWidth size="small">
-          <InputLabel>{ADD_SCHEDULE.repeating_cycle}</InputLabel>
+          <InputLabel>{SCHEDULE_DRAWER.repeating_cycle}</InputLabel>
           <Select
             name="repeating_cycle"
             value={schedule.repeating_cycle}
-            label={ADD_SCHEDULE.repeating_cycle}
+            label={SCHEDULE_DRAWER.repeating_cycle}
             onChange={updateRepeat}
           >
             {REPEAT.map((r) => (<MenuItem id="repeating_cycle" key={Math.random()} value={r}>{r}</MenuItem>))}
@@ -79,11 +79,11 @@ function RepeatInput({
           size="small"
           disabled={schedule.repeating_cycle === '없음'}
         >
-          <InputLabel>{ADD_SCHEDULE.repeat_deadline}</InputLabel>
+          <InputLabel>{SCHEDULE_DRAWER.repeat_deadline}</InputLabel>
           <Select
             name="repeat_deadline"
             value={schedule.repeat_deadline === '캘린더에 표시' ? schedule.repeat_endDate : schedule.repeat_deadline}
-            label={ADD_SCHEDULE.repeat_deadline}
+            label={SCHEDULE_DRAWER.repeat_deadline}
             onChange={updateRepeat}
           >
             {DEADLINE.map((d) => (<MenuItem key={Math.random()} value={d}>{d}</MenuItem>))}

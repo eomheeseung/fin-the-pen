@@ -9,10 +9,11 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ClearIcon from '@mui/icons-material/Clear';
 import moment from 'moment';
+import { v4 as uuidv4 } from 'uuid';
 import NameInput from './inputs/NameInput';
 import DateInput from './inputs/DateInput';
 import {
-  ADD_SCHEDULE, NEED_TITLE, REPEAT_CYCLE, SCHEDULE_DRAWER_MODE,
+  SCHEDULE_DRAWER, NEED_TITLE, REPEAT_CYCLE, SCHEDULE_DRAWER_MODE,
 } from '../../../utils/constants/schedule';
 import { addSchedule, deleteSchedule, modifySchedule } from '../../../utils/redux/schedule/scheduleSlice';
 import SpendingInput from './inputs/SpendingInput';
@@ -72,10 +73,10 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
   };
 
   const updateSpendingType = () => {
-    if (schedule.type === ADD_SCHEDULE.type_plus) {
-      setSchedule({ ...schedule, type: ADD_SCHEDULE.type_minus });
+    if (schedule.type === SCHEDULE_DRAWER.type_plus) {
+      setSchedule({ ...schedule, type: SCHEDULE_DRAWER.type_minus });
     } else {
-      setSchedule({ ...schedule, type: ADD_SCHEDULE.type_plus });
+      setSchedule({ ...schedule, type: SCHEDULE_DRAWER.type_plus });
     }
   };
 
@@ -102,13 +103,12 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
     if ((schedule.repeating_cycle !== '없음') && (schedule.repeat_deadline !== '없음')) {
       let repeatDate = moment(schedule.date).add(1, REPEAT_CYCLE[schedule.repeating_cycle]);
       while (moment(schedule.repeat_endDate).isSameOrAfter(repeatDate)) {
-        dispatch(addSchedule({ ...schedule, id: schedule.event_name + Math.random(), date: repeatDate.format('YYYY-MM-DD') }));
+        dispatch(addSchedule({ ...schedule, id: uuidv4(), date: repeatDate.format('YYYY-MM-DD') }));
         repeatDate = moment(repeatDate).add(1, REPEAT_CYCLE[schedule.repeating_cycle]);
       }
     }
-    setSchedule({ ...schedule, id: schedule.event_name + Math.random() });
     // 원래 일정 추가
-    dispatch(addSchedule(schedule));
+    dispatch(addSchedule({ ...schedule, id: uuidv4() }));
     setBottomDrawerOpen(false);
   };
 
@@ -127,14 +127,14 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
   };
 
   const handleSubmit = () => {
-    if (schedule.event_name.length > 0) {
-      if (mode === SCHEDULE_DRAWER_MODE.생성) {
-        addNewSchedule();
-      } else {
-        deleteSelectedSchedule();
-      }
-    } else {
+    if (schedule.event_name.length === 0) {
       alert(NEED_TITLE);
+      return;
+    }
+    if (mode === SCHEDULE_DRAWER_MODE.생성) {
+      addNewSchedule();
+    } else {
+      deleteSelectedSchedule();
     }
   };
 
@@ -161,7 +161,7 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
           {useMode === SCHEDULE_DRAWER_MODE.수정
             ? <Button onClick={() => setBottomDrawerOpen(false)}>취소</Button>
             : <Button />}
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{ADD_SCHEDULE.drawer_title[useMode]}</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{SCHEDULE_DRAWER.drawer_title[useMode]}</Typography>
 
           {useMode === SCHEDULE_DRAWER_MODE.수정
             ? <Button onClick={() => modifySelectedSchedule()}>저장</Button>
@@ -185,7 +185,7 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
 
         <CategoryInput
           updateCategory={updateCategory}
-          selected={useMode === SCHEDULE_DRAWER_MODE.생성 ? null : schedule.category.title}
+          selected={useMode === SCHEDULE_DRAWER_MODE.생성 ? null : schedule.category}
         />
 
         {mode === SCHEDULE_DRAWER_MODE.수정
@@ -206,7 +206,7 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
-                <Typography sx={{ fontWeight: 'bold' }}>{ADD_SCHEDULE.set_finance_title}</Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>{SCHEDULE_DRAWER.set_finance_title}</Typography>
               </AccordionSummary>
               <AccordionDetails sx={{ backgroundColor: '#F6F6F6' }}>
                 <AssetSettings
@@ -227,7 +227,9 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
           onClick={() => handleSubmit()}
         >
           {
-            user === null ? NEED_SIGN_IN : ADD_SCHEDULE.add_schedule[useMode]
+            user === null
+              ? NEED_SIGN_IN
+              : SCHEDULE_DRAWER.add_schedule[useMode]
           }
         </Button>
       </Stack>

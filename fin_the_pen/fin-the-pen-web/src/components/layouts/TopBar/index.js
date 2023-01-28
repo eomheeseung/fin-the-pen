@@ -1,13 +1,16 @@
+/* eslint-disable no-unused-vars */
 import {
-  Box, Paper, Stack,
+  Box, Button, Paper, Stack, Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 // import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
-import { selectHeaderMode, selectHeaderOpen } from '../../../utils/redux/common/commonSlice';
+import {
+  selectGuestMode, selectHeaderMode, selectHeaderOpen, setGuestModeFalse, setGuestModeTrue,
+} from '../../../utils/redux/common/commonSlice';
 import FullScreenDialog from '../FullScreenDialog';
 import RoundedButton from '../../common/RoundedButton';
 import PATH from '../../../utils/constants/path';
@@ -17,37 +20,54 @@ import PersonalButton from './buttons/PersonalButton';
 import logo from '../../../assets/logos/logo_square.jpg';
 
 function LogoButton({ navigate }) {
+  const guestMode = useSelector(selectGuestMode);
   return (
     <RoundedButton value="user" onClick={() => navigate(PATH.home)}>
       <img src={logo} alt="" width="26px" height="26px" />
+      {
+        guestMode && (
+          <Typography ml={1}>GUEST MODE</Typography>
+        )
+      }
     </RoundedButton>
   );
 }
 
 function TopBar() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const headerOpen = useSelector(selectHeaderOpen);
   const headerMode = useSelector(selectHeaderMode);
   const [fullScreenModalOpen, setFullScreenModalOpen] = useState(false);
-  const [ask, setAsk] = useState({
-    id: 0,
-    question: '',
-    label: '',
-    answer: null,
-    skip: false,
-  });
+  // const [ask, setAsk] = useState({
+  //   id: 0,
+  //   question: '',
+  //   label: '',
+  //   answer: null,
+  //   skip: false,
+  // });
+
+  // useEffect(() => {
+  //   if (user !== null) {
+  //     for (let index = 0; index < user.goals.length; index += 1) {
+  //       const goal = user.goals[index];
+  //       if (goal.skip === false && goal.answer === null) {
+  //         setAsk(goal);
+  //         setFullScreenModalOpen(true);
+  //         break;
+  //       }
+  //     }
+  //   }
+  // }, [user]);
 
   useEffect(() => {
-    if (user !== null) {
-      for (let index = 0; index < user.goals.length; index += 1) {
-        const goal = user.goals[index];
-        if (goal.skip === false && goal.answer === null) {
-          setAsk(goal);
-          setFullScreenModalOpen(true);
-          break;
-        }
-      }
+    // 옵셔널 체이닝 사용하면 eslint에서 오류 발생
+    if (user && user.name === 'guest') {
+      console.warn('게스트 모드로 동작합니다. 게스트 모드에서는 데이터가 저장되지 않습니다.');
+      dispatch(setGuestModeTrue());
+    } else {
+      dispatch(setGuestModeFalse());
     }
   }, [user]);
 
@@ -62,10 +82,7 @@ function TopBar() {
               sx={{
                 backgroundColor: 'primary.main',
                 height: 100,
-                borderTopLeftRadius: '0px',
-                borderTopRightRadius: '0px',
-                borderBottomLeftRadius: '15px',
-                borderBottomRightRadius: '15px',
+                borderRadius: 0,
               }}
             >
               <Stack
@@ -79,7 +96,7 @@ function TopBar() {
                 <Stack
                   direction="row"
                   justifyContent="space-between"
-                  alignItems="flex-end"
+                  alignItems="center"
                 >
                   {headerMode === 'home' && (
                     <LogoButton navigate={navigate} />
@@ -93,7 +110,7 @@ function TopBar() {
                 <Stack
                   direction="row"
                   justifyContent="space-between"
-                  alignItems="flex-end"
+                  alignItems="center"
                 >
                   {headerMode === 'analysis' && (
                     <LogoButton navigate={navigate} />
@@ -104,7 +121,7 @@ function TopBar() {
                 <Stack
                   direction="row"
                   justifyContent="space-between"
-                  alignItems="flex-end"
+                  alignItems="center"
                 >
                   {headerMode === 'home' && (
                     <>
@@ -128,7 +145,11 @@ function TopBar() {
           )
         }
       </Box>
-      <FullScreenDialog open={fullScreenModalOpen} setOpen={setFullScreenModalOpen} ask={ask} />
+      {/* <FullScreenDialog
+        open={fullScreenModalOpen}
+        setOpen={setFullScreenModalOpen}
+        ask={ask}
+      /> */}
     </>
 
   );

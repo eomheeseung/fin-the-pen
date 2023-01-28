@@ -1,46 +1,84 @@
 package project.fin_the_pen.data.schedule;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
-@Data
+@Getter
 public class Schedule {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_id")
-    private int eventKey;
+    public Schedule() {
+    }
 
-    // TODO 나중에 User의 userId와 매핑할 것임 FK로 가져와서
+    @Builder
+    public Schedule(UUID id, String userId, String eventName, boolean alarm, Date date, Date startTime,
+                    Date endTime, String category, String type, int expectedSpending, String repeatingCycle,
+                    String repeatDeadline, String repeatEndDate, boolean exclusion, String importance) {
+        this.id = id;
+        this.userId = userId;
+        this.eventName = eventName;
+        this.alarm = alarm;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.category = category;
+        this.type = type;
+        this.expectedSpending = expectedSpending;
+        this.repeatingCycle = repeatingCycle;
+        this.repeatDeadline = repeatDeadline;
+        this.repeatEndDate = repeatEndDate;
+        this.exclusion = exclusion;
+        this.importance = importance;
+    }
+    @Id
+    @Column(name = "id")
+    private UUID id;
+
     @Column(name = "user_id")
     private String userId;
 
     @Column(name = "event_name")
     private String eventName;
 
+    @Column(name = "alarm")
+    private boolean alarm;
+
     @Column(name = "date")
-    private Date eventDate;
+    private Date date;
 
     @Column(name = "start_time")
-    private Date startDateTime;
+    private Date startTime;
 
     @Column(name = "end_time")
     private Date endTime;
 
-    @Column(name = "period")
-    private String period;
-
-    @Column(name = "categories")
-    private String categories;
+    @Column(name = "category")
+    private String category;
 
     @Column(name = "type")
     private String type;
 
     @Column(name = "expected_spending")
-    private int expected_spending;
+    private int expectedSpending;
+
+    @Column(name = "repeating_cycle")
+    private String repeatingCycle;
+    @Column(name = "repeat_deadline")
+    private String repeatDeadline;
+
+    @Column(name = "repeat_endDate")
+    private String repeatEndDate;
 
     @Column(name = "exclusion")
     private boolean exclusion;
+
+    @Column(name = "importance")
+    private String importance;
+
+
 }

@@ -2,7 +2,7 @@ import {
   FormControl, IconButton, InputAdornment, OutlinedInput,
 } from '@mui/material';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import { ADD_SCHEDULE } from '../../../../utils/constants/schedule';
+import { SCHEDULE_DRAWER } from '../../../../utils/constants/schedule';
 
 function NameInput({
   schedule, updateSchedule, updateAlarm,
@@ -11,7 +11,7 @@ function NameInput({
     <FormControl fullWidth>
       <OutlinedInput
         id="event_name"
-        startAdornment={<InputAdornment position="start">{ADD_SCHEDULE.name}</InputAdornment>}
+        startAdornment={<InputAdornment position="start">{SCHEDULE_DRAWER.name}</InputAdornment>}
         endAdornment={(
           <InputAdornment position="end">
             <IconButton

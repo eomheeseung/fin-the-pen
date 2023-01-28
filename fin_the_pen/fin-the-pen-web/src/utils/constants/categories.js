@@ -27,7 +27,7 @@ const INCOME = {
     {
       type: '수익',
       categories: ['금융', '사업', '기타'],
-      color: '#008000',
+      color: '#FFD700',
     },
   ],
 };
@@ -38,12 +38,12 @@ const EXPENDITURE = {
     {
       type: '음식',
       categories: ['식비', '술', '카페'],
-      color: '#87CEEB',
+      color: '#008000',
     },
     {
       type: '생활',
       categories: ['생필품', '주거', '통신', '자녀/육아', '반려동물', '교육/학습', '의료/건강'],
-      color: '#0000FF',
+      color: '#87CEEB',
     },
     {
       type: '교통',

@@ -1,4 +1,4 @@
-const ADD_SCHEDULE = Object.freeze({
+const SCHEDULE_DRAWER = Object.freeze({
   drawer_title: {
     create: '새로운 이벤트',
     read: '일정',
@@ -45,9 +45,9 @@ const INIT_SCHEDULE = {
   repeat_deadline: '없음',
   repeat_endDate: new Date(),
   category: {},
-  type: ADD_SCHEDULE.type_minus,
+  type: SCHEDULE_DRAWER.type_minus,
   expected_spending: 0,
-  importance: ADD_SCHEDULE.importance_middle,
+  importance: SCHEDULE_DRAWER.importance_middle,
   exclusion: false, // false면 포함
 };
 const REPEAT_CYCLE = {
@@ -63,7 +63,7 @@ const VIEW_MODE = {
 
 export default null;
 export {
-  ADD_SCHEDULE,
+  SCHEDULE_DRAWER,
   SCHEDULE_DRAWER_MODE,
   NEED_TITLE,
   INIT_SCHEDULE,

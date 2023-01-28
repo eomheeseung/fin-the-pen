@@ -1,14 +1,14 @@
 import {
   Stack, TextField,
 } from '@mui/material';
-import { ADD_SCHEDULE } from '../../../../utils/constants/schedule';
+import { SCHEDULE_DRAWER } from '../../../../utils/constants/schedule';
 
 function DateInput({ schedule, updateSchedule }) {
   return (
     <>
       <TextField
         id="date"
-        label={ADD_SCHEDULE.date}
+        label={SCHEDULE_DRAWER.date}
         type="date"
         fullWidth
         InputLabelProps={{
@@ -27,7 +27,7 @@ function DateInput({ schedule, updateSchedule }) {
       >
         <TextField
           id="start_time"
-          label={ADD_SCHEDULE.start_time}
+          label={SCHEDULE_DRAWER.start_time}
           type="time"
           InputLabelProps={{
             shrink: true,
@@ -42,7 +42,7 @@ function DateInput({ schedule, updateSchedule }) {
         />
         <TextField
           id="end_time"
-          label={ADD_SCHEDULE.end_time}
+          label={SCHEDULE_DRAWER.end_time}
           type="time"
           InputLabelProps={{
             shrink: true,

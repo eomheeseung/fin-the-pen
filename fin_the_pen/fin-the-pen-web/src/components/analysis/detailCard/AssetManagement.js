@@ -11,25 +11,10 @@ function AssetManagement({ selectedItem }) {
       }}
     >
       <Typography variant="buttontext">
-        {moment(new Date()).format('M월 D일')}
-        {' '}
-        기준
-        {' '}
-        {selectedItem.label}
-        {' '}
-        지출 내역 총
-        {' '}
-        {selectedItem.history.length}
-        건 (
-        {selectedItem.value.toLocaleString('ko-KR')}
-        원)
+        {`${moment(new Date()).format('M월 D일')} 기준 ${selectedItem.label} 지출 내역 총 ${selectedItem.history.length}건 (${selectedItem.value.toLocaleString('ko-KR')}원)`}
       </Typography>
       <Typography variant="buttontext">
-        '
-        {selectedItem.label}
-        '
-        {' '}
-        카테고리 소비 목표액인 100,000의 25%
+        {`'${selectedItem.label}' 카테고리 소비 목표액인 100,000의 25%`}
       </Typography>
     </Stack>
   );

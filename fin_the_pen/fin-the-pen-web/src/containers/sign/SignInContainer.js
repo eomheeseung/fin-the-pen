@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -13,8 +14,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/material';
 import axios from 'axios';
 import { setHeaderOpenFalse, setHeaderOpenTrue } from '../../utils/redux/common/commonSlice';
-import { mockLogin, selectStatus, selectUser } from '../../utils/redux/user/userSlice';
+import {
+  login,
+  mockLogin, selectStatus, selectUser, setUser,
+} from '../../utils/redux/user/userSlice';
 import PATH from '../../utils/constants/path';
+import { isObjectValuesEmpty } from '../../utils/tools';
+import { NO_BLANKS } from '../../utils/constants/common';
 // import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Copyright(props) {
@@ -40,6 +46,11 @@ export default function SignInContainer() {
   const user = useSelector(selectUser);
   const status = useSelector(selectStatus);
 
+  const guestLogin = () => {
+    dispatch(mockLogin());
+    // 추가로 이런 저런 설정을 여기에서 해줘야 함.
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -47,28 +58,12 @@ export default function SignInContainer() {
       user_id: data.get('email'),
       password: data.get('password'),
     };
-    alert(JSON.stringify(sign));
-    /**
-     * @eomheeseung
-     *
-     * axios로 로그인 요청하기
-     * POST 방식으로 위 sign 객체를 서버에 전달하려고 합니다.
-     * 하단에 있는 요청 주소는 수정해주셔야 합니다.
-     *
-     */
-    axios.post('/fin-the-pen-web/sign-in', sign)
-      .then((response) => {
-        // 처리 결과
-        alert(response);
-      }).catch((error) => {
-        // error 발생 시
-        alert(`err : ${error}`);
-      });
-  };
-
-  const guestLogin = () => {
-    dispatch(mockLogin());
-    // 추가로 이런 저런 설정을 여기에서 해줘야 함.
+    const invalidIndex = isObjectValuesEmpty(sign);
+    if (invalidIndex === -1) {
+      dispatch(login(sign));
+    } else {
+      alert(NO_BLANKS);
+    }
   };
 
   useEffect(() => {
@@ -79,6 +74,7 @@ export default function SignInContainer() {
   }, []);
 
   useEffect(() => {
+    // 로그인에 성공하는 경우를 감지하여 home으로 보내버림. 혹은, 이미 로그인 된 상태라면 홈으로 강제 이동
     if (user !== null) {
       navigate(PATH.home);
     }
@@ -130,7 +126,7 @@ export default function SignInContainer() {
             autoComplete="current-password"
           />
 
-          <Link>
+          <Link onClick={() => alert('You forget a thousand things every day. Make sure this is one of them :)')}>
             비밀번호를 잊으셨나요?
           </Link>
 
@@ -140,7 +136,7 @@ export default function SignInContainer() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            로그인 (미구현)
+            로그인
           </Button>
 
           <Link to={PATH.signUp}>

@@ -4,7 +4,7 @@ import ImportanceInput from '../inputs/ImportanceInput';
 import SpendingInput from '../inputs/SpendingInput';
 
 function AssetSettings({
-  schedule, updateSchedule, updateSpendingType, updateExclusion, useMode,
+  schedule, updateSchedule, updateSpendingType, updateExclusion, mode,
 }) {
   return (
     <Stack spacing={1}>
@@ -13,7 +13,7 @@ function AssetSettings({
           schedule={schedule}
           updateSchedule={updateSchedule}
           updateSpendingType={updateSpendingType}
-          mode={useMode}
+          mode={mode}
         />
       </Card>
       <Card>

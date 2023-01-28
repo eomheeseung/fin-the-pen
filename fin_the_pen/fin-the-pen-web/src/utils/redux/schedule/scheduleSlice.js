@@ -7,7 +7,11 @@ const initialState = {
   date: moment(new Date()),
   schedules: [],
   filtered: [],
-  viewMode: 'schedule',
+  filtered_date: {
+    start: moment(new Date()),
+    end: moment(new Date()),
+  },
+  viewMode: 'asset',
 };
 
 export const scheduleSlice = createSlice({
@@ -83,6 +87,7 @@ export const {
 export const selectSchedules = (state) => state.schedule.schedules;
 export const selectDate = (state) => state.schedule.date;
 export const selectFiltered = (state) => state.schedule.filtered;
+export const selectFilteredDate = (state) => state.schedule.filtered_date;
 export const selectViewMode = (state) => state.schedule.viewMode;
 
 export default scheduleSlice.reducer;

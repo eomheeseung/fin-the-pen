@@ -44,6 +44,7 @@ public class ScheduleController {
         log.info("json return");
         JSONArray array = scheduleService.findAllSchedule(map.get("user_id"));
         log.info(array.toString());
+
         return array.toString();
     }
 

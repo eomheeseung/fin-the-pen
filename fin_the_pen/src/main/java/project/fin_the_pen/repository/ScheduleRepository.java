@@ -50,7 +50,7 @@ public class ScheduleRepository {
 
 
         if (scheduleList.isEmpty()) {
-            return new JSONArray("일정이 찾을 수 없음.");
+            return new JSONArray((JSONArray) null);
         }
 
         log.info(String.valueOf(scheduleList.size()));

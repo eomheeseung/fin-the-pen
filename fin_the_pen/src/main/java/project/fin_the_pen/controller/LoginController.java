@@ -20,11 +20,11 @@ public class LoginController {
     private final LoginService loginService;
     private UserResponseDTO currentUser;
 
-    @GetMapping("init")
+    /*@GetMapping("init")
     public boolean init() {
         loginService.init();
         return true;
-    }
+    }*/
     @PostMapping("join")
     public UserRequestDTO join(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());

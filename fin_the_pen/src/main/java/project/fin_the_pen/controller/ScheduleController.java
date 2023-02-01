@@ -1,8 +1,8 @@
 package project.fin_the_pen.controller;
 
-import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -39,10 +39,12 @@ public class ScheduleController {
     // TODO 반환 타입 json 형태인데... toString()을 사용해야 postman에서 보임
     @PostMapping("/getAllSchedules")
     @ResponseBody
-    public JsonObject findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+    public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("user_id"));
         log.info("json return");
-        return scheduleService.findAllSchedule(map.get("user_id"));
+        JSONArray array = scheduleService.findAllSchedule(map.get("user_id"));
+        log.info(array.toString());
+        return array.toString();
     }
 
     //일정 편집

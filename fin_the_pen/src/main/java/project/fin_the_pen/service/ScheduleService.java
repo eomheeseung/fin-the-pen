@@ -1,7 +1,7 @@
 package project.fin_the_pen.service;
 
-import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.data.schedule.ScheduleResponseDTO;
@@ -23,7 +23,7 @@ public class ScheduleService {
         return true;
     }
 
-    public JsonObject findAllSchedule(String id) {
+    public JSONArray findAllSchedule(String id) {
         return scheduleRepository.findAllSchedule(id);
     }
 

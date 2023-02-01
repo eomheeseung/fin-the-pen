@@ -20,6 +20,11 @@ public class LoginController {
     private final LoginService loginService;
     private UserResponseDTO currentUser;
 
+    @GetMapping("init")
+    public boolean init() {
+        loginService.init();
+        return true;
+    }
     @PostMapping("join")
     public UserRequestDTO join(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());
@@ -28,7 +33,6 @@ public class LoginController {
         return userRequestDTO;
     }
 
-    //TODO API 회원가입 연동
     @PostMapping("/fin-the-pen-web/sign-up")
     public boolean signIn(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());
@@ -80,5 +84,6 @@ public class LoginController {
     private void grantSession(HttpServletRequest request) {
         HttpSession session = request.getSession();
         session.setAttribute("session", currentUser.getUser_id());
+        log.info((String) session.getAttribute("session"));
     }
 }

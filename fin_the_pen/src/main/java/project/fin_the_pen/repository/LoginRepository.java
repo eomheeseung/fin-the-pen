@@ -17,6 +17,17 @@ public class LoginRepository {
     @PersistenceContext
     EntityManager entityManager;
 
+    public void init() {
+        User user = new User();
+        user.setUserId("admin@naver.com");
+        user.setName("관리자");
+        user.setPassword("1234");
+        user.setPhoneNumber("010-1111-1111");
+        user.setRegisterDate(java.util.Calendar.getInstance().getTime());
+
+        entityManager.persist(user);
+    }
+
     // TODO 사용자가 회원가입할 때 id,pw를 중복검사
     public boolean joinRegister(UserRequestDTO userRequestDTO) {
         if (!duplicateLogin(userRequestDTO)) {

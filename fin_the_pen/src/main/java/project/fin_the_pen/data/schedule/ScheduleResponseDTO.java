@@ -3,7 +3,6 @@ package project.fin_the_pen.data.schedule;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -13,9 +12,9 @@ public class ScheduleResponseDTO {
 //    private String userId;
     private boolean alarm;
     private String eventName;
-    private Date date;
-    private Date startTime;
-    private Date endTime;
+    private String date;
+    private String startTime;
+    private String endTime;
     private String repeatingCycle;
     private String repeatDeadline;
     private String repeatEndDate;

@@ -1,16 +1,18 @@
 package project.fin_the_pen.controller;
 
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
+import project.fin_the_pen.data.schedule.ScheduleResponseDTO;
 import project.fin_the_pen.service.ScheduleService;
 
 import javax.servlet.http.HttpSession;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
@@ -35,13 +37,31 @@ public class ScheduleController {
     }
 
     // TODO 반환 타입 json 형태인데... toString()을 사용해야 postman에서 보임
-    @PostMapping ("/getAllSchedules")
+    @PostMapping("/getAllSchedules")
     @ResponseBody
-    public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+    public JsonObject findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("user_id"));
         log.info("json return");
-        JSONArray array = scheduleService.findAllSchedule(map.get("user_id"));
-        log.info(array.toString());
-        return array.toString();
+        return scheduleService.findAllSchedule(map.get("user_id"));
+    }
+
+    //일정 편집
+    @PostMapping("/modifySchedule")
+    @ResponseBody
+    public Boolean modifySchedule(@RequestBody ScheduleRequestDTO scheduleRequestDTO) {
+        log.info(String.valueOf(scheduleRequestDTO.getId()));
+
+        if (!scheduleService.modifySchedule(scheduleRequestDTO)) {
+            return false;
+        }
+        return true;
+    }
+
+    //uuid로 하나의 일정만 조회
+    @PostMapping("/findOne")
+    @ResponseBody
+    public ScheduleResponseDTO findOne(@RequestBody ConcurrentHashMap<String, UUID> map) {
+        log.info(String.valueOf(map.get("id")));
+        return scheduleService.findOne(map.get("id"));
     }
 }

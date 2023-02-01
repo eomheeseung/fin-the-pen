@@ -54,9 +54,7 @@ function BottomBar({ value, setValue }) {
         <ScheduleDrawer
           setBottomDrawerOpen={setBottomDrawerOpen}
           data={{
-            ...INIT_SCHEDULE,
-            date: moment(date).format('YYYY-MM-DD'),
-            repeat_endDate: moment(date).format('YYYY-MM-DD'),
+            ...INIT_SCHEDULE(moment(date).format('YYYY-MM-DD')),
           }}
           mode={SCHEDULE_DRAWER_MODE.생성}
         />

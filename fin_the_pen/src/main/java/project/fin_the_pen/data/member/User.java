@@ -20,7 +20,6 @@ public class User {
     @Column(name = "user_id")
     private String userId;
 
-    //TODO json 타입의 키와 엔티티 또는 DAO의 필드가 동일해야 하는거 같음.
     @NotEmpty
     @Column(name = "password")
     private String password;

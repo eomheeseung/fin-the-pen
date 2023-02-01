@@ -3,7 +3,6 @@ package project.fin_the_pen.data.schedule;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Data
@@ -19,11 +18,11 @@ public class ScheduleRequestDTO {
     @JsonProperty(value = "event_name")
     private String eventName;
     @JsonProperty(value = "date")
-    private Date date;
+    private String date;
     @JsonProperty(value = "start_time")
-    private Date startTime;
+    private String startTime;
     @JsonProperty(value = "end_time")
-    private Date endTime;
+    private String endTime;
     @JsonProperty(value = "repeating_cycle")
     private String repeatingCycle;
     @JsonProperty(value = "repeat_deadline")

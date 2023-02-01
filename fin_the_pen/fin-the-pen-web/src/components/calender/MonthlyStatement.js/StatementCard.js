@@ -13,7 +13,7 @@ function StatementCard({ title, value, color }) {
       >
         <Stack>
           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{title}</Typography>
-          <Box sx={{ textAlign: 'end', fontWeight: 'bold' }}>{value}</Box>
+          <Box sx={{ textAlign: 'end', fontWeight: 'bold' }}>{`${value}원`}</Box>
         </Stack>
       </Paper>
     </Grid>

@@ -1,23 +1,22 @@
 package project.fin_the_pen.data.schedule;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Getter
+@Data
 public class Schedule {
     public Schedule() {
     }
 
     @Builder
-    public Schedule(UUID id, String userId, String eventName, boolean alarm, Date date, Date startTime,
-                    Date endTime, String category, String type, int expectedSpending, String repeatingCycle,
+    public Schedule(UUID id, String userId, String eventName, boolean alarm, String date, String startTime,
+                    String endTime, String category, String type, int expectedSpending, String repeatingCycle,
                     String repeatDeadline, String repeatEndDate, boolean exclusion, String importance) {
         this.id = id;
         this.userId = userId;
@@ -49,13 +48,13 @@ public class Schedule {
     private boolean alarm;
 
     @Column(name = "date")
-    private Date date;
+    private String date;
 
     @Column(name = "start_time")
-    private Date startTime;
+    private String startTime;
 
     @Column(name = "end_time")
-    private Date endTime;
+    private String endTime;
 
     @Column(name = "category")
     private String category;

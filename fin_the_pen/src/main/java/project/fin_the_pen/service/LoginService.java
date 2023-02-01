@@ -1,6 +1,6 @@
 package project.fin_the_pen.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.data.member.User;
 import project.fin_the_pen.data.member.UserRequestDTO;
@@ -11,14 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class LoginService {
     private final LoginRepository loginRepository;
 
-    @Autowired
-    public LoginService(LoginRepository loginRepository) {
-        this.loginRepository = loginRepository;
+    public void init() {
+        loginRepository.init();
     }
-
     public boolean joinUser(UserRequestDTO userRequestDTO) {
         if (loginRepository.joinRegister(userRequestDTO)) {
             return true;

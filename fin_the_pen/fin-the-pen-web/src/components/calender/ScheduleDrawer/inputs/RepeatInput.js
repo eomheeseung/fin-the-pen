@@ -6,13 +6,32 @@ import {
 import { LocalizationProvider, PickersDay, StaticDatePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import moment from 'moment';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { DEADLINE, REPEAT } from '../../../../utils/constants/repeat';
 import { SCHEDULE_DRAWER } from '../../../../utils/constants/schedule';
+import { selectSchedule, setDrawerSchedule } from '../../../../utils/redux/schedule/scheduleSlice';
+import { updateRepeat, updateRepeatEndDate } from '../utils/schedule';
 
-function RepeatInput({
-  schedule, updateRepeat, openDatePickerModal,
-  handleModalClose, repeatEndDate, updateRepeatEndDate,
-}) {
+function RepeatInput() {
+  const dispatch = useDispatch();
+  const schedule = useSelector(selectSchedule);
+
+  const [openDatePickerModal, setOpenDatePickerModal] = useState(false);
+  const [repeatEndDate, setRepeatEndDate] = useState(moment(schedule.repeat_endDate));
+
+  const changeRepeat = (state) => {
+    updateRepeat(dispatch, schedule, setOpenDatePickerModal, state);
+  };
+
+  const handleModalClose = () => {
+    setOpenDatePickerModal(false);
+    dispatch(setDrawerSchedule({
+      ...schedule,
+      repeat_endDate: moment(repeatEndDate).format('YYYY-MM-DD'),
+    }));
+  };
+
   const renderDayInPicker = (day, _value, DayComponentProps) => {
     if (moment(schedule.date).isSame(repeatEndDate)) {
       return <PickersDay {...DayComponentProps} />;
@@ -68,7 +87,7 @@ function RepeatInput({
             name="repeating_cycle"
             value={schedule.repeating_cycle}
             label={SCHEDULE_DRAWER.repeating_cycle}
-            onChange={updateRepeat}
+            onChange={changeRepeat}
           >
             {REPEAT.map((r) => (<MenuItem id="repeating_cycle" key={Math.random()} value={r}>{r}</MenuItem>))}
           </Select>
@@ -84,13 +103,14 @@ function RepeatInput({
             name="repeat_deadline"
             value={schedule.repeat_deadline === '캘린더에 표시' ? schedule.repeat_endDate : schedule.repeat_deadline}
             label={SCHEDULE_DRAWER.repeat_deadline}
-            onChange={updateRepeat}
+            onChange={changeRepeat}
           >
             {DEADLINE.map((d) => (<MenuItem key={Math.random()} value={d}>{d}</MenuItem>))}
             <MenuItem disabled value={schedule.repeat_endDate}>{schedule.repeat_endDate}</MenuItem>
           </Select>
         </FormControl>
       </Stack>
+
       <Dialog
         open={openDatePickerModal}
         onClose={handleModalClose}
@@ -113,7 +133,7 @@ function RepeatInput({
               disableHighlightToday
               value={moment(repeatEndDate)}
               onChange={(newValue) => {
-                updateRepeatEndDate(newValue);
+                updateRepeatEndDate(schedule, setRepeatEndDate, newValue);
               }}
               renderDay={renderDayInPicker}
               renderInput={(params) => <TextField {...params} />}

@@ -4,14 +4,19 @@ import { createSlice } from '@reduxjs/toolkit';
 import moment from 'moment';
 
 const initialState = {
+  // 메인
   date: moment(new Date()),
+  viewMode: 'asset',
+  // 전체 일정 데이터
   schedules: [],
+  // 서랍에 표시될 일정 1개
+  schedule: null,
+  // 필터
   filtered: [],
   filtered_date: {
     start: moment(new Date()),
     end: moment(new Date()),
   },
-  viewMode: 'asset',
 };
 
 export const scheduleSlice = createSlice({
@@ -29,6 +34,9 @@ export const scheduleSlice = createSlice({
     },
     setSchedules: (state, action) => {
       state.schedules = action.payload;
+    },
+    setDrawerSchedule: (state, action) => {
+      state.schedule = action.payload;
     },
     selectedDate: (state, action) => {
       state.date = action.payload;
@@ -76,6 +84,7 @@ export const {
   addSchedule,
   deleteSchedule,
   setSchedules,
+  setDrawerSchedule,
   selectedDate,
   modifySchedule,
   updateFilter,
@@ -89,5 +98,6 @@ export const selectDate = (state) => state.schedule.date;
 export const selectFiltered = (state) => state.schedule.filtered;
 export const selectFilteredDate = (state) => state.schedule.filtered_date;
 export const selectViewMode = (state) => state.schedule.viewMode;
+export const selectSchedule = (state) => state.schedule.schedule;
 
 export default scheduleSlice.reducer;

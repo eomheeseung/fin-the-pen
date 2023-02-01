@@ -17,7 +17,7 @@ import PATH from '../../../utils/constants/path';
 import { selectUser } from '../../../utils/redux/user/userSlice';
 import FilterButton from './buttons/FilterButton';
 import PersonalButton from './buttons/PersonalButton';
-import logo from '../../../assets/logos/logo_square.jpg';
+import logo from '../../../assets/logos/logo_removebg.png';
 
 function LogoButton({ navigate }) {
   const guestMode = useSelector(selectGuestMode);

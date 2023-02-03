@@ -170,6 +170,7 @@ public class ScheduleRepository {
             jsonObject.put("category", schedule.getCategory());
             jsonObject.put("exclusion", schedule.isExclusion());
             jsonObject.put("importance", schedule.getImportance());
+            jsonObject.put("expected_spending", schedule.getExpectedSpending());
 
             jsonArray.put(jsonObject);
         }

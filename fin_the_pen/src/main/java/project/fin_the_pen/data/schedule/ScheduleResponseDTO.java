@@ -9,7 +9,7 @@ import java.util.UUID;
 @Builder
 public class ScheduleResponseDTO {
     private UUID id;
-//    private String userId;
+    //    private String userId;
     private boolean alarm;
     private String eventName;
     private String date;

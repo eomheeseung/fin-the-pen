@@ -60,6 +60,13 @@ public class ScheduleController {
         return true;
     }
 
+    @PostMapping("/findMonth")
+    @ResponseBody
+    public String findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+        log.info(map.get("month"));
+        return scheduleService.findMonthSchedule(map.get("month")).toString();
+    }
+
     //uuid로 하나의 일정만 조회
     @PostMapping("/findOne")
     @ResponseBody

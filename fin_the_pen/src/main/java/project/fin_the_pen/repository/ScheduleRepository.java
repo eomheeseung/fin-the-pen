@@ -1,7 +1,9 @@
 package project.fin_the_pen.repository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.data.schedule.Schedule;
 import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
@@ -17,9 +19,12 @@ import java.util.UUID;
 @Repository
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class ScheduleRepository {
     @PersistenceContext
     EntityManager entityManager;
+
+    private final CRUDScheduleRepository repository;
 
     //TODO 일정을 가져올 수 있어야 함
     public Boolean registerSchedule(ScheduleRequestDTO scheduleRequestDTO) {
@@ -44,33 +49,40 @@ public class ScheduleRepository {
                 .setParameter("id", id)
                 .getResultList();
 
+
         List<ScheduleResponseDTO> schduleResponseList = new ArrayList<>();
-
         log.info(String.valueOf(scheduleList.size()));
-
-
+        JSONArray jsonArray = new JSONArray(schduleResponseList);
         if (scheduleList.isEmpty()) {
             return new JSONArray((JSONArray) null);
         }
 
         log.info(String.valueOf(scheduleList.size()));
 
-        for (Schedule schedule : scheduleList) {
-            ScheduleResponseDTO responseDTO = ScheduleResponseDTO.builder().id(schedule.getId()).alarm(schedule.isAlarm())
-                    .endTime(schedule.getEndTime()).startTime(schedule.getStartTime()).category(schedule.getCategory())
-                    .eventName(schedule.getEventName()).exclusion(schedule.isExclusion())
-                    .expectedSpending(schedule.getExpectedSpending()).type(schedule.getType())
-                    .importance(schedule.getImportance()).repeatDeadline(schedule.getRepeatDeadline())
-                    .repeatEndDate(schedule.getRepeatEndDate()).repeatingCycle(schedule.getRepeatingCycle())
-                    .date(schedule.getDate()).build();
-            schduleResponseList.add(responseDTO);
-        }
-
-        JSONArray jsonArray = new JSONArray(schduleResponseList);
-        return jsonArray;
+        return getJsonArrayBySchedule(scheduleList, jsonArray);
     }
 
-    // uuid로 일정 하나만 조회
+    /**
+     * 월별로 일정 조회
+     * @param month
+     * @return
+     */
+    public JSONArray findMonthSchedule(String month) {
+        List<Schedule> byMonthSchedule = repository.findByMonthSchedule(month);
+        JSONArray jsonArray = new JSONArray();
+
+        return getJsonArrayBySchedule(byMonthSchedule, jsonArray);
+
+    }
+
+
+
+    // TODO 나중에 jsonObject로 바꿔야 할 수도
+    /**
+     * 일정 하나만 조회인데 필요할지 안 필요할지....
+     * @param uuid
+     * @return
+     */
     public ScheduleResponseDTO findOneSchedule(UUID uuid) {
         Schedule findSchedule = getSingleSchedule(uuid);
 
@@ -93,7 +105,7 @@ public class ScheduleRepository {
 
         return scheduleResponseDTO;
     }
-    // 일정 편집
+    //TODO 나중에 해야 함 1.
     public boolean modifySchedule(ScheduleRequestDTO scheduleRequestDTO) {
         Schedule findSchedule = getSingleSchedule(scheduleRequestDTO.getId());
 
@@ -122,6 +134,17 @@ public class ScheduleRepository {
         return true;
     }
 
+    //TODO 나중에 해야 함 2.
+    public boolean deleteSchedule(UUID uuid) {
+        Schedule singleSchedule = getSingleSchedule(uuid);
+        try {
+            entityManager.remove(singleSchedule);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
 
 
     private Schedule getSingleSchedule(UUID uuid) {
@@ -129,5 +152,27 @@ public class ScheduleRepository {
                 .setParameter("uuid", uuid)
                 .getSingleResult();
         return findSchedule;
+    }
+
+    private JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, JSONArray jsonArray) {
+        for (Schedule schedule : scheduleList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("user_id", schedule.getId());
+            jsonObject.put("alarm", schedule.isAlarm());
+            jsonObject.put("event_name", schedule.getEventName());
+            jsonObject.put("date", schedule.getDate());
+            jsonObject.put("start_time", schedule.getStartTime());
+            jsonObject.put("end_time", schedule.getEndTime());
+            jsonObject.put("type", schedule.getType());
+            jsonObject.put("repeating_cycle", schedule.getRepeatingCycle());
+            jsonObject.put("repeat_deadline", schedule.getRepeatDeadline());
+            jsonObject.put("repeat_endDate", schedule.getRepeatEndDate());
+            jsonObject.put("category", schedule.getCategory());
+            jsonObject.put("exclusion", schedule.isExclusion());
+            jsonObject.put("importance", schedule.getImportance());
+
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray;
     }
 }

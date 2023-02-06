@@ -10,7 +10,6 @@ import java.util.Date;
 @Entity
 @Data
 public class User {
-    // TODO date 객체 사용
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

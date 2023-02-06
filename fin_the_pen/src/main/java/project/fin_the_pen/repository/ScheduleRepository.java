@@ -26,7 +26,6 @@ public class ScheduleRepository {
 
     private final CRUDScheduleRepository repository;
 
-    //TODO 일정을 가져올 수 있어야 함
     public Boolean registerSchedule(ScheduleRequestDTO scheduleRequestDTO) {
         try {
             Schedule schedule = new Schedule(scheduleRequestDTO.getId(), scheduleRequestDTO.getUserId(),
@@ -64,11 +63,11 @@ public class ScheduleRepository {
 
     /**
      * 월별로 일정 조회
-     * @param month
+     * @param date
      * @return
      */
-    public JSONArray findMonthSchedule(String month) {
-        List<Schedule> byMonthSchedule = repository.findByMonthSchedule(month);
+    public JSONArray findMonthSchedule(String date,String userId) {
+        List<Schedule> byMonthSchedule = repository.findByMonthSchedule(date,userId);
         JSONArray jsonArray = new JSONArray();
 
         return getJsonArrayBySchedule(byMonthSchedule, jsonArray);
@@ -105,7 +104,7 @@ public class ScheduleRepository {
 
         return scheduleResponseDTO;
     }
-    //TODO 나중에 해야 함 1.
+
     public boolean modifySchedule(ScheduleRequestDTO scheduleRequestDTO) {
         Schedule findSchedule = getSingleSchedule(scheduleRequestDTO.getId());
 
@@ -134,7 +133,6 @@ public class ScheduleRepository {
         return true;
     }
 
-    //TODO 나중에 해야 함 2.
     public boolean deleteSchedule(UUID uuid) {
         Schedule singleSchedule = getSingleSchedule(uuid);
         try {
@@ -144,8 +142,6 @@ public class ScheduleRepository {
         }
         return true;
     }
-
-
 
     private Schedule getSingleSchedule(UUID uuid) {
         Schedule findSchedule = entityManager.createQuery("select s from Schedule s where s.id =: uuid", Schedule.class)

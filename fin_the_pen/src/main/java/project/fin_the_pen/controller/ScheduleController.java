@@ -23,7 +23,6 @@ public class ScheduleController {
 
     @PostMapping("/createSchedule")
     public boolean registerSchedule(@RequestBody ScheduleRequestDTO scheduleRequestDTO, HttpSession session) {
-        //TODO 나중에 주석 해제해야함. 세션으로 받아올 거라
         scheduleRequestDTO.setUserId(session.getAttribute("session").toString());
         log.info(session.getAttribute("session").toString());
         try {
@@ -36,7 +35,6 @@ public class ScheduleController {
         return true;
     }
 
-    // TODO 반환 타입 json 형태인데... toString()을 사용해야 postman에서 보임
     @PostMapping("/getAllSchedules")
     @ResponseBody
     public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
@@ -60,11 +58,17 @@ public class ScheduleController {
         return true;
     }
 
-    @PostMapping("/findMonth")
+    @PostMapping("/deleteSchedule")
+    public boolean deleteSchedule(UUID uuid) {
+        if (scheduleService.deleteSchedule(uuid)) {
+            return true;
+        } else return false;
+    }
+    @PostMapping("/getMonthSchedules")
     @ResponseBody
     public String findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        log.info(map.get("month"));
-        return scheduleService.findMonthSchedule(map.get("month")).toString();
+        log.info(map.get("date"));
+        return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id")).toString();
     }
 
     //uuid로 하나의 일정만 조회

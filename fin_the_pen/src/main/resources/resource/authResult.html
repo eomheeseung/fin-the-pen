@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script>
+        var $authorizeFrm = $('#authorizeFrm');
+        window.open('', '_authForm');
+        $authorizeFrm.submit();
+    </script>
 </head>
 <!--금융 인증 예시-->
 <body>
 <form method="get" action="https://testapi.openbanking.or.kr/oauth/2.0/authorize" target="_blank">
   <input type="hidden" name="response_type" value="code"/>
   <input type="hidden" name="client_id" value="24ffbbc3-fd31-426f-80ac-ec22e36ce10d"/>
-  <input type="hidden" name="redirect_uri" value="http://localhost:63342/fin-the-pen/fin_the_pen.main/resource/authResult"/>
+  <input type="hidden" name="redirect_uri" value="http://localhost:63342/fin-the-pen/fin_the_pen.main/resource/home"/>
   <input type="hidden" name="scope" value="login inquiry transfer"/>
   <input type="hidden" name="state" value="b80BLsfigm9OokPTjy03elbJqRHOfGSY"/>
   <input type="hidden" name="auth_type" value="0"/>

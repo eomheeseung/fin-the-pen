@@ -34,16 +34,17 @@ public class ScheduleService {
         return true;
     }
 
-    public JSONArray findMonthSchedule(String month) {
-        return scheduleRepository.findMonthSchedule(month);
+    public JSONArray findMonthSchedule(String date,String userId) {
+        return scheduleRepository.findMonthSchedule(date,userId);
     }
-    /*public boolean deleteSchedule(UUID uuid) {
+    public boolean deleteSchedule(UUID uuid) {
         try {
             scheduleRepository.deleteSchedule(uuid);
         } catch (Exception e) {
             return false;
         }
-    }*/
+        return true;
+    }
 
     public ScheduleResponseDTO findOne(UUID uuid) {
         return scheduleRepository.findOneSchedule(uuid);

@@ -1,4 +1,4 @@
-package project.fin_the_pen.data.api;
+package project.fin_the_pen.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
@@ -17,13 +17,13 @@ import java.net.URL;
 @Slf4j
 public class APIController {
     //사용자 인증 사이트로 넘어감.
-    private final StringBuffer stringBuffer = new StringBuffer("https://testapi.openbanking.or.kr");
+    private final StringBuffer URLstringBuffer = new StringBuffer("https://testapi.openbanking.or.kr");
     private static int length;
     private TokenIssuance tokenIssuance;
 
     @GetMapping("auth")
     public void userAuthorization(@RequestParam String code) {
-        length = stringBuffer.length();
+        length = URLstringBuffer.length();
 
         HttpURLConnection httpURLConnection = null;
         JSONObject responseJson = null;
@@ -88,11 +88,11 @@ public class APIController {
     @GetMapping("accountAuth")
     @ResponseBody
     public String accountAuth() throws IOException {
-        stringBuffer.append("/v2.0/user/me");
+        URLstringBuffer.append("/v2.0/user/me");
 
         try {
-            stringBuffer.append("?user_seq_no=").append(tokenIssuance.getUserSeqNo());
-            URL url = new URL(stringBuffer.toString());
+            URLstringBuffer.append("?user_seq_no=").append(tokenIssuance.getUserSeqNo());
+            URL url = new URL(URLstringBuffer.toString());
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.setRequestProperty("Authorization", "Bearer " + tokenIssuance.getAccessToken());
@@ -107,7 +107,7 @@ public class APIController {
             }
 
             bufferedReader.close();
-            extractedSB(stringBuffer);
+            extractedSB(URLstringBuffer);
 
             String response = stringBuffer.toString();
             log.info(response);
@@ -122,11 +122,12 @@ public class APIController {
     @ResponseBody
     public String accountInquiry(@RequestParam String bankTranId,
                                  @RequestParam String fintechUseNum, @RequestParam String tranDTime) throws IOException {
+
         String param = "?bank_tran_id=" + bankTranId + "&fintech_use_num=" + fintechUseNum + "&tran_dtime=" + tranDTime;
-        stringBuffer.append("/v2.0/account/balance/fin_num");
+        URLstringBuffer.append("/v2.0/account/balance/fin_num");
 
         try {
-            URL url = new URL(stringBuffer.toString());
+            URL url = new URL(URLstringBuffer.toString());
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.setRequestProperty("Authorization", "Bearer " + tokenIssuance.getAccessToken());

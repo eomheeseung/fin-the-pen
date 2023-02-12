@@ -34,9 +34,15 @@ public class ScheduleService {
         return true;
     }
 
-    public JSONArray findMonthSchedule(String date,String userId) {
-        return scheduleRepository.findMonthSchedule(date,userId);
+    /*public JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+        List<Schedule> scheduleByCategory = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
+
+    }*/
+
+    public JSONArray findMonthSchedule(String date, String userId) {
+        return scheduleRepository.findMonthSchedule(date, userId);
     }
+
     public boolean deleteSchedule(UUID uuid) {
         try {
             scheduleRepository.deleteSchedule(uuid);

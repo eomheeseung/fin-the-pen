@@ -1,4 +1,4 @@
-package project.fin_the_pen.data.api;
+package project.fin_the_pen.api;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +27,6 @@ public class TokenIssuance {
     private String expiresIn;
 
     private String scope;
-
 
     private String userSeqNo;
 }

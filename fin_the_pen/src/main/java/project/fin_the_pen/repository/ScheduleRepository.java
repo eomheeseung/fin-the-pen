@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import project.fin_the_pen.data.schedule.Schedule;
 import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.data.schedule.ScheduleResponseDTO;
+import project.fin_the_pen.data.schedule.category.CategoryRequestDTO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -63,22 +64,22 @@ public class ScheduleRepository {
 
     /**
      * 월별로 일정 조회
+     *
      * @param date
      * @return
      */
-    public JSONArray findMonthSchedule(String date,String userId) {
-        List<Schedule> byMonthSchedule = repository.findByMonthSchedule(date,userId);
+    public JSONArray findMonthSchedule(String date, String userId) {
+        List<Schedule> byMonthSchedule = repository.findByMonthSchedule(date, userId);
         JSONArray jsonArray = new JSONArray();
 
         return getJsonArrayBySchedule(byMonthSchedule, jsonArray);
-
     }
 
-
-
     // TODO 나중에 jsonObject로 바꿔야 할 수도
+
     /**
      * 일정 하나만 조회인데 필요할지 안 필요할지....
+     *
      * @param uuid
      * @return
      */
@@ -131,6 +132,13 @@ public class ScheduleRepository {
             }
         }
         return true;
+    }
+
+    public List<Schedule> findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+        return entityManager.createQuery("select s from Schedule s where s.userId= :userId and s.category = :categoryName", Schedule.class)
+                .setParameter("userId", currentSession)
+                .setParameter("categoryName", categoryRequestDTO.getCategoryName())
+                .getResultList();
     }
 
     public boolean deleteSchedule(UUID uuid) {

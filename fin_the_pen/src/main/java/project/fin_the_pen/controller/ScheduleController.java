@@ -64,6 +64,7 @@ public class ScheduleController {
             return true;
         } else return false;
     }
+
     @PostMapping("/getMonthSchedules")
     @ResponseBody
     public String findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
@@ -78,4 +79,9 @@ public class ScheduleController {
         log.info(String.valueOf(map.get("id")));
         return scheduleService.findOne(map.get("id"));
     }
+
+    /*@PostMapping("/findCategory")
+    public String findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO,HttpSession session) {
+        scheduleService.findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
+    }*/
 }

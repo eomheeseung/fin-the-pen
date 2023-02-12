@@ -25,6 +25,7 @@ public class LoginController {
         loginService.init();
         return true;
     }*/
+
     @PostMapping("join")
     public UserRequestDTO join(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());

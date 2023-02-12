@@ -35,10 +35,10 @@ public class Schedule {
         this.importance = importance;
     }
     @Id
-    @Column(name = "id")
+    @Column(name = "uuid")
     private UUID id;
 
-    @Column(name = "user_id")
+    @Column(name = "id")
     private String userId;
 
     @Column(name = "event_name")

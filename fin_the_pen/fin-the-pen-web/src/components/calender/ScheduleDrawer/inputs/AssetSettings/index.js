@@ -1,7 +1,7 @@
 import { Card, Stack } from '@mui/material';
-import ExclusionInput from '../ExclusionInput';
-import ImportanceInput from '../ImportanceInput';
-import SpendingInput from '../SpendingInput';
+import ExclusionInput from './ExclusionInput';
+import ImportanceInput from './ImportanceInput';
+import SpendingInput from './SpendingInput';
 
 function AssetSettings({ mode }) {
   return (

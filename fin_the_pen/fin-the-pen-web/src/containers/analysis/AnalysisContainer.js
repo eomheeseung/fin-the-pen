@@ -92,7 +92,7 @@ function AnalysisContainer() {
   };
 
   return (
-    <Box>
+    <Box sx={{ mt: 2 }}>
       <AnalysisHeader />
       {total > 0 ? (
         showDetailCard

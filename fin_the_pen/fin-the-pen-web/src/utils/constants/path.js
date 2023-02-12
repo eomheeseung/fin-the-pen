@@ -5,7 +5,7 @@ const PATH = Object.freeze({
   signUp: '/sign-up',
   mypage: '/mypage',
   notification: '/notification',
-  moneyManagement: '/money-management',
+  assetManagement: '/asset-management',
   settings: '/settings',
   test: '/test',
 

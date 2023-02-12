@@ -6,7 +6,6 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -15,7 +14,7 @@ public class Schedule {
     }
 
     @Builder
-    public Schedule(UUID id, String userId, String eventName, boolean alarm, String date, String startTime,
+    public Schedule(String id, String userId, String eventName, boolean alarm, String date, String startTime,
                     String endTime, String category, String type, int expectedSpending, String repeatingCycle,
                     String repeatDeadline, String repeatEndDate, boolean exclusion, String importance) {
         this.id = id;
@@ -35,10 +34,10 @@ public class Schedule {
         this.importance = importance;
     }
     @Id
-    @Column(name = "uuid")
-    private UUID id;
-
     @Column(name = "id")
+    private String id;
+
+    @Column(name = "user_id")
     private String userId;
 
     @Column(name = "event_name")
@@ -78,6 +77,4 @@ public class Schedule {
 
     @Column(name = "importance")
     private String importance;
-
-
 }

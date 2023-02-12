@@ -53,7 +53,7 @@ function CalenderBox({
           margin: 0,
         },
         '& .PrivatePickersSlideTransition-root': {
-          minHeight: DATE_HEIGHT * 5,
+          minHeight: DATE_HEIGHT * week,
         },
         '& .PrivatePickersSlideTransition-root [role="row"]': {
           margin: 0,

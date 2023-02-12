@@ -1,33 +1,40 @@
-/* eslint-disable max-len */
 import {
-  Box, Grid,
+  Stack, Typography,
 } from '@mui/material';
-import { lightBlue, pink } from '@mui/material/colors';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { selectDate, selectSchedules } from '../../../utils/redux/schedule/scheduleSlice';
 import { calculateIncomeExpenditure } from '../../../utils/tools';
-import StatementCard from './StatementCard';
+import StatusStack from '../../assetManagement/ScheduleStatusCard/StatusStack';
+import SwitchingHeader from '../../common/SwitchingHeader';
+import RoundedPaper from '../../common/RoundedPaper';
+import RoundedBorderBox from '../../common/RoundedBorderBox';
 
 function MonthlyStatement() {
   const schedules = useSelector(selectSchedules);
   const date = useSelector(selectDate);
 
   return (
-    <Box mx={2} mb="80px">
-      <Grid container spacing={2}>
-        <StatementCard
-          title="수입"
-          value={calculateIncomeExpenditure(schedules, moment(date), 'month', '+')}
-          color={pink[100]}
-        />
-        <StatementCard
-          title="지출"
-          value={calculateIncomeExpenditure(schedules, moment(date), 'month', '-')}
-          color={lightBlue[200]}
-        />
-      </Grid>
-    </Box>
+    <RoundedPaper>
+      <SwitchingHeader>
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{`${moment(date).format('M')}월`}</Typography>
+        <Typography variant="caption">{moment(date).format('YYYY')}</Typography>
+      </SwitchingHeader>
+
+      <RoundedBorderBox>
+        <Stack direction="row" spacing={2}>
+          <StatusStack
+            title="수입"
+            content={`+${calculateIncomeExpenditure(schedules, moment(date), 'month', '+')}`}
+          />
+
+          <StatusStack
+            title="지출"
+            content={`-${calculateIncomeExpenditure(schedules, moment(date), 'month', '-')}`}
+          />
+        </Stack>
+      </RoundedBorderBox>
+    </RoundedPaper>
   );
 }
 

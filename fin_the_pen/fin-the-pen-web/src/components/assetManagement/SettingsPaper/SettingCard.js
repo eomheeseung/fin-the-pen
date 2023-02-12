@@ -8,7 +8,7 @@ function SettingCard({ setting }) {
     <Grid item xs={6}>
       <CardActionArea onClick={() => navigatie(setting.path)}>
         <Box sx={{
-          height: '120px',
+          height: '15vh',
           backgroundColor: setting.color,
           paddingX: 1,
           borderRadius: 4,

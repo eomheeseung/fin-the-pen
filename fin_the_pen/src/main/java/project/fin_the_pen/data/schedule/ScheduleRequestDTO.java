@@ -3,14 +3,12 @@ package project.fin_the_pen.data.schedule;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 public class ScheduleRequestDTO {
     public ScheduleRequestDTO() {
     }
     @JsonProperty(value = "id")
-    private UUID id;
+    private String id;
     @JsonProperty(value = "user_id")
     private String userId;
     @JsonProperty(value = "alarm")

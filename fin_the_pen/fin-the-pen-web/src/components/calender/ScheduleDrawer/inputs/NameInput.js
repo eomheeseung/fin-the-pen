@@ -31,13 +31,16 @@ function NameInput({ setSchedule }) {
               onClick={changeAlarm}
               edge="end"
             >
-              {schedule.alarm ? <NotificationsNoneIcon color="primary" /> : <NotificationsNoneIcon />}
+              <NotificationsNoneIcon color={schedule.alarm ? 'primary' : ''} />
             </IconButton>
           </InputAdornment>
         )}
         value={schedule.event_name}
         onChange={changeSchedule}
         size="small"
+        inputProps={{
+          style: { textAlign: 'right' },
+        }}
       />
     </FormControl>
   );

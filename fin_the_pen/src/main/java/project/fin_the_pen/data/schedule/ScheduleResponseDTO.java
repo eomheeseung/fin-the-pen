@@ -3,12 +3,10 @@ package project.fin_the_pen.data.schedule;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
 @Builder
 public class ScheduleResponseDTO {
-    private UUID id;
+    private String id;
     //    private String userId;
     private boolean alarm;
     private String eventName;

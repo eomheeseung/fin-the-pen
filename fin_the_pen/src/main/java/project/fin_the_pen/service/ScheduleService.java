@@ -7,8 +7,6 @@ import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.data.schedule.ScheduleResponseDTO;
 import project.fin_the_pen.repository.ScheduleRepository;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
@@ -43,7 +41,7 @@ public class ScheduleService {
         return scheduleRepository.findMonthSchedule(date, userId);
     }
 
-    public boolean deleteSchedule(UUID uuid) {
+    public boolean deleteSchedule(String uuid) {
         try {
             scheduleRepository.deleteSchedule(uuid);
         } catch (Exception e) {
@@ -52,7 +50,7 @@ public class ScheduleService {
         return true;
     }
 
-    public ScheduleResponseDTO findOne(UUID uuid) {
+    public ScheduleResponseDTO findOne(String uuid) {
         return scheduleRepository.findOneSchedule(uuid);
     }
 }

@@ -3,7 +3,7 @@ import {
 } from '@mui/material/colors';
 import PATH from './path';
 
-const momeyManagementSettings = Object.freeze([
+const assetManagements = Object.freeze([
   {
     title: '저축 목표 금액 설정',
     color: pink[200],
@@ -26,4 +26,4 @@ const momeyManagementSettings = Object.freeze([
   },
 ]);
 
-export default momeyManagementSettings;
+export default assetManagements;

@@ -12,7 +12,6 @@ import project.fin_the_pen.data.schedule.ScheduleResponseDTO;
 import project.fin_the_pen.service.ScheduleService;
 
 import javax.servlet.http.HttpSession;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
@@ -59,10 +58,14 @@ public class ScheduleController {
     }
 
     @PostMapping("/deleteSchedule")
-    public boolean deleteSchedule(UUID uuid) {
-        if (scheduleService.deleteSchedule(uuid)) {
+    @ResponseBody
+    public boolean deleteSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+        log.info(map.get("id"));
+        if (scheduleService.deleteSchedule(map.get("id"))) {
             return true;
-        } else return false;
+        } else {
+            return false;
+        }
     }
 
     @PostMapping("/getMonthSchedules")
@@ -75,7 +78,7 @@ public class ScheduleController {
     //uuid로 하나의 일정만 조회
     @PostMapping("/findOne")
     @ResponseBody
-    public ScheduleResponseDTO findOne(@RequestBody ConcurrentHashMap<String, UUID> map) {
+    public ScheduleResponseDTO findOne(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(String.valueOf(map.get("id")));
         return scheduleService.findOne(map.get("id"));
     }

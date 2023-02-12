@@ -1,3 +1,14 @@
+const TIME_SELECTOR = Object.freeze({
+  meridiem: {
+    am: '오전',
+    pm: '오후',
+  },
+  minutes: {
+    zero: '00',
+    thirty: '30',
+  },
+});
+
 const SCHEDULE_DRAWER = Object.freeze({
   drawer_title: {
     create: '새로운 이벤트',
@@ -35,12 +46,13 @@ const SCHEDULE_DRAWER_MODE = {
   생성: 'create',
 };
 const NEED_TITLE = '제목을 입력해야 합니다.';
+const WRONG_TIME_ORDER = '종료 시각이 시작 시각보다 빠르지 않았으면 좋겠어요.';
 const INIT_SCHEDULE = (date) => ({
   event_name: '',
   alarm: false,
   date,
   start_time: '09:00',
-  end_time: '11:00',
+  end_time: '20:00',
   repeating_cycle: '없음',
   repeat_deadline: '없음',
   repeat_endDate: date,
@@ -63,9 +75,11 @@ const VIEW_MODE = {
 
 export default null;
 export {
+  TIME_SELECTOR,
   SCHEDULE_DRAWER,
   SCHEDULE_DRAWER_MODE,
   NEED_TITLE,
+  WRONG_TIME_ORDER,
   INIT_SCHEDULE,
   REPEAT_CYCLE,
   VIEW_MODE,

@@ -9,13 +9,13 @@ import {
 } from '@mui/material/colors';
 import moment from 'moment/moment';
 import { useSelector } from 'react-redux';
-import ScheduleStatusCard from '../../components/momeyManagement/ScheduleStatusCard.js';
-import SettingsPaper from '../../components/momeyManagement/SettingsPaper';
+import ScheduleStatusCard from '../../components/assetManagement/ScheduleStatusCard';
+import SettingsPaper from '../../components/assetManagement/SettingsPaper';
 import { CATEGORIES } from '../../utils/constants/categories';
 import { selectSchedules } from '../../utils/redux/schedule/scheduleSlice';
 import { selectUser } from '../../utils/redux/user/userSlice';
 
-function MoneyManagementContainer() {
+function AssetManagementContainer() {
   const schedules = useSelector(selectSchedules);
   const user = useSelector(selectUser);
   const today = moment();
@@ -25,13 +25,11 @@ function MoneyManagementContainer() {
       {user
         ? (
           <>
-            <Box sx={{ typography: 'h4', fontWeight: 'bold' }}>
+            <Box sx={{ typography: 'h5', fontWeight: 'bold' }}>
               {`핀더팬과 함께 "${user.name}" 님의 자산과 일정을 관리하세요`}
             </Box>
             <SettingsPaper />
-            <Box sx={{ typography: 'h4', fontWeight: 'bold' }}>
-              My 스케줄 현황
-            </Box>
+
             <ScheduleStatusCard
               month={today.format('M월')}
               numberOfSchedule={schedules.filter((s) => today.isSame(s.date, 'month') && today.isSameOrBefore(s.date, 'day')).length}
@@ -42,4 +40,4 @@ function MoneyManagementContainer() {
     </Box>
   );
 }
-export default MoneyManagementContainer;
+export default AssetManagementContainer;

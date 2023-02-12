@@ -1,23 +1,41 @@
 import {
-  Box,
-  Button,
-  Divider,
-  Stack, TextField,
+  Alert, Stack, TextField,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { SCHEDULE_DRAWER } from '../../../../utils/constants/schedule';
-import { selectSchedule } from '../../../../utils/redux/schedule/scheduleSlice';
-import ModalStaticBackdrop from '../../../layouts/ModalStaticBackdrop';
-import { updateSchedule } from '../utils/schedule';
+import { SCHEDULE_DRAWER, WRONG_TIME_ORDER } from '../../../../../utils/constants/schedule';
+import { selectSchedule } from '../../../../../utils/redux/schedule/scheduleSlice';
+import { isTimeOrderCorrect } from '../../../../../utils/tools';
+import ModalStaticBackdrop from '../../../../layouts/ModalStaticBackdrop';
+import { updateSchedule } from '../../utils/schedule';
+import TimeSelector from './TimeSelector';
 
 function DateInput() {
   const dispatch = useDispatch();
   const schedule = useSelector(selectSchedule);
+  const [timeId, setTimeId] = useState(null);
+  const [currentTime, setCurrentTime] = useState('09:00');
   const [modalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState(null);
+
   const changeSchedule = (state) => {
     updateSchedule(dispatch, schedule, state);
   };
+
+  const openModal = (id, time) => {
+    setTimeId(id);
+    setCurrentTime(time);
+    setModalOpen(!modalOpen);
+  };
+
+  useEffect(() => {
+    if (isTimeOrderCorrect(schedule.start_time, schedule.end_time)) {
+      setError(false);
+    } else {
+      setError(true);
+    }
+  }, [schedule]);
+
   return (
     <>
       <TextField
@@ -32,7 +50,7 @@ function DateInput() {
         onChange={changeSchedule}
         size="small"
       />
-      <Stack
+      {/* <Stack
         direction="row"
         justifyContent="space-between"
         alignItems="center"
@@ -69,7 +87,7 @@ function DateInput() {
           onChange={changeSchedule}
           size="small"
         />
-      </Stack>
+      </Stack> */}
       <Stack
         direction="row"
         justifyContent="space-between"
@@ -79,51 +97,41 @@ function DateInput() {
       >
         <TextField
           id="start_time"
-          label={`${SCHEDULE_DRAWER.start_time} (동작x 구현중)`}
+          label={`${SCHEDULE_DRAWER.start_time} (beta)`}
           fullWidth
           value={schedule.start_time}
-          onClick={() => setModalOpen(!modalOpen)}
+          onClick={() => openModal('start_time', schedule.start_time)}
           size="small"
         />
         <TextField
           id="end_time"
-          label={`${SCHEDULE_DRAWER.end_time} (동작x 구현중)`}
+          label={`${SCHEDULE_DRAWER.end_time} (beta)`}
           fullWidth
           value={schedule.end_time}
-          onClick={() => setModalOpen(!modalOpen)}
+          onClick={() => openModal('end_time', schedule.end_time)}
           size="small"
         />
       </Stack>
+      {
+        error && (
+          <Stack justifyContent="center">
+            <Alert color="error">
+              {WRONG_TIME_ORDER}
+            </Alert>
+          </Stack>
+        )
+      }
       <ModalStaticBackdrop
         keepMounted
-        width="xl"
+        width="xs"
         open={modalOpen}
         component={(
-          <Box>
-            <Stack p={2}>
-              <Stack direction="row" justifyContent="center">
-                <Button>오전</Button>
-                <Button>오후</Button>
-              </Stack>
-              <Box my={3}>
-                <Divider />
-              </Box>
-              <Box>
-                {
-                  Array.from({ length: 12 }, (_, i) => i + 1).map((n) => <Button>{n}</Button>)
-                }
-              </Box>
-              <Box my={3}>
-                <Divider />
-              </Box>
-              <Stack direction="row" justifyContent="center">
-                <Button>00</Button>
-                <Button>30</Button>
-              </Stack>
-            </Stack>
-
-            <Button fullWidth variant="contained" onClick={() => setModalOpen(false)}>닫기</Button>
-          </Box>
+          <TimeSelector
+            timeId={timeId}
+            currentTime={currentTime}
+            setModalOpen={setModalOpen}
+            changeSchedule={changeSchedule}
+          />
         )}
       />
     </>

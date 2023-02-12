@@ -4,18 +4,26 @@ import {
   Box,
   Button, Chip, Drawer, ListItem, Paper, Stack, TextField, Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import { useDispatch, useSelector } from 'react-redux';
+import ClearIcon from '@mui/icons-material/Clear';
 import RoundedButton from '../../../../common/RoundedButton';
 import { EXPENDITURE, FIXED, INCOME } from '../../../../../utils/constants/categories';
 import FilterAccordion from './inputs/FilterAccordion';
-import { initFilter, selectFiltered, updateFilter } from '../../../../../utils/redux/schedule/scheduleSlice';
+import {
+  initFilter, selectFiltered, selectFilteredDate, setFilteredDate, updateFilter,
+} from '../../../../../utils/redux/schedule/scheduleSlice';
+import { SOMETHING_IS_WRONG } from '../../../../../utils/constants/common';
+import { isTimeOrderCorrect } from '../../../../../utils/tools';
+import { WRONG_TIME_ORDER } from '../../../../../utils/constants/schedule';
 
 function FilterButton() {
   const dispatch = useDispatch();
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const filtered = useSelector(selectFiltered);
+  const filteredDate = useSelector(selectFilteredDate);
+  const [error, setError] = useState(null);
 
   const handleClick = (state) => {
     dispatch(updateFilter(state.target.innerText));
@@ -24,6 +32,21 @@ function FilterButton() {
   const handleDelete = (cat) => {
     dispatch(updateFilter(cat));
   };
+
+  const changeSchedule = (state) => {
+    dispatch(setFilteredDate({
+      type: state.target.id,
+      date: state.target.value,
+    }));
+  };
+
+  useEffect(() => {
+    if (isTimeOrderCorrect(filteredDate.start, filteredDate.end)) {
+      setError(false);
+    } else {
+      setError(true);
+    }
+  }, [filteredDate]);
 
   return (
     <>
@@ -41,11 +64,18 @@ function FilterButton() {
           spacing={2}
           m={1}
           pt={5}
+          pb={2}
         >
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Button onClick={() => setBottomDrawerOpen(false)}>닫기</Button>
-            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>필터 설정(제작중)</Typography>
-            <Button onClick={() => alert('확인')}>확인</Button>
+            <Button onClick={() => setBottomDrawerOpen(false)}><ClearIcon /></Button>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>필터 설정</Typography>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => dispatch(initFilter())}
+            >
+              초기화
+            </Button>
           </Stack>
           {
             filtered.length > 0 && (
@@ -73,9 +103,9 @@ function FilterButton() {
           }
           <Stack>
             {
-                [FIXED, INCOME, EXPENDITURE].map((obj) => (
-                  <FilterAccordion tag={obj} key={obj.type} />
-                ))
+              [FIXED, INCOME, EXPENDITURE].map((obj) => (
+                <FilterAccordion tag={obj} key={obj.type} />
+              ))
             }
           </Stack>
           <Stack
@@ -86,35 +116,40 @@ function FilterButton() {
             sx={{ width: '100%' }}
           >
             <TextField
-              id="start_date"
+              id="start"
               label="시작일"
               type="date"
               fullWidth
               InputLabelProps={{
                 shrink: true,
               }}
+              value={filteredDate.start}
+              onChange={changeSchedule}
               size="small"
             />
             <Typography>~</Typography>
             <TextField
-              id="date"
+              id="end"
               label="종료일"
               type="date"
               fullWidth
               InputLabelProps={{
                 shrink: true,
               }}
+              value={filteredDate.end}
+              onChange={changeSchedule}
               size="small"
             />
           </Stack>
-          <Stack>
-            <Button
-              variant="contained"
-              onClick={() => dispatch(initFilter())}
-            >
-              필터 초기화
-            </Button>
-          </Stack>
+          {
+            error && (
+              <Stack justifyContent="center">
+                <Alert color="error">
+                  {WRONG_TIME_ORDER}
+                </Alert>
+              </Stack>
+            )
+          }
         </Stack>
       </Drawer>
     </>

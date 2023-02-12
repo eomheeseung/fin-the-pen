@@ -50,6 +50,7 @@ function DataBackUpButton() {
                 border: 'none',
                 resize: 'none',
               }}
+              readOnly
             />
 
             <Box my={3}>

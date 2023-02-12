@@ -11,21 +11,21 @@ function IncomeExpenditureBox({
       <Stack mb={1}>
         <Box
           sx={{
-            fontSize: 'x-small', paddingRight: 1, color: expenditureColor, height: '15px',
+            fontSize: 'x-small', paddingRight: 1, color: expenditureColor, height: '8px',
           }}
           display="flex"
           justifyContent="flex-end"
         >
-          {expenditure !== '0' && expenditure}
+          {expenditure !== '0' && `-${expenditure}`}
         </Box>
         <Box
           sx={{
-            fontSize: 'x-small', paddingRight: 1, color: incomeColor, height: '15px',
+            fontSize: 'x-small', paddingRight: 1, color: incomeColor, height: '6px',
           }}
           display="flex"
           justifyContent="flex-end"
         >
-          {income !== '0' && income}
+          {income !== '0' && `+${income}`}
         </Box>
       </Stack>
       {children}

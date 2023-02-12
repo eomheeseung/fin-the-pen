@@ -28,5 +28,17 @@ export function fetchMockLogin() {
       //   },
       // ],
     },
-  }), 2000));
+  }), 1000));
+}
+
+export function fetchMockCreateSchedule(scheduleWithUuid) {
+  return new Promise((resolve) => setTimeout(() => resolve({
+    data: scheduleWithUuid,
+  }), 500));
+}
+
+export function fetchMockDeleteSchedule(id) {
+  return new Promise((resolve) => setTimeout(() => resolve({
+    data: id,
+  }), 500));
 }

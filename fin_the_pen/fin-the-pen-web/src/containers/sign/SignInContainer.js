@@ -1,44 +1,20 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/material';
-import axios from 'axios';
 import { setHeaderOpenFalse, setHeaderOpenTrue } from '../../utils/redux/common/commonSlice';
 import {
-  login,
-  mockLogin, selectStatus, selectUser, setUser,
+  login, mockLogin, selectStatus, selectUser,
 } from '../../utils/redux/user/userSlice';
 import PATH from '../../utils/constants/path';
 import { isObjectValuesEmpty } from '../../utils/tools';
 import { NO_BLANKS } from '../../utils/constants/common';
-// import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-function Copyright(props) {
-  return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        핀더펜
-      </Link>
-      {' '}
-      {new Date().getFullYear()}
-      .
-    </Typography>
-  );
-}
-
-// const theme = createTheme();
+import CenterBox from '../../components/layouts/CenterBox';
+import LogoCircle from '../../components/common/LogoCircle';
 
 export default function SignInContainer() {
   const dispatch = useDispatch();
@@ -81,30 +57,25 @@ export default function SignInContainer() {
   }, [user]);
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
+    <CenterBox>
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        px={1}
       >
-        <Avatar sx={{
-          m: 1, bgcolor: 'secondary.main', width: 100, height: 100,
-        }}
-        >
-          <LockOutlinedIcon />
-        </Avatar>
-
+        <LogoCircle />
         <Stack my={2}>
           <Typography component="h1" variant="h5">
             핀더펜과 함께 자산설계를 시작하세요!
           </Typography>
         </Stack>
 
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{ maxWidth: '400px' }}
+        >
           <TextField
             margin="normal"
             required
@@ -126,9 +97,9 @@ export default function SignInContainer() {
             autoComplete="current-password"
           />
 
-          <Link onClick={() => alert('You forget a thousand things every day. Make sure this is one of them :)')}>
+          <Button onClick={() => alert('You forget a thousand things every day. Make sure this is one of them :)')}>
             비밀번호를 잊으셨나요?
-          </Link>
+          </Button>
 
           <Button
             type="submit"
@@ -139,11 +110,11 @@ export default function SignInContainer() {
             로그인
           </Button>
 
-          <Link to={PATH.signUp}>
+          <Button onClick={() => navigate(PATH.signUp)}>
             계정이 없으신가요?
-          </Link>
+          </Button>
         </Box>
-        {/* 서버 감지에 실패한 경우에만 아래 버튼이 뜨게 개선 예정 */}
+
         <Button
           type="submit"
           fullWidth
@@ -154,9 +125,18 @@ export default function SignInContainer() {
         >
           {status === 'idle' ? 'Guest 계정으로 로그인 하기' : '로그인 중 ...'}
         </Button>
-      </Box>
-      <Copyright sx={{ mt: 8, mb: 4 }} />
-    </Container>
+        <Typography color="text.secondary">
+          {'Copyright © '}
+          <Link color="inherit" href="https://mui.com/">
+            핀더펜
+          </Link>
+          {' '}
+          {new Date().getFullYear()}
+          .
+        </Typography>
 
+      </Stack>
+
+    </CenterBox>
   );
 }

@@ -14,6 +14,8 @@ import {
   NO_BLANKS, NO_DUPLICATION_ID, NO_SIGNAL_FROM_SERVER, SIGN_UP_SUCCESS,
 } from '../../utils/constants/common';
 import PATH from '../../utils/constants/path';
+import CenterBox from '../../components/layouts/CenterBox';
+import LogoCircle from '../../components/common/LogoCircle';
 
 function SignUpContainer() {
   const dispatch = useDispatch();
@@ -58,23 +60,24 @@ function SignUpContainer() {
     }
   };
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 25,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
+    <CenterBox>
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        px={1}
       >
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          계정 가입
-        </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <LogoCircle />
+        <Stack my={2}>
+          <Typography component="h1" variant="h5">
+            계정 만들기
+          </Typography>
+        </Stack>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          noValidate
+          sx={{ maxWidth: '400px' }}
+        >
 
           <TextField
             margin="normal"
@@ -109,7 +112,14 @@ function SignUpContainer() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Button variant="contained" size="small">사용가능</Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="success"
+                  >
+                    사용가능
+
+                  </Button>
                 </InputAdornment>
               ),
             }}
@@ -126,7 +136,13 @@ function SignUpContainer() {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Button variant="contained" size="small">인증완료</Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="success"
+                  >
+                    인증완료
+                  </Button>
                 </InputAdornment>
               ),
             }}
@@ -149,8 +165,8 @@ function SignUpContainer() {
             </Button>
           </Stack>
         </Box>
-      </Box>
-    </Container>
+      </Stack>
+    </CenterBox>
   );
 }
 export default SignUpContainer;

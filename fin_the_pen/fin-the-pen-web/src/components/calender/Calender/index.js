@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-/* eslint-disable max-len */
 /* eslint-disable react/jsx-props-no-spreading */
-import { Box, Stack, TextField } from '@mui/material';
+import { Box, TextField } from '@mui/material';
 import { StaticDatePicker } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -10,7 +9,7 @@ import moment from 'moment';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { grey, lightBlue, pink } from '@mui/material/colors';
-import { CATEGORIES, EXPENDITURE, INCOME } from '../../../utils/constants/categories';
+import { CATEGORIES } from '../../../utils/constants/categories';
 import {
   selectDate, selectedDate, selectSchedules, selectViewMode,
 } from '../../../utils/redux/schedule/scheduleSlice';
@@ -20,6 +19,8 @@ import 'moment/locale/ko';
 import CalenderBox from './boxes/CalenderBox';
 import IncomeExpenditureBox from './boxes/IncomeExpenditureBox';
 import { calculateIncomeExpenditure } from '../../../utils/tools';
+import { makeMarkerData } from './utils/calender';
+import WeeklyStatment from '../WeeklyStatment';
 
 function Calender({ dateHeight }) {
   const dispatch = useDispatch();
@@ -28,42 +29,12 @@ function Calender({ dateHeight }) {
   const viewMode = useSelector(selectViewMode);
   const today = moment(new Date());
 
-  const DATE_SIZE = 32;
+  const DATE_SIZE = 25;
   const DATE_HEIGHT = dateHeight;
 
   useEffect(() => {
     dispatch(selectedDate(moment(new Date())));
   }, []);
-
-  /**
-   * 해당 일의 일정을 받아 카테고리 수별로 마커위치를 고정하기 위해 새로운 배열을 생성해 반환하는 함수
-   * @param {Array} daySchedules 해당 일의 일정 배열
-   * @returns {Array} 카테고리별 일정 마커를 표시하기 휘한 길이 7의 배열 (색상 표시를 위해 color 요소 필수)
-   */
-  const makeMarkerData = (daySchedules) => {
-    const emptyData = Array(6).fill().map(() => ({ color: '#FFFFFF' }));
-    const categoryForMarker = INCOME.nested.concat(EXPENDITURE.nested)
-      .filter((c) => (daySchedules.findIndex(
-        (s) => s.category.nestedType === c.type,
-      ) !== -1));
-
-    switch (categoryForMarker.length) {
-      case 1:
-        return [emptyData[0], ...categoryForMarker, ...emptyData.slice(-5)];
-      case 2:
-        return [...emptyData.slice(-4), ...categoryForMarker, emptyData[0]];
-      case 3:
-        return [...categoryForMarker, ...emptyData.slice(-4)];
-      case 4:
-        return [...emptyData.slice(-3), ...categoryForMarker];
-      case 5:
-        return [...categoryForMarker.slice(0, 3), emptyData[0], ...categoryForMarker.slice(-2), emptyData[0]];
-      case 6:
-        return [categoryForMarker[0], emptyData[0], ...categoryForMarker.slice(1)];
-      default:
-        return categoryForMarker;
-    }
-  };
 
   const renderDayInPicker = (day, _value, DayComponentProps) => {
     const daySchedules = schedules.filter((e) => e.date === day.format('YYYY-MM-DD')).map((s) => ({ ...s, category: CATEGORIES.find((c) => c.title === s.category) || { type: '미분류', color: '#C8A2C8' } }));
@@ -75,17 +46,17 @@ function Calender({ dateHeight }) {
       if (nonFixedWithdrwal.length > 0) {
         const categoryForMarker = makeMarkerData(daySchedules);
         return (
-          <Box sx={{ width: DATE_SIZE, marginX: 'auto' }} key={DayComponentProps.key}>
-            <Stack>
+          <Box sx={{ width: 'calc(100vw / 7)' }} key={DayComponentProps.key}>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <MarkedPickersDay
                 color={fixedWithdrawal[0].category.color}
                 DayComponentProps={DayComponentProps}
               />
-              <MarkerStack
-                nonFixedWithdrwal={nonFixedWithdrwal}
-                categoryForMarker={categoryForMarker}
-              />
-            </Stack>
+            </Box>
+            <MarkerStack
+              nonFixedWithdrwal={nonFixedWithdrwal}
+              categoryForMarker={categoryForMarker}
+            />
           </Box>
         );
       }
@@ -101,14 +72,14 @@ function Calender({ dateHeight }) {
     if (nonFixedWithdrwal.length > 0) {
       const categoryForMarker = makeMarkerData(daySchedules);
       return (
-        <Box sx={{ width: DATE_SIZE, marginX: 'auto' }} key={DayComponentProps.key}>
-          <Stack>
+        <Box sx={{ width: 'calc(100vw / 7)' }} key={DayComponentProps.key}>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <PickersDay {...DayComponentProps} />
-            <MarkerStack
-              nonFixedWithdrwal={nonFixedWithdrwal}
-              categoryForMarker={categoryForMarker}
-            />
-          </Stack>
+          </Box>
+          <MarkerStack
+            nonFixedWithdrwal={nonFixedWithdrwal}
+            categoryForMarker={categoryForMarker}
+          />
         </Box>
       );
     }
@@ -144,29 +115,31 @@ function Calender({ dateHeight }) {
             ? (
           // 이번주의 주별 수입/지출 표시
               <Box sx={{
-                width: `calc(100vw / 7 * (${today.diff(day, 'days')} + 1))`, background: grey[200], overflow: 'visible', borderRadius: 3, display: 'flex', justifyContent: 'flex-end', paddingX: 2, height: '20px',
+                width: `calc(100vw / 7 * (${today.diff(day, 'days')} + 1))`,
               }}
               >
-                <Box sx={{ fontSize: 'small', paddingRight: 1, color: 'primary.main' }}>
-                  {schedules.filter((s) => day.isSameOrBefore(s.date) && day.isSame(s.date, 'week')).reduce((sum, current) => (current.type === '-' ? sum - parseInt(current.expected_spending, 10) : sum), 0)}
-                </Box>
-                <Box sx={{ fontSize: 'small', color: grey[500] }}>
-                  {schedules.filter((s) => day.isSameOrBefore(s.date) && day.isSame(s.date, 'week')).reduce((sum, current) => (current.type === '+' ? sum + parseInt(current.expected_spending, 10) : sum), 0)}
-                </Box>
+                <WeeklyStatment
+                  expenditure={schedules.filter((s) => day.isSameOrBefore(s.date) && day.isSame(s.date, 'week')).reduce((sum, current) => (current.type === '-' ? sum - parseInt(current.expected_spending, 10) : sum), 0)}
+                  income={schedules.filter((s) => day.isSameOrBefore(s.date) && day.isSame(s.date, 'week')).reduce((sum, current) => (current.type === '+' ? sum + parseInt(current.expected_spending, 10) : sum), 0)}
+                />
               </Box>
             )
             : (
           // 지난주들의 주별 수입/지출 표시
               <Box sx={{
-                width: '100vw', background: grey[200], overflow: 'visible', borderRadius: 3, display: 'flex', justifyContent: 'flex-end', paddingX: 2, height: '20px',
+                width: '100vw',
               }}
               >
-                <Box sx={{ fontSize: 'small', paddingRight: 1, color: 'primary.main' }}>
+                {/* <Box sx={{ fontSize: 'small', paddingRight: 1, color: 'primary.main' }}>
                   {calculateIncomeExpenditure(schedules, day, 'week', '-')}
                 </Box>
                 <Box sx={{ fontSize: 'small', color: grey[500] }}>
                   {calculateIncomeExpenditure(schedules, day, 'week', '+')}
-                </Box>
+                </Box> */}
+                <WeeklyStatment
+                  expenditure={calculateIncomeExpenditure(schedules, day, 'week', '-')}
+                  income={calculateIncomeExpenditure(schedules, day, 'week', '+')}
+                />
               </Box>
             )}
         </IncomeExpenditureBox>
@@ -215,8 +188,3 @@ function Calender({ dateHeight }) {
 }
 
 export default Calender;
-
-/**
- * 어떤 방식으로 작업할 지는 모르겠지만
- * 파일 명 등은 알아서 수정해주세요
- */

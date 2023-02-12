@@ -15,7 +15,6 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 @Transactional
@@ -83,7 +82,7 @@ public class ScheduleRepository {
      * @param uuid
      * @return
      */
-    public ScheduleResponseDTO findOneSchedule(UUID uuid) {
+    public ScheduleResponseDTO findOneSchedule(String uuid) {
         Schedule findSchedule = getSingleSchedule(uuid);
 
         ScheduleResponseDTO scheduleResponseDTO = ScheduleResponseDTO.builder()
@@ -141,7 +140,7 @@ public class ScheduleRepository {
                 .getResultList();
     }
 
-    public boolean deleteSchedule(UUID uuid) {
+    public boolean deleteSchedule(String uuid) {
         Schedule singleSchedule = getSingleSchedule(uuid);
         try {
             entityManager.remove(singleSchedule);
@@ -151,7 +150,7 @@ public class ScheduleRepository {
         return true;
     }
 
-    private Schedule getSingleSchedule(UUID uuid) {
+    private Schedule getSingleSchedule(String uuid) {
         Schedule findSchedule = entityManager.createQuery("select s from Schedule s where s.id =: uuid", Schedule.class)
                 .setParameter("uuid", uuid)
                 .getSingleResult();
@@ -161,7 +160,7 @@ public class ScheduleRepository {
     private JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, JSONArray jsonArray) {
         for (Schedule schedule : scheduleList) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("user_id", schedule.getId());
+            jsonObject.put("id", schedule.getId());
             jsonObject.put("alarm", schedule.isAlarm());
             jsonObject.put("event_name", schedule.getEventName());
             jsonObject.put("date", schedule.getDate());

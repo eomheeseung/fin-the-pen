@@ -1,12 +1,12 @@
 import { useSelector } from 'react-redux';
 import TestBox from '../../components/test/TestBox';
-import { selectSchedules } from '../../utils/redux/schedule/scheduleSlice';
+import { selectSchedule } from '../../utils/redux/schedule/scheduleSlice';
 
 function ScheduleData() {
-  const schedules = useSelector(selectSchedules);
+  const schedule = useSelector(selectSchedule);
   return (
-    <TestBox title="Redux : selectSchedules">
-      {JSON.stringify(schedules)}
+    <TestBox title="Redux : selectSchedule">
+      {JSON.stringify(schedule)}
     </TestBox>
   );
 }

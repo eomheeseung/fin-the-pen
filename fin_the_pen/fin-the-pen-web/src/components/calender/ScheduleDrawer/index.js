@@ -3,7 +3,7 @@ import {
   Box, Slide, Snackbar, Stack, Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NameInput from './inputs/NameInput';
 import DateInput from './inputs/DateInput';
@@ -25,12 +25,13 @@ function TransitionUp(props) {
   return <Slide {...props} direction="right" />;
 }
 
-function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
-  const dispatch = useDispatch();
-
+function ScheduleDrawer({
+  setDrawerWidth, setBottomDrawerOpen, data, mode,
+}) {
   // 추후 삭제 예정
   const random = Math.floor((Math.random() * 5));
 
+  const dispatch = useDispatch();
   const schedule = useSelector(selectSchedule);
 
   const [expandAccordion, setExpandAccordion] = useState(mode !== SCHEDULE_DRAWER_MODE.생성);
@@ -46,9 +47,17 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
     }
   }, []);
 
+  const ref = useRef(null);
+  useEffect(() => {
+    // 현재 버그 있음
+    console.log('width', ref.current ? ref.current.offsetWidth : 0);
+    setDrawerWidth(ref.current ? ref.current.offsetWidth : 0);
+  }, [ref.current]);
+
   return (
-    <Box>
-      {
+    <div ref={ref}>
+      <Box>
+        {
         schedule && (
           <Box>
             <Snackbar
@@ -120,7 +129,8 @@ function ScheduleDrawer({ setBottomDrawerOpen, data, mode }) {
           </Box>
         )
       }
-    </Box>
+      </Box>
+    </div>
   );
 }
 export default ScheduleDrawer;

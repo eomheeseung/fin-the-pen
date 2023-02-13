@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.data.schedule.ScheduleResponseDTO;
+import project.fin_the_pen.data.schedule.category.CategoryRequestDTO;
 import project.fin_the_pen.service.ScheduleService;
 
 import javax.servlet.http.HttpSession;
@@ -83,8 +84,10 @@ public class ScheduleController {
         return scheduleService.findOne(map.get("id"));
     }
 
-    /*@PostMapping("/findCategory")
-    public String findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO,HttpSession session) {
-        scheduleService.findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
-    }*/
+    @PostMapping("/findCategory")
+    public String findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
+        JSONArray jsonArray = scheduleService
+                .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
+        return jsonArray.toString();
+    }
 }

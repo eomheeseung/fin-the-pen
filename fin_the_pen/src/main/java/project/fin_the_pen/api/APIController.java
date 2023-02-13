@@ -3,10 +3,12 @@ package project.fin_the_pen.api;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import project.fin_the_pen.api.service.APIService;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -20,6 +22,13 @@ public class APIController {
     private final StringBuffer URLstringBuffer = new StringBuffer("https://testapi.openbanking.or.kr");
     private static int length;
     private TokenIssuance tokenIssuance;
+
+    private final APIService apiService;
+
+    @Autowired
+    public APIController(APIService apiService) {
+        this.apiService = apiService;
+    }
 
     @GetMapping("auth")
     public void userAuthorization(@RequestParam String code) {
@@ -120,8 +129,10 @@ public class APIController {
 
     @GetMapping("accountInquiry")
     @ResponseBody
-    public String accountInquiry(@RequestParam String bankTranId,
-                                 @RequestParam String fintechUseNum, @RequestParam String tranDTime) throws IOException {
+    public String accountInquiry() throws IOException {
+        final String bankTranId = "M202300246U000000026";
+        final String fintechUseNum = "120230024688951003826191";
+        final String tranDTime = "20230205170942";
 
         String param = "?bank_tran_id=" + bankTranId + "&fintech_use_num=" + fintechUseNum + "&tran_dtime=" + tranDTime;
         URLstringBuffer.append("/v2.0/account/balance/fin_num");
@@ -139,6 +150,7 @@ public class APIController {
                 output.writeBytes(param);
                 output.flush();
             }
+
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
             StringBuffer stringBuffer = new StringBuffer();
             String inputLine;
@@ -150,6 +162,9 @@ public class APIController {
             extractedSB(stringBuffer);
 
             String response = stringBuffer.toString();
+            // response를 역직렬화
+            apiService.init(response);
+
             log.info(response);
             httpURLConnection.disconnect();
             return response;

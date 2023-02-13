@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.data.schedule.ScheduleResponseDTO;
+import project.fin_the_pen.data.schedule.category.CategoryRequestDTO;
 import project.fin_the_pen.repository.ScheduleRepository;
 
 @Service
@@ -32,10 +33,9 @@ public class ScheduleService {
         return true;
     }
 
-    /*public JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
-        List<Schedule> scheduleByCategory = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
-
-    }*/
+    public JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+        return scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
+    }
 
     public JSONArray findMonthSchedule(String date, String userId) {
         return scheduleRepository.findMonthSchedule(date, userId);

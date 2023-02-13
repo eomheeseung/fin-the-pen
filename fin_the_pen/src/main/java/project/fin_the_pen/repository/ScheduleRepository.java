@@ -133,11 +133,12 @@ public class ScheduleRepository {
         return true;
     }
 
-    public List<Schedule> findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
-        return entityManager.createQuery("select s from Schedule s where s.userId= :userId and s.category = :categoryName", Schedule.class)
+    public JSONArray findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+        List<Schedule> resultList = entityManager.createQuery("select s from Schedule s where s.userId= :userId and s.category = :categoryName", Schedule.class)
                 .setParameter("userId", currentSession)
                 .setParameter("categoryName", categoryRequestDTO.getCategoryName())
                 .getResultList();
+        return getJsonArrayBySchedule(resultList, new JSONArray());
     }
 
     public boolean deleteSchedule(String uuid) {

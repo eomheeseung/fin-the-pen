@@ -28,7 +28,11 @@ public class LoginRepository {
         entityManager.persist(user);
     }
 
-    // TODO 사용자가 회원가입할 때 id,pw를 중복검사
+    /**
+     * 회원가입 (중복 검사까지)
+     * @param userRequestDTO
+     * @return
+     */
     public boolean joinRegister(UserRequestDTO userRequestDTO) {
         if (!duplicateLogin(userRequestDTO)) {
             return false;
@@ -46,11 +50,10 @@ public class LoginRepository {
     }
 
     public List<User> findAll() {
-        List<User> findUserAll = entityManager.createQuery("select u from User u", User.class).getResultList();
-        return findUserAll;
+        return entityManager.createQuery("select u from User u", User.class).getResultList();
     }
 
-    public UserResponseDTO findByUser(String id, String password) {
+    /*public UserResponseDTO findByUser(String id, String password) {
         try {
             User user = entityManager
                     .createQuery("select u from User u where u.userId = :findId and u.password =: findPw", User.class)
@@ -71,17 +74,31 @@ public class LoginRepository {
         } catch (Exception e) {
             return null;
         }
+    }*/
+
+    public UserResponseDTO findByUser(String id, String password) {
+        try {
+            return entityManager
+                    .createQuery(
+                        "select new project.fin_the_pen.data.member.UserResponseDTO(u.id,u.userId,u.name,u.baby,u.registerDate,u.userRole,u.phoneNumber) " +
+                                "from User u " +
+                                "where u.userId = :findId and u.password =: findPw", UserResponseDTO.class)
+                    .setParameter("findId", id)
+                    .setParameter("findPw", password)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private boolean duplicateLogin(UserRequestDTO userRequestDTO) {
-        List<User> all = findAll();
-        Optional<User> duplicatedUser = all.stream()
+        Optional<User> duplicatedUser = findAll().stream()
                 .filter(user -> user.getUserId().equals(userRequestDTO.getUser_id()) &&
                         user.getPassword().equals(userRequestDTO.getPassword())).findAny();
 
         // db에 동일한 id, pw가 중복이 안되면
         if (duplicatedUser.isEmpty()) {
             return true;
-        }else return false;
+        } else return false;
     }
 }

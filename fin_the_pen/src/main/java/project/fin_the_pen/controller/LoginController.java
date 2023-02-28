@@ -34,6 +34,11 @@ public class LoginController {
         return userRequestDTO;
     }
 
+    /**
+     * 회원 가입
+     * @param userRequestDTO
+     * @return
+     */
     @PostMapping("/fin-the-pen-web/sign-up")
     public boolean signIn(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());
@@ -54,15 +59,34 @@ public class LoginController {
         return optionalUser.get();
     }
 
-    @GetMapping("login")
+    /*@GetMapping("login")
     @ResponseBody
     public UserResponseDTO login(@RequestParam String userId, @RequestParam String password, HttpServletRequest request) {
         currentUser = loginService.findByUser(userId, password);
         grantSession(request);
         return currentUser;
-    }
+    }*/
 
-    //TODO API 로그인
+    /**
+     * 로그인
+     * @param userRequestDTO
+     * @param request
+     * @return
+     * @throws IOException
+     */
+//    @PostMapping("/fin-the-pen-web/sign-in")
+    /*@ResponseBody
+    public UserResponseDTO apiLogin(@RequestBody UserRequestDTO userRequestDTO, HttpServletRequest request) throws IOException {
+        try {
+            currentUser = loginService.findByUser(userRequestDTO.getUser_id(), userRequestDTO.getPassword());
+            grantSession(request);
+        } catch (NullPointerException e) {
+            log.info("로그인 - 존재하지 않는 사용자 입니다.");
+            return null;
+        }
+        return currentUser;
+    }*/
+
     @PostMapping("/fin-the-pen-web/sign-in")
     @ResponseBody
     public UserResponseDTO apiLogin(@RequestBody UserRequestDTO userRequestDTO, HttpServletRequest request) throws IOException {

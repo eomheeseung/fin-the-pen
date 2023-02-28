@@ -18,6 +18,7 @@ public class LoginService {
     public void init() {
         loginRepository.init();
     }
+
     public boolean joinUser(UserRequestDTO userRequestDTO) {
         if (loginRepository.joinRegister(userRequestDTO)) {
             return true;
@@ -29,6 +30,11 @@ public class LoginService {
         List<User> all = loginRepository.findAll();
         return all.stream().filter(user -> user.getName().equals("테스터")).findFirst();
     }
+
+    /*public UserResponseDTO findByUser(String id, String password) {
+        UserResponseDTO currentUser = loginRepository.findByUser(id, password);
+        return currentUser;
+    }*/
 
     public UserResponseDTO findByUser(String id, String password) {
         UserResponseDTO currentUser = loginRepository.findByUser(id, password);

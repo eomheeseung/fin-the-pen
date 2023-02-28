@@ -36,7 +36,7 @@ public class ScheduleController {
     }
 
     @PostMapping("/getAllSchedules")
-    @ResponseBody
+//    @ResponseBody
     public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("user_id"));
         log.info("json return");
@@ -48,7 +48,7 @@ public class ScheduleController {
 
     //일정 편집
     @PostMapping("/modifySchedule")
-    @ResponseBody
+//    @ResponseBody
     public Boolean modifySchedule(@RequestBody ScheduleRequestDTO scheduleRequestDTO) {
         log.info(String.valueOf(scheduleRequestDTO.getId()));
 
@@ -59,7 +59,7 @@ public class ScheduleController {
     }
 
     @PostMapping("/deleteSchedule")
-    @ResponseBody
+//    @ResponseBody
     public boolean deleteSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("id"));
         if (scheduleService.deleteSchedule(map.get("id"))) {
@@ -70,13 +70,17 @@ public class ScheduleController {
     }
 
     @PostMapping("/getMonthSchedules")
-    @ResponseBody
+//    @ResponseBody
     public String findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
         return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id")).toString();
     }
 
-    //uuid로 하나의 일정만 조회
+    /**
+     * uuid 하나로만 일정 조회
+     * @param map
+     * @return
+     */
     @PostMapping("/findOne")
     @ResponseBody
     public ScheduleResponseDTO findOne(@RequestBody ConcurrentHashMap<String, String> map) {

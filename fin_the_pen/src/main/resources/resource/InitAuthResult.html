@@ -9,10 +9,10 @@
         $authorizeFrm.submit();
     </script>
 </head>
-<!--2.1.3 계좌 등록확인-->
+<!--2.1.1 사용자 인증-->
 <!--금융 인증 예시-->
 <body>
-<form method="get" action="https://testapi.openbanking.or.kr/oauth/2.0/authorize_account" target="_blank">
+<form method="get" action="https://testapi.openbanking.or.kr/oauth/2.0/authorize" target="_blank">
   <input type="hidden" name="response_type" value="code"/>
   <input type="hidden" name="client_id" value="24ffbbc3-fd31-426f-80ac-ec22e36ce10d"/>
   <input type="hidden" name="redirect_uri" value="http://localhost:63342/fin-the-pen/fin_the_pen.main/resource/home"/>

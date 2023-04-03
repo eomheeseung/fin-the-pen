@@ -7,7 +7,6 @@ import org.apache.tomcat.util.json.ParseException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
-import project.fin_the_pen.api.Issuance;
 import project.fin_the_pen.api.NoAuthTokenIssuance;
 import project.fin_the_pen.api.TokenIssuance;
 
@@ -28,10 +27,7 @@ public class APIService {
     private TokenIssuance tokenIssuance;
     private NoAuthTokenIssuance noAuthTokenIssuance;
 
-    private Issuance issuance;
 
-
-    //TODO 파싱 해야 함.
     public void init(String response) {
         try {
 //            Account saveAccount = objectMapper.readValue(response, Account.class);
@@ -80,17 +76,16 @@ public class APIService {
             responseJson = new JSONObject(stringBuilder.toString());
             log.info(stringBuilder.toString());
 
-            issuance = new NoAuthTokenIssuance(responseJson.get("access_token").toString(),
+            noAuthTokenIssuance = new NoAuthTokenIssuance(responseJson.get("access_token").toString(),
                     responseJson.get("token_type").toString(), responseJson.get("expires_in").toString(),
                     responseJson.get("scope").toString(), responseJson.get("client_use_code").toString());
 
-            System.out.println(responseJson);
-            log.info(((NoAuthTokenIssuance)issuance).getAccessToken());
+            log.info(noAuthTokenIssuance.getAccessToken());
+            httpURLConnection.disconnect();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             extractedSB(URLStringBuffer);
-            httpURLConnection.disconnect();
         }
     }
 
@@ -110,7 +105,7 @@ public class APIService {
         // key=value&key=value형태
         try {
             URL url = new URL("https://testapi.openbanking.or.kr/oauth/2.0/token");
-            String param = "?code=" + code + "&client_id=" + "24ffbbc3-fd31-426f-80ac-ec22e36ce10d" +
+            String param = "code=" + code + "&client_id=" + "24ffbbc3-fd31-426f-80ac-ec22e36ce10d" +
                     "&client_secret=" + "80d52d5a-fd08-4248-aaf0-b21247b20c53"
                     + "&redirect_uri=" + "http://localhost:63342/fin-the-pen/fin_the_pen.main/resource/home"
                     + "&grant_type=" + "authorization_code";
@@ -141,18 +136,19 @@ public class APIService {
                 BufferedReader br = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
                 StringBuilder sb = new StringBuilder();
                 String line = "";
+
                 while ((line = br.readLine()) != null) {
                     sb.append(line);
                 }
                 responseJson = new JSONObject(sb.toString());
 
-                issuance = new TokenIssuance(responseJson.get("access_token").toString(),
+                tokenIssuance = new TokenIssuance(responseJson.get("access_token").toString(),
                         responseJson.get("token_type").toString(), responseJson.get("refresh_token").toString(),
                         responseJson.get("expires_in").toString(), responseJson.get("scope").toString(),
                         responseJson.get("user_seq_no").toString());
 
                 System.out.println(responseJson);
-                log.info(((TokenIssuance)issuance).getAccessToken());
+                log.info(tokenIssuance.getAccessToken());
                 httpURLConnection.disconnect();
             }
         } catch (JSONException e) {
@@ -165,13 +161,14 @@ public class APIService {
 
     /**
      * 2.2.1 사용자 계좌 조회
-     * @param URLstringBuffer
+     *
+     * @param URStringBuffer
      * @return
      */
-    public String accountAuthLogic(StringBuffer URLstringBuffer) {
+    public String accountAuthLogic(StringBuffer URStringBuffer) {
         try {
-            URLstringBuffer.append("?user_seq_no=").append(tokenIssuance.getUserSeqNo());
-            URL url = new URL(URLstringBuffer.toString());
+            URStringBuffer.append("?user_seq_no=").append(tokenIssuance.getUserSeqNo());
+            URL url = new URL(URStringBuffer.toString());
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.setRequestProperty("Authorization", "Bearer " + tokenIssuance.getAccessToken());
@@ -186,12 +183,160 @@ public class APIService {
             }
 
             bufferedReader.close();
-            extractedSB(URLstringBuffer);
+            extractedSB(URStringBuffer);
 
             String response = stringBuffer.toString();
             log.info(response);
             httpURLConnection.disconnect();
             return response;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 2.2.3 등록 계좌 조회
+     *
+     * @param URLstringBuffer
+     * @return
+     */
+    public String accountListLogic(StringBuffer URLstringBuffer) {
+        String param = "?user_seq_no=" + tokenIssuance.getUserSeqNo() + "&include_cancel_yn=" + "Y" + "&sort_order=" + "D";
+        try {
+            URLstringBuffer.append("/v2.0/account/list").append(param);
+            URL url = new URL(URLstringBuffer.toString());
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setRequestProperty("Authorization", "Bearer " + tokenIssuance.getAccessToken());
+            httpURLConnection.setRequestMethod("GET");
+            httpURLConnection.setDoInput(true);
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+            StringBuffer stringBuffer = new StringBuffer();
+            String readLine;
+
+            while ((readLine = bufferedReader.readLine()) != null) {
+                stringBuffer.append(readLine);
+            }
+
+            bufferedReader.close();
+            extractedSB(URLstringBuffer);
+            String response = stringBuffer.toString();
+            log.info(response);
+            httpURLConnection.disconnect();
+            return response;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 2.2.4 계좌 정보 변경 : 오픈뱅킹센터에 등록된 계좌의 별명을 변경
+     * 핀테크 이용번호를 어떻게 동적으로 바인딩할 것인가?
+     *
+     * @param URLStringBuffer
+     * @return
+     */
+    public JSONObject accountUpdateLogic(StringBuffer URLStringBuffer) {
+        URLStringBuffer.append("/v2.0/account/update_info");
+
+        try {
+            URL url = new URL(URLStringBuffer.toString());
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+            httpURLConnection.setRequestProperty("Authorization", "Bearer " + tokenIssuance.getAccessToken());
+            httpURLConnection.connect();
+
+            JSONObject requestJson = new JSONObject();
+
+            // 여기 핀테크 번호를 동적바인딩이 필요함. => 파라미터를 어디서 끌어올지...
+            requestJson.put("fintech_use_num", "120230024688951003826191");
+            requestJson.put("account_alias", "updateTest");
+
+            try {
+                DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
+                dataOutputStream.write(requestJson.toString().getBytes());
+                dataOutputStream.flush();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line = "";
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+
+            JSONObject responseJson = new JSONObject(stringBuilder.toString());
+            log.info(responseJson.toString());
+            bufferedReader.close();
+            httpURLConnection.disconnect();
+            extractedSB(URLStringBuffer);
+
+            return responseJson;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 2.2.6 계좌 정보 조회 : 등록된 계좌의 정보를 조회, 해당 API는 참가으느행에 등록된 내역을 조회
+     * test 해봐야 함.
+     *
+     * @param URLStringBuffer
+     * @return
+     */
+    public JSONObject accountInfoLogic(StringBuffer URLStringBuffer) {
+        StringBuffer bankTranId = new StringBuffer("M202300246U0000000");
+        int random = new Random().nextInt(30) + 10;
+        bankTranId.append(random);
+
+        URLStringBuffer.append("/v2.0/account/info");
+
+        try {
+            URL url = new URL(URLStringBuffer.toString());
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+            httpURLConnection.setRequestProperty("Authorization", "Bearer " + tokenIssuance.getAccessToken());
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
+
+            httpURLConnection.connect();
+
+            JSONObject requestJson = new JSONObject();
+            requestJson.put("bank_tran_id", bankTranId);
+            requestJson.put("user_seq_no", tokenIssuance.getUserSeqNo());
+            requestJson.put("bank_code_std", "097");
+            requestJson.put("account_num", "123412341234");
+            requestJson.put("account_seq", "124");
+            requestJson.put("scope", "inquiry");
+
+            DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
+            dataOutputStream.write(requestJson.toString().getBytes());
+            dataOutputStream.flush();
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+            StringBuilder stringBuilder = new StringBuilder();
+            String line = "";
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+
+            JSONObject responseJson = new JSONObject(stringBuilder.toString());
+            log.info(responseJson.toString());
+            httpURLConnection.disconnect();
+            bufferedReader.close();
+            extractedSB(URLStringBuffer);
+
+            return responseJson;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -211,7 +356,7 @@ public class APIService {
         String tranDTime = "20230205170942";
 
         String param = "?bank_tran_id=" + bankTranId + "&fintech_use_num=" + fintechUseNum + "&tran_dtime=" + tranDTime;
-        URLstringBuffer.append("/v2.0/account/balance/fin_num" + param);
+        URLstringBuffer.append("/v2.0/account/balance/fin_num").append(param);
 
         try {
             URL url = new URL(URLstringBuffer.toString());
@@ -283,11 +428,6 @@ public class APIService {
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
 
-            /*try (DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream())) {
-                dataOutputStream.writeBytes(param);
-                dataOutputStream.flush();
-            }*/
-
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             StringBuffer stringBuffer = new StringBuffer();
             String inputLine;
@@ -309,10 +449,11 @@ public class APIService {
         }
     }
 
-    private static void extractedSB(StringBuffer stringBuffer) {
-        String substring = stringBuffer.substring(0, length);
-        stringBuffer.setLength(0);
-        stringBuffer.append(substring);
-        log.info(stringBuffer.toString());
+
+    private static void extractedSB(StringBuffer URLStringBuffer) {
+        String substring = URLStringBuffer.substring(0, length);
+        URLStringBuffer.setLength(0);
+        URLStringBuffer.append(substring);
+        log.info("복구된 url={}", URLStringBuffer);
     }
 }

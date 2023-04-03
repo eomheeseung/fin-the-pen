@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class TokenIssuance implements Issuance{
+public class TokenIssuance {
     @Builder
     public TokenIssuance(String accessToken, String tokenType, String refreshToken,
                          String expiresIn, String scope, String userSeqNo) {

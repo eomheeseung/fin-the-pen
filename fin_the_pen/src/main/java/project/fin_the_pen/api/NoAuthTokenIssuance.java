@@ -3,9 +3,8 @@ package project.fin_the_pen.api;
 import lombok.Builder;
 import lombok.Getter;
 
-
 @Getter
-public class NoAuthTokenIssuance implements Issuance{
+public class NoAuthTokenIssuance {
     @Builder
     public NoAuthTokenIssuance(String accessToken, String tokenType, String expiresIn, String scope, String clientUseCode) {
         this.accessToken = accessToken;

@@ -1,4 +1,4 @@
-package project.fin_the_pen.codefAPI.Controller;
+package project.fin_the_pen.codefAPI.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,13 @@ import project.fin_the_pen.codefAPI.domain.individual.*;
 import project.fin_the_pen.codefAPI.service.*;
 import project.fin_the_pen.data.token.Token;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 /**
@@ -46,7 +52,6 @@ public class CodefController {
 
     /**
      * 그냥 토큰 DB에 잘 들어갔나 확인하는 코드
-     *
      * @return
      */
     @GetMapping("codef/findToken")
@@ -54,21 +59,29 @@ public class CodefController {
         return apiService.findToken();
     }
 
-    @GetMapping("codef/accountCreate")
+    /*@GetMapping("codef/accountCreate")
     public void codefAccountCreate() {
         apiService.accountCreate();
+    }*/
+
+    /**
+     * connectedId 발급(해결!)
+     * @param list
+     */
+    @GetMapping("codef/accountCreate")
+    public void codefAccountCreate(@RequestBody accountList list) {
+        apiService.accountCreate(list);
     }
 
     /**
-     * 등록여부 확인
+     * 등록여부 확인(해결!)
      *
      * @param dto
      * @return
      */
     @GetMapping("codef/registerStatus")
-    public String registerStatus(@RequestBody AccountDTO dto) {
-        String result = apiService.registerStatus(dto.getOrganization(), dto.getBirthDate(),
-                dto.getWithdrawAccountNo(), dto.getWithdrawAccountPassword());
+    public String registerStatus(@RequestBody AccountDTO dto) throws IOException, ParseException, InterruptedException {
+        String result = apiService.registerStatus(dto);
 
         if (result.equals("error")) {
             return "system error";
@@ -81,7 +94,7 @@ public class CodefController {
     }
 
     /**
-     * 보유계좌 : 돌려봐야 함.
+     * 보유계좌 (해결)
      *
      * @param dto
      * @return
@@ -91,7 +104,7 @@ public class CodefController {
      */
     @GetMapping("codef/accountList")
     public String accountList(@RequestBody AccountDTO dto) throws IOException, ParseException, InterruptedException {
-        String result = apiService.accountList(dto.getOrganization(), dto.getBirthDate(), dto.getWithdrawAccountNo(), dto.getWithdrawAccountPassword());
+        String result = apiService.accountList(dto);
         return result;
     }
 
@@ -102,7 +115,7 @@ public class CodefController {
      * @return
      */
     @GetMapping("codef/fastAccount")
-    public String fastAccount(@RequestBody FastAccountDTO dto) throws IOException, ParseException, InterruptedException {
+    public String fastAccount(@RequestBody FastAccountDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         String result = apiService.fastAccountList(dto);
         return result;
     }
@@ -111,7 +124,7 @@ public class CodefController {
      * 수시입출 거래내역
      */
     @GetMapping("codef/occasionalAccount")
-    public String occasionalAccount(@RequestBody OccasionalDTO dto) throws IOException, ParseException, InterruptedException {
+    public String occasionalAccount(@RequestBody OccasionalDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         String result = apiService.occasionalAccount(dto);
         return result;
     }
@@ -249,6 +262,7 @@ public class CodefController {
 
     /**
      * 수시입출 거래내역
+     *
      * @param dto
      * @return
      * @throws IOException

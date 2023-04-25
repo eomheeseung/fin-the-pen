@@ -7,10 +7,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.codefAPI.api.IndividualAPILogic;
-import project.fin_the_pen.codefAPI.domain.individual.FastAccountDTO;
-import project.fin_the_pen.codefAPI.domain.individual.OccasionalDTO;
-import project.fin_the_pen.codefAPI.domain.individual.OccasionalPastDTO;
-import project.fin_the_pen.codefAPI.domain.individual.SavingTransactionDTO;
+import project.fin_the_pen.codefAPI.domain.individual.*;
 import project.fin_the_pen.codefAPI.repository.TokenRepository;
 import project.fin_the_pen.data.token.Token;
 
@@ -46,11 +43,24 @@ public class CodefIndividualService {
     }
 
     /**
+     * connectedId 발급 받는 코드
      * 어차피 토큰 1개만 저장된다는 보장이 있음.
      */
-    public void accountCreate() throws RuntimeException {
+    public void accountCreate() throws RuntimeException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, IOException, ParseException, InvalidKeyException, InterruptedException {
         try {
             apiLogic.accountRegister();
+        } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                 InvalidKeySpecException | BadPaddingException | InvalidKeyException | IOException | ParseException |
+                 InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        token = tokenRepository.findOneToken();
+        apiLogic.accountRegister();
+    }
+
+    public void accountCreate(accountList list) throws RuntimeException {
+        try {
+            apiLogic.accountRegister(list);
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
                  InvalidKeySpecException | BadPaddingException | InvalidKeyException | IOException | ParseException |
                  InterruptedException e) {
@@ -60,12 +70,19 @@ public class CodefIndividualService {
         apiLogic.accountRegister(token.getAccessToken());*/
     }
 
-    public String registerStatus(String organizationCode, String birth, String withdrawAccountNo, String withdrawAccountPassword) throws RuntimeException {
-        JSONParser jsonParser = new JSONParser();
+    /**
+     * 등록 여부 확인
+     * @param dto
+     * @return
+     * @throws RuntimeException
+     */
+    public String registerStatus(AccountDTO dto) throws RuntimeException, IOException, ParseException, InterruptedException {
+        return apiLogic.registrationStatus(dto);
+        /*JSONParser jsonParser = new JSONParser();
         Object obj = null;
 
         try {
-            obj = jsonParser.parse(apiLogic.registrationStatus(organizationCode, birth, withdrawAccountNo, withdrawAccountPassword));
+            obj = jsonParser.parse(apiLogic.registrationStatus(dto));
         } catch (ParseException | IOException | InterruptedException e) {
             return "error";
         }
@@ -79,26 +96,23 @@ public class CodefIndividualService {
             return status;
         } else {
             return "true";
-        }
+        }*/
     }
 
     /**
      * 보유계좌
-     * @param organization
-     * @param birthDate
-     * @param withdrawAccountNo
-     * @param withdrawAccountPassword
+     *
      * @return
      * @throws IOException
      * @throws ParseException
      * @throws InterruptedException
      */
-    public String accountList(String organization, String birthDate, String withdrawAccountNo, String withdrawAccountPassword)
+    public String accountList(AccountDTO dto)
             throws IOException, ParseException, InterruptedException {
         JSONParser jsonParser = new JSONParser();
         Object obj = null;
 
-        obj = jsonParser.parse(apiLogic.accountList(organization, birthDate, withdrawAccountNo, withdrawAccountPassword));
+        obj = jsonParser.parse(apiLogic.accountList(dto));
         JSONObject jsonObject = (JSONObject) obj;
 
         return jsonObject.toJSONString();
@@ -112,7 +126,7 @@ public class CodefIndividualService {
      * @throws ParseException
      * @throws InterruptedException
      */
-    public String fastAccountList(FastAccountDTO dto) throws IOException, ParseException, InterruptedException {
+    public String fastAccountList(FastAccountDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         String result = apiLogic.fastAccountList(dto);
         return result;
     }
@@ -128,7 +142,7 @@ public class CodefIndividualService {
      * @throws ParseException
      * @throws InterruptedException
      */
-    public String occasionalAccount(OccasionalDTO dto) throws IOException, ParseException, InterruptedException {
+    public String occasionalAccount(OccasionalDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         String result = apiLogic.occasionalAccount(dto);
         JSONParser parser = new JSONParser();
         Object obj = null;

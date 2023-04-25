@@ -6,7 +6,6 @@ public class CommonConstant {
 
     public static final String TOKEN_DOMAIN = "https://oauth.codef.io";                                        // OAUTH2.0 테스트 도메인
     public static final String GET_TOKEN = "/oauth/token";                                                // OAUTH2.0 토큰 발급 요청 URL
-
     public static final String CONNECTED_ID = "connectedId";                                                // 유저 식별 연결 아이디
     public static final String PAGE_NO = "pageNo";                                                        // 페이지 번호
 

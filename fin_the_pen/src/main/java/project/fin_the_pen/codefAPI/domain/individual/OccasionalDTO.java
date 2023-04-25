@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class OccasionalDTO implements IndividualDTO {
+    private String connectedId;
     private String organization;
     private String account;
     private String startDate;

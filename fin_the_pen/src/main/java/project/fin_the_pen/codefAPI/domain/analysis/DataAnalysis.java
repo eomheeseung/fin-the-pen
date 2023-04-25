@@ -1,15 +1,21 @@
-package project.fin_the_pen.data.analysis;
+package project.fin_the_pen.codefAPI.domain.analysis;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
+@Data
 public class DataAnalysis {
     @Id
-    @Column(name = "resAccount")
+    @GeneratedValue
+    @Column(name = "identity_id")
+    private Long id;
+    @Column
     private String resAccount;
-
     @Column
     private String resAccountDisplay;
     @Column
@@ -36,11 +42,24 @@ public class DataAnalysis {
     private String resAccountBalance;
     @Column
     private String resWithdrawalAmt;
-
-    //TODO 2. list에 해당 class들에 포함된 것을 넣어야 함.
     @Column
-    @ElementCollection(fetch = FetchType.LAZY)
-    private List<ResTrHistory> resTrHistoryList = new ArrayList<>();
+    private String resAccountTrDate;
+    @Column
+    private String resAccountTrTime;
+    @Column
+    private String resAccountOut;
+    @Column
+    private String resAccountIn;
+    @Column
+    private String resAccountDesc1;
+    @Column
+    private String resAccountDesc2;
+    @Column
+    private String resAccountDesc3;
+    @Column
+    private String resAccountDesc4;
+    @Column
+    private String resAfterTranBalance;
     @Column
     private String commStartDate;
     @Column

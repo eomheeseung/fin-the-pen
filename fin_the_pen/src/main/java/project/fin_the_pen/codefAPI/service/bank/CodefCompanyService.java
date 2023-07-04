@@ -8,7 +8,6 @@ import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.codefAPI.api.CompanyAPILogic;
 import project.fin_the_pen.codefAPI.dto.bank.company.*;
-import project.fin_the_pen.codefAPI.dto.company.*;
 
 import java.io.IOException;
 
@@ -20,6 +19,7 @@ public class CodefCompanyService {
 
     /**
      * 계좌 비밀번호 검증
+     *
      * @param dto
      * @return
      */
@@ -47,6 +47,7 @@ public class CodefCompanyService {
 
     /**
      * 대출 거래 내역
+     *
      * @param dto
      * @return
      * @throws IOException
@@ -60,6 +61,7 @@ public class CodefCompanyService {
 
     /**
      * 보유 계좌
+     *
      * @param organization
      * @return
      * @throws IOException
@@ -73,6 +75,7 @@ public class CodefCompanyService {
 
     /**
      * 빠른조회
+     *
      * @param dto
      * @return
      * @throws IOException
@@ -86,6 +89,7 @@ public class CodefCompanyService {
 
     /**
      * 수시 입출 거래 내외
+     *
      * @param dto
      * @return
      */
@@ -96,6 +100,7 @@ public class CodefCompanyService {
 
     /**
      * 외화 거래 내역
+     *
      * @param dto
      * @return
      */
@@ -106,6 +111,7 @@ public class CodefCompanyService {
 
     /**
      * 적금 거래 내역
+     *
      * @param dto
      * @return
      */
@@ -116,6 +122,7 @@ public class CodefCompanyService {
 
     /**
      * 펀드 거래내역
+     *
      * @param dto
      * @return
      */

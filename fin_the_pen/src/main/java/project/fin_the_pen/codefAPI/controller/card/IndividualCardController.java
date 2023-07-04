@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.codefAPI.dto.card.individualcard.*;
-import project.fin_the_pen.codefAPI.dto.individualcard.*;
 import project.fin_the_pen.codefAPI.service.card.CodefCardIndividualService;
 
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.io.IOException;
 @RestController
 public class IndividualCardController {
     private final CodefCardIndividualService cardIndividualService;
+
     /**
      * 가맹점 정보
      *

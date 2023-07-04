@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.codefAPI.dto.card.corporateCard.*;
-import project.fin_the_pen.codefAPI.dto.corporateCard.*;
 import project.fin_the_pen.codefAPI.service.card.CodefCardCorporateService;
 
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CorporateCardController {
     private final CodefCardCorporateService cardCorporateService;
+
     /**
      * 당일 승인내역
      */

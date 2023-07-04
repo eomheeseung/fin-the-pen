@@ -8,7 +8,6 @@ import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.codefAPI.api.IndividualAPILogic;
 import project.fin_the_pen.codefAPI.dto.bank.individual.*;
-import project.fin_the_pen.codefAPI.dto.individual.*;
 import project.fin_the_pen.codefAPI.repository.TokenRepository;
 import project.fin_the_pen.data.token.Token;
 
@@ -23,11 +22,10 @@ import java.util.List;
 
 /**
  * API를 호출 => 받아온 API 데이터, DB 데이터 를 여기서 처리
- *
+ * <p>
  * !!!! 프론트에서 필요한 정보를
  * parse => 1. jsonObject로 만들어서 필요한 정보만 던지면 됨.
- *          2. errorCode가 있는 경우 ex 처리함.
- *
+ * 2. errorCode가 있는 경우 ex 처리함.
  */
 @Service
 @RequiredArgsConstructor
@@ -73,6 +71,7 @@ public class CodefIndIndividualService {
 
     /**
      * 등록 여부 확인
+     *
      * @param dto
      * @return
      * @throws RuntimeException
@@ -121,6 +120,7 @@ public class CodefIndIndividualService {
 
     /**
      * 빠른 조회
+     *
      * @param dto
      * @return
      * @throws IOException
@@ -153,6 +153,7 @@ public class CodefIndIndividualService {
 
     /**
      * 수시입출 과거 내역
+     *
      * @param dto
      * @return
      * @throws IOException
@@ -166,6 +167,7 @@ public class CodefIndIndividualService {
 
     /**
      * 적금 거래내역
+     *
      * @param dto
      * @return
      * @throws IOException

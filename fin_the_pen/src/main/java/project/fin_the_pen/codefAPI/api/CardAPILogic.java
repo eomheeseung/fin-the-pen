@@ -7,7 +7,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.codefAPI.dto.card.individualcard.*;
-import project.fin_the_pen.codefAPI.dto.individualcard.*;
 import project.fin_the_pen.codefAPI.repository.DataAnalysisRepository;
 import project.fin_the_pen.codefAPI.util.APIRequest;
 import project.fin_the_pen.codefAPI.util.CommonConstant;
@@ -23,6 +22,7 @@ public class CardAPILogic {
 
     /**
      * 가맹점 정보
+     *
      * @param dto
      * @return
      * @throws IOException
@@ -60,6 +60,7 @@ public class CardAPILogic {
 
     /**
      * 등록여부
+     *
      * @param dto
      * @return
      */
@@ -87,6 +88,7 @@ public class CardAPILogic {
 
     /**
      * 보유카드
+     *
      * @param dto
      * @return
      */
@@ -111,6 +113,7 @@ public class CardAPILogic {
 
     /**
      * 승인내역
+     *
      * @param dto
      * @return
      */
@@ -142,6 +145,7 @@ public class CardAPILogic {
 
     /**
      * 실적조회
+     *
      * @param dto
      * @return
      */
@@ -166,6 +170,7 @@ public class CardAPILogic {
 
     /**
      * 청구내역
+     *
      * @param dto
      * @return
      */
@@ -192,6 +197,7 @@ public class CardAPILogic {
 
     /**
      * 한도 조회
+     *
      * @param dto
      * @return
      */
@@ -217,6 +223,7 @@ public class CardAPILogic {
 
     /**
      * 후불하이패스 이용내역
+     *
      * @param dto
      * @return
      */

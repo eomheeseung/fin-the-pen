@@ -6,7 +6,6 @@ import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.codefAPI.dto.IntegratedDTO;
 import project.fin_the_pen.codefAPI.dto.bank.company.*;
-import project.fin_the_pen.codefAPI.dto.company.*;
 import project.fin_the_pen.codefAPI.repository.DataAnalysisRepository;
 import project.fin_the_pen.codefAPI.util.APIRequest;
 import project.fin_the_pen.codefAPI.util.CommonConstant;
@@ -234,6 +233,7 @@ public class CompanyAPILogic implements APILogicInterface {
 
     /**
      * 펀드 거래내역
+     *
      * @param dto
      * @return
      */

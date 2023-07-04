@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.codefAPI.dto.bank.company.*;
-import project.fin_the_pen.codefAPI.dto.company.*;
 import project.fin_the_pen.codefAPI.service.bank.CodefCompanyService;
 
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CompanyBankController {
     private final CodefCompanyService companyService;
+
     /**
      * 계좌 비밀번호 검증
      */

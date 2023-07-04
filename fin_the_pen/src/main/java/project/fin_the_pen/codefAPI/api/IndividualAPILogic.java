@@ -10,7 +10,6 @@ import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.codefAPI.dto.IntegratedDTO;
 import project.fin_the_pen.codefAPI.dto.bank.individual.*;
-import project.fin_the_pen.codefAPI.dto.individual.*;
 import project.fin_the_pen.codefAPI.repository.DataAnalysisRepository;
 import project.fin_the_pen.codefAPI.util.APIRequest;
 import project.fin_the_pen.codefAPI.util.CommonConstant;
@@ -39,7 +38,7 @@ public class IndividualAPILogic implements APILogicInterface {
     private final DataAnalysisRepository repository;
 
     @Override
-    public HashMap<String, Object> registerMap(IntegratedDTO dto, HashMap<String, Object> registerMap)  {
+    public HashMap<String, Object> registerMap(IntegratedDTO dto, HashMap<String, Object> registerMap) {
 
         if (dto instanceof FastAccountDTO) {
             FastAccountDTO transDto = (FastAccountDTO) dto;

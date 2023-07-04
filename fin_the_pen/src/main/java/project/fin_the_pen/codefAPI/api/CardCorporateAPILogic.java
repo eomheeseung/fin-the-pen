@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.codefAPI.dto.card.corporateCard.*;
-import project.fin_the_pen.codefAPI.dto.corporateCard.*;
 import project.fin_the_pen.codefAPI.util.APIRequest;
 import project.fin_the_pen.codefAPI.util.CommonConstant;
 
@@ -17,6 +16,7 @@ public class CardCorporateAPILogic {
 
     /**
      * 당일 승인내역
+     *
      * @param dto
      * @return
      * @throws IOException
@@ -46,6 +46,7 @@ public class CardCorporateAPILogic {
 
     /**
      * 매입내역
+     *
      * @param dto
      * @return
      */
@@ -74,6 +75,7 @@ public class CardCorporateAPILogic {
 
     /**
      * 보유카드
+     *
      * @param dto
      * @return
      */
@@ -97,6 +99,7 @@ public class CardCorporateAPILogic {
 
     /**
      * 승인내역
+     *
      * @param dto
      * @return
      */
@@ -130,6 +133,7 @@ public class CardCorporateAPILogic {
 
     /**
      * 청구내역
+     *
      * @param dto
      * @return
      */
@@ -177,7 +181,6 @@ public class CardCorporateAPILogic {
         log.info(result);
         return result;
     }
-
 
 
     /**

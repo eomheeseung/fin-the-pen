@@ -5,7 +5,6 @@ import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.codefAPI.api.CardAPILogic;
 import project.fin_the_pen.codefAPI.dto.card.individualcard.*;
-import project.fin_the_pen.codefAPI.dto.individualcard.*;
 
 import java.io.IOException;
 
@@ -16,6 +15,7 @@ public class CodefCardIndividualService {
 
     /**
      * 가맹점 정보
+     *
      * @param dto
      * @return
      * @throws IOException
@@ -36,6 +36,7 @@ public class CodefCardIndividualService {
 
     /**
      * 등록여부
+     *
      * @param dto
      * @return
      */
@@ -45,6 +46,7 @@ public class CodefCardIndividualService {
 
     /**
      * 보유 카드
+     *
      * @param dto
      * @return
      */
@@ -54,6 +56,7 @@ public class CodefCardIndividualService {
 
     /**
      * 승인 내역
+     *
      * @param dto
      * @return
      */
@@ -63,6 +66,7 @@ public class CodefCardIndividualService {
 
     /**
      * 실적조회
+     *
      * @param dto
      * @return
      */
@@ -72,6 +76,7 @@ public class CodefCardIndividualService {
 
     /**
      * 청구내역
+     *
      * @param dto
      * @return
      */
@@ -81,6 +86,7 @@ public class CodefCardIndividualService {
 
     /**
      * 한도 조회
+     *
      * @param dto
      * @return
      */
@@ -90,6 +96,7 @@ public class CodefCardIndividualService {
 
     /**
      * 후불하이패스 이용내역
+     *
      * @param dto
      * @return
      */

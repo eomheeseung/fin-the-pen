@@ -1,11 +1,17 @@
 package project.fin_the_pen.codefAPI.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
-import project.fin_the_pen.codefAPI.domain.IntegratedDTO;
-import project.fin_the_pen.codefAPI.domain.individual.*;
+import project.fin_the_pen.codefAPI.dto.IntegratedDTO;
+import project.fin_the_pen.codefAPI.dto.bank.individual.*;
+import project.fin_the_pen.codefAPI.dto.individual.*;
+import project.fin_the_pen.codefAPI.repository.DataAnalysisRepository;
 import project.fin_the_pen.codefAPI.util.APIRequest;
 import project.fin_the_pen.codefAPI.util.CommonConstant;
 import project.fin_the_pen.codefAPI.util.RSAUtil;
@@ -26,9 +32,11 @@ import java.util.List;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class IndividualAPILogic implements APILogicInterface {
     private String accessToken;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final DataAnalysisRepository repository;
 
     @Override
     public HashMap<String, Object> registerMap(IntegratedDTO dto, HashMap<String, Object> registerMap)  {
@@ -109,7 +117,7 @@ public class IndividualAPILogic implements APILogicInterface {
     }
 
     // TODO 1. connectedId 기관 아이디
-    public void accountRegister(accountList dto)
+    public void accountRegister(AccountList dto)
             throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             InvalidKeySpecException, BadPaddingException, InvalidKeyException,
             IOException, ParseException, InterruptedException {
@@ -211,7 +219,6 @@ public class IndividualAPILogic implements APILogicInterface {
      */
     public String accountList(AccountDTO dto)
             throws IOException, ParseException, InterruptedException {
-
         String urlPath = CommonConstant.TEST_DOMAIN + CommonConstant.KR_BK_1_P_001;
 
         HashMap<String, Object> registerMap = getRegisterMap(new HashMap<>(), dto);
@@ -277,7 +284,7 @@ public class IndividualAPILogic implements APILogicInterface {
 
 
     /**
-     * 수시 입출 거래내역
+     * 수시 입출 거래내역 (data를 보내야 하는 부분)
      *
      * @param dto
      * @return
@@ -288,6 +295,22 @@ public class IndividualAPILogic implements APILogicInterface {
         HashMap<String, Object> registerMap = registerMap(dto, CreateMap.create());
 
         String result = APIRequest.request(urlPath, registerMap);
+
+        //string -> jsonObject
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(result);
+        // 여기는 result부터 ~~
+        log.info(jsonObject.toJSONString());
+
+        // 여기는 data부터 ~~
+        JSONObject dataJson = (JSONObject) jsonObject.get("data");
+        log.info(dataJson.toString());
+
+        // 여기는 data내부의 resTrHistoryList를 jsonArray로 바꿔서 0번째 jsonObject를 log에 찍음
+        JSONArray historyList = (JSONArray) dataJson.get("resTrHistoryList");
+        log.info(historyList.get(0).toString());
+
+        repository.dataAnalysis(jsonObject);
         return result;
     }
 

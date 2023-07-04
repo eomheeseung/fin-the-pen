@@ -68,17 +68,17 @@ public class CommonConstant {
     /**
      * CODEF로부터 발급받은 클라이언트 아이디
      */
-    public static final String CLIENT_ID = "4e08356c-1940-4c69-9ec9-1d55f12c3cf2";
+    public static final String CLIENT_ID = "81a8680d-bcb7-4f73-83f2-15bef1966761";
 
     /**
      * CODEF로부터 발급받은 시크릿 키
      */
-    public static final String SECERET_KEY = "9ea5d443-4699-41bf-bbe6-27db50e2dee8";
+    public static final String SECERET_KEY = "1f4ba394-abbf-451c-8f75-77ddd05965cf";
 
     /**
      * CODEF로부터 발급받은 퍼블릭 키
      */
-    public static final String PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnimlE5ZzZVF6zkXhW8Kmm9VCoCb2l1a6Hb9JA08+HLqvCJSdO36iOCj1vND53URRfVZ9sXymeQPOEDMre7invFaMg/Sqbg2yHtrW+RobOwpvtIxXQeeEl1gX7kkp23g8V3vmpWlOzChjrPUI7rETAVR7cHrmOvJoG7lGrBO8n6OdPuZ9SpFxSsMMvn0OX+tmXuGdYQL9M08T4cOWLHspoWHNO7ST/C299yMe58WR2Klw2Xzu5XzOfBeKSo+zA6n/XQmcOlQ+JFM2h6IAn9h080fit+w/Mtk5nbc3gEHluD8W3lIeMoobeB8Bxq5pStYqwsCHLwXaY7V/spDLxWvkcQIDAQAB";
+    public static final String PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1ld5T8Q2IhUK+KbuPI2M4Vv3mdin6/RU4DHM5guWTBKAEawgLedFQzNo+CpSB77WsLs5S6+XEEuIFvRv9O6MOcTE/9YdW6DbkfcpYj/Gj4pn4lDqPUj+GgFugVAU9b4geLyoUurkFrfFVA+6DZFKSXqJlVJ7zoWOgCSNl2YaZvsXy7mkAAZdPGNkfpYSIxHX898/5t8covZ2zGeN1FLKl+VIn/IS3u28L5PKbJPr/RhYUkgwENykwz3zfzFg0KyutUC6D8CNxRzRlsqBXmK5xJbD+Gq6ysv3Qhlaj8kqgt3zcf/JvJEvUZlbpa6eGh34OvSmmeJYsdcBQhcr1H0kMQIDAQAB";
 
     /**
      * OAUTH2.0 토큰 샘플

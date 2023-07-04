@@ -1,6 +1,6 @@
 package project.fin_the_pen.codefAPI.api;
 
-import project.fin_the_pen.codefAPI.domain.IntegratedDTO;
+import project.fin_the_pen.codefAPI.dto.IntegratedDTO;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;

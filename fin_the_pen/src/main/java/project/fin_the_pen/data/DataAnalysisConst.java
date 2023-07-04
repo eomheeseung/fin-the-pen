@@ -6,7 +6,7 @@ public class DataAnalysisConst {
     public static final String resAccountDisplay = "resAccountDisplay";
 
     public static final String resAccountName = "resAccountName";
-    
+
     public static final String resAccountNickName = "resAccountNickName";
 
     public static final String resAccountHolder = "resAccountHolder";

@@ -2,13 +2,11 @@ package project.fin_the_pen.codefAPI.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
-import project.fin_the_pen.codefAPI.domain.IntegratedDTO;
-import project.fin_the_pen.codefAPI.domain.company.*;
+import project.fin_the_pen.codefAPI.dto.IntegratedDTO;
+import project.fin_the_pen.codefAPI.dto.bank.company.*;
+import project.fin_the_pen.codefAPI.dto.company.*;
 import project.fin_the_pen.codefAPI.repository.DataAnalysisRepository;
 import project.fin_the_pen.codefAPI.util.APIRequest;
 import project.fin_the_pen.codefAPI.util.CommonConstant;
@@ -184,13 +182,6 @@ public class CompanyAPILogic implements APILogicInterface {
         HashMap<String, Object> registerMap = registerMap(dto, CreateMap.create());
         String result = APIRequest.request(urlPath, registerMap);
         log.info(result);
-
-        //string -> jsonObject
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(result);
-        JSONArray jsonArray = (JSONArray) jsonObject.get("resTrHistoryList");
-
-        repository.dataAnalysis(jsonObject, jsonArray);
 
         return result;
     }

@@ -3,9 +3,9 @@ package project.fin_the_pen.codefAPI.api;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
-import project.fin_the_pen.codefAPI.domain.IntegratedDTO;
-import project.fin_the_pen.codefAPI.domain.bank2.Bank2AccountDTO;
-import project.fin_the_pen.codefAPI.domain.bank2.Bank2AccountTransactionDTO;
+import project.fin_the_pen.codefAPI.dto.IntegratedDTO;
+import project.fin_the_pen.codefAPI.dto.bank.bank2.Bank2AccountDTO;
+import project.fin_the_pen.codefAPI.dto.bank.bank2.Bank2AccountTransactionDTO;
 import project.fin_the_pen.codefAPI.util.APIRequest;
 import project.fin_the_pen.codefAPI.util.CommonConstant;
 

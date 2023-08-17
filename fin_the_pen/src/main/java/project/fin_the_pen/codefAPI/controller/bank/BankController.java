@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.codefAPI.dto.bank.individual.*;
@@ -25,6 +26,7 @@ public class BankController {
 
     /**
      * 등록여부 확인
+     *
      * @param dto
      * @return
      */
@@ -72,9 +74,23 @@ public class BankController {
     /**
      * 수시입출 거래내역
      */
-    @GetMapping("codef/occasionalAccount")
+    /*@GetMapping("codef/occasionalAccount")
     public String occasionalAccount(@RequestBody OccasionalDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+        dto.setOrganization("0004");
         String result = apiService.occasionalAccount(dto);
+        log.info("결과:{}", result);
+        return result;
+    }*/
+
+    /**
+     * test
+     */
+    @PostMapping("/codef/occasionalAccount")
+    public String occasionalAccount(@RequestBody OccasionalDTO dto)
+            throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+        String result = apiService.occasionalAccount(dto);
+        log.info(dto.getConnectedId());
+//        log.info(result);
         return result;
     }
 
@@ -99,13 +115,10 @@ public class BankController {
     // ========= 저축은행 ==========
 
 
-
     //================== 카드 ===============
 
 
-
     //=========== 카드 법인 ===========
-
 
 
     // =========== 가맹점번호 조회 ===========

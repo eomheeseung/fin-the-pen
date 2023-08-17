@@ -53,4 +53,8 @@ public class ScheduleService {
     public ScheduleResponseDTO findOne(String uuid) {
         return scheduleRepository.findOneSchedule(uuid);
     }
+
+    public JSONArray findByContainsName(String name) {
+        return scheduleRepository.findByContainsName(name);
+    }
 }

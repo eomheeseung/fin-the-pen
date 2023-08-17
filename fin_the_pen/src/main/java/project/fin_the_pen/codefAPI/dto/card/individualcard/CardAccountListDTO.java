@@ -10,5 +10,4 @@ public class CardAccountListDTO {
     private String cardPassword;
     private String birthDate;
     private String inquiryType;
-
 }

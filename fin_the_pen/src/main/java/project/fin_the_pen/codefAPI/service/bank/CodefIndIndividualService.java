@@ -147,7 +147,6 @@ public class CodefIndIndividualService {
         JSONParser parser = new JSONParser();
         Object obj = null;
 
-
         return result;
     }
 

@@ -112,7 +112,7 @@ public class CardAPILogic {
     }
 
     /**
-     * 승인내역
+     * 개인 승인내역
      *
      * @param dto
      * @return
@@ -137,7 +137,7 @@ public class CardAPILogic {
 
         String result = APIRequest.request(urlPath, registerMap);
 
-        repository.DataApproval(parseMethod(result));
+        repository.dataApproval(parseMethod(result));
 
         log.info(result);
         return result;
@@ -263,5 +263,4 @@ public class CardAPILogic {
         }
         return jsonObject;
     }
-
 }

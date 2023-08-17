@@ -67,7 +67,7 @@ public class IndividualCardController {
     }
 
     /**
-     * 승인내역
+     * 개인 승인내역
      */
     @GetMapping("codef/card/approval-list")
     public String cardApprovalList(@RequestBody CardApprovalListDTO dto) throws IOException, ParseException, InterruptedException {

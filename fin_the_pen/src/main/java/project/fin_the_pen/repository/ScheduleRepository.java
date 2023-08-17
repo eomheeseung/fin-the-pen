@@ -43,6 +43,22 @@ public class ScheduleRepository {
     }
 
     /**
+     * TODO 포함된 이름으로 검색 테스트 필요함.
+     */
+    public JSONArray findByContainsName(String name) {
+        List<Schedule> byContainsNameList = repository.findByContainsName(name);
+        JSONArray jsonArray = new JSONArray(new ArrayList<ScheduleResponseDTO>());
+
+        if (byContainsNameList.isEmpty()) {
+            return new JSONArray((JSONArray) null);
+        }
+
+        log.info(String.valueOf(byContainsNameList.size()));
+
+        return getJsonArrayBySchedule(byContainsNameList, jsonArray);
+    }
+
+    /**
      * 전체 일정 조회
      *
      * @param id

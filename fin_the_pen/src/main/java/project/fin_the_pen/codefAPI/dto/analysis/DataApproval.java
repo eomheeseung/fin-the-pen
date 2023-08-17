@@ -1,6 +1,8 @@
 package project.fin_the_pen.codefAPI.dto.analysis;
 
+import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -9,9 +11,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "card_table")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DataApproval {
-    public DataApproval() {
-    }
 
     @Builder
     public DataApproval(String resUsedDate, String resUsedTime, String resCardNo, String resCardName, String resUsedAmount, String resPaymentType, String resInstallmentMonth, String resPaymentDueDate, String resHomeForeignType, String resMemberStoreType, String resCancelYN, String resCancelAmount, String resVAT, String resCashBack, String resKRWAmt) {

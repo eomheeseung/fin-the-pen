@@ -115,7 +115,6 @@ public class IndividualAPILogic implements APILogicInterface {
         }
     }
 
-    // TODO 1. connectedId 기관 아이디
     public void accountRegister(AccountList dto)
             throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
             InvalidKeySpecException, BadPaddingException, InvalidKeyException,
@@ -284,11 +283,11 @@ public class IndividualAPILogic implements APILogicInterface {
 
     /**
      * 수시 입출 거래내역 (data를 보내야 하는 부분)
-     *
+     * TODO 하루만 조회하는 특수한 경우를 따로 만들어야 함.
      * @param dto
      * @return
      */
-    public String occasionalAccount(OccasionalDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    public String occasionalAccount(OccasionalDTO dto) throws IOException, ParseException, InterruptedException {
         String urlPath = CommonConstant.TEST_DOMAIN + CommonConstant.KR_BK_1_P_002;
 
         HashMap<String, Object> registerMap = registerMap(dto, CreateMap.create());

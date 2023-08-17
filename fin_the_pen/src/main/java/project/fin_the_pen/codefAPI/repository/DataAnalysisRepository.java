@@ -19,6 +19,7 @@ public class DataAnalysisRepository {
     @PersistenceContext
     EntityManager manager;
 
+    private final DataRepository dataRepository;
 
     public void dataAnalysis(JSONObject jsonObject) {
         JSONObject dataJson = (JSONObject) jsonObject.get("data");
@@ -62,26 +63,32 @@ public class DataAnalysisRepository {
 
     }
 
-    // 승인 내역
-    public void DataApproval(JSONObject jsonObject) {
-        DataApproval dataApproval = DataApproval.builder()
-                .resUsedDate(jsonObject.get("resUsedDate").toString())
-                .resUsedTime(jsonObject.get("resUseTime").toString())
-                .resCardNo(jsonObject.get("resCardNo").toString())
-                .resCardName(jsonObject.get("resCardName").toString())
-                .resUsedAmount(jsonObject.get("resUsedAmount").toString())
-                .resPaymentType(jsonObject.get("resPaymentType").toString())
-                .resInstallmentMonth(jsonObject.get("resInstallmentMonth").toString())
-                .resPaymentDueDate(jsonObject.get("resPaymentDueDate").toString())
-                .resMemberStoreType(jsonObject.get("resMemberStoreType").toString())
-                .resCancelYN(jsonObject.get("resCancelYN").toString())
-                .resCancelAmount(jsonObject.get("resCancelAmount").toString())
-                .resVAT(jsonObject.get("resVAT").toString())
-                .resCashBack(jsonObject.get("resCashBack").toString())
-                .resKRWAmt(jsonObject.get("resKRWAmt").toString())
-                .build();
+    // 카드 / 승인 내역
+    public void dataApproval(JSONObject jsonObject) {
+        JSONArray jsonArray = (JSONArray) jsonObject.get("data");
 
-        manager.persist(dataApproval);
+        for (Object o : jsonArray) {
+            JSONObject innerJson = (JSONObject) o;
+
+            DataApproval dataApproval = DataApproval.builder()
+                    .resUsedDate(innerJson.get("resUsedDate").toString())
+                    .resUsedTime(innerJson.get("resUsedTime").toString())
+                    .resCardNo(innerJson.get("resCardNo").toString())
+                    .resCardName(innerJson.get("resCardName").toString())
+                    .resUsedAmount(innerJson.get("resUsedAmount").toString())
+                    .resPaymentType(innerJson.get("resPaymentType").toString())
+                    .resInstallmentMonth(innerJson.get("resInstallmentMonth").toString())
+                    .resPaymentDueDate(innerJson.get("resPaymentDueDate").toString())
+                    .resMemberStoreType(innerJson.get("resMemberStoreType").toString())
+                    .resCancelYN(innerJson.get("resCancelYN").toString())
+                    .resCancelAmount(innerJson.get("resCancelAmount").toString())
+                    .resVAT(innerJson.get("resVAT").toString())
+                    .resCashBack(innerJson.get("resCashBack").toString())
+                    .resKRWAmt(innerJson.get("resKRWAmt").toString())
+                    .build();
+
+            dataRepository.save(dataApproval);
+        }
     }
 
     // 실적 조회

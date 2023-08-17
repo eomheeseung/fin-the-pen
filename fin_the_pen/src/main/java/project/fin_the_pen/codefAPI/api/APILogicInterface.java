@@ -11,5 +11,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 
 public interface APILogicInterface {
-    HashMap<String, Object> registerMap(IntegratedDTO dto, HashMap<String, Object> registerMap) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException;
+    HashMap<String, Object> registerMap(IntegratedDTO dto, HashMap<String, Object> registerMap)
+            throws NoSuchPaddingException,
+            IllegalBlockSizeException,
+            NoSuchAlgorithmException,
+            InvalidKeySpecException,
+            BadPaddingException,
+            InvalidKeyException;
 }

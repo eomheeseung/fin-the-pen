@@ -78,6 +78,7 @@ public class ScheduleController {
 
     /**
      * uuid 하나로만 일정 조회
+     *
      * @param map
      * @return
      */
@@ -93,5 +94,10 @@ public class ScheduleController {
         JSONArray jsonArray = scheduleService
                 .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
         return jsonArray.toString();
+    }
+
+    @PostMapping("/find/contains/name")
+    public String findByContainsName(@RequestBody String name) {
+        return scheduleService.findByContainsName(name).toString();
     }
 }

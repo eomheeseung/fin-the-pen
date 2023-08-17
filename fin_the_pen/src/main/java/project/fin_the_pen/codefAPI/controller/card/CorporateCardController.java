@@ -45,7 +45,7 @@ public class CorporateCardController {
     }
 
     /**
-     * 승인내역
+     * 기업 승인내역
      */
     @GetMapping("codef/account/approval-list")
     public String corporateApproval(@RequestBody CorporateApprovalDTO dto) throws IOException, ParseException, InterruptedException {

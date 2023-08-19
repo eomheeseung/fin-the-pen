@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * 모든 API는 여기서 작성
+ * 일반 은행 개인
  */
 @Slf4j
 @Component
@@ -36,6 +36,7 @@ public class IndividualAPILogic implements APILogicInterface {
     private String accessToken;
     private final ObjectMapper mapper = new ObjectMapper();
     private final DataAnalysisRepository repository;
+
 
     @Override
     public HashMap<String, Object> registerMap(IntegratedDTO dto, HashMap<String, Object> registerMap) {

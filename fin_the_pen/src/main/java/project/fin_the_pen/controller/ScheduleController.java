@@ -97,7 +97,8 @@ public class ScheduleController {
     }
 
     @PostMapping("/find/contains/name")
-    public String findByContainsName(@RequestBody String name) {
-        return scheduleService.findByContainsName(name).toString();
+    public String findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
+        log.info(scheduleService.findByContainsName(map.get("name")).toString());
+        return scheduleService.findByContainsName(map.get("name")).toString();
     }
 }

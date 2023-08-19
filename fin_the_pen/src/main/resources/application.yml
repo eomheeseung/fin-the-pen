@@ -1,0 +1,38 @@
+# h2 driver ??
+#spring.datasource.username=sa
+#spring.datasource.password=
+#spring.datasource.url=jdbc:h2:tcp://localhost/~/fin_the_pen
+#spring.datasource.driver-class-name=org.h2.Driver
+#spring.jpa.database=h2
+
+#h2 DB
+spring:
+  datasource:
+    username: sa
+    password:
+    url: jdbc:h2:tcp://localhost/~/fin_the_pen
+    driver-class-name: org.h2.Driver
+  jpa:
+    database: h2
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+# mysql DB
+#spring:
+#  jpa:
+#    database: mysql
+#    hibernate:
+#      ddl-auto: create
+#    properties:
+#      hibernate:
+#        format_sql: true
+#    show-sql: true
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: fomuller@1350
+#    url: jdbc:mysql://localhost:3306/fin_the_pen?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul

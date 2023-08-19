@@ -35,38 +35,11 @@ public class CodefIndIndividualService {
     private Token token;
     private final IndividualAPILogic apiLogic;
 
+
     public List<Token> findToken() {
         List<Token> list = tokenRepository.findToken();
         list.forEach(t -> log.info(t.getAccessToken()));
         return list;
-    }
-
-    /**
-     * connectedId 발급 받는 코드
-     * 어차피 토큰 1개만 저장된다는 보장이 있음.
-     */
-    public void accountCreate() throws RuntimeException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, IOException, ParseException, InvalidKeyException, InterruptedException {
-        try {
-            apiLogic.accountRegister();
-        } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
-                 InvalidKeySpecException | BadPaddingException | InvalidKeyException | IOException | ParseException |
-                 InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        token = tokenRepository.findOneToken();
-        apiLogic.accountRegister();
-    }
-
-    public void accountCreate(AccountList list) throws RuntimeException {
-        try {
-            apiLogic.accountRegister(list);
-        } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
-                 InvalidKeySpecException | BadPaddingException | InvalidKeyException | IOException | ParseException |
-                 InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        /*token = tokenRepository.findOneToken();
-        apiLogic.accountRegister(token.getAccessToken());*/
     }
 
     /**

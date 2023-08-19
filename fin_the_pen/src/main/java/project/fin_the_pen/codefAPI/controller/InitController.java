@@ -2,14 +2,19 @@ package project.fin_the_pen.codefAPI.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import project.fin_the_pen.codefAPI.connectedId.ConnectedService;
+import project.fin_the_pen.codefAPI.dto.bank.individual.AccountAddList;
+import project.fin_the_pen.codefAPI.dto.bank.individual.AccountDeleteDTO;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountList;
-import project.fin_the_pen.codefAPI.service.bank.CodefIndIndividualService;
 import project.fin_the_pen.codefAPI.service.CodefPublishTokenService;
+import project.fin_the_pen.codefAPI.service.bank.CodefIndIndividualService;
 import project.fin_the_pen.data.token.Token;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,6 +23,7 @@ import java.util.List;
 public class InitController {
     private final CodefPublishTokenService tokenService;
     private final CodefIndIndividualService apiService;
+    private final ConnectedService connectedService;
 
     /**
      * accessTokenPublish
@@ -43,10 +49,28 @@ public class InitController {
 
     /**
      * connectedId 발급(해결!)
+     *
      * @param list
      */
     @GetMapping("codef/accountCreate")
     public void codefAccountCreate(@RequestBody AccountList list) {
-        apiService.accountCreate(list);
+        connectedService.accountCreate(list);
+    }
+
+    /**
+     * 계정 추가
+     */
+    @GetMapping("/codef/account/add")
+    public void codefAccountAdd(@RequestBody AccountAddList list)
+            throws IOException, ParseException, InterruptedException {
+        connectedService.accountAdd(list);
+    }
+
+    /**
+     * 계정 삭제 - 성공
+     */
+    @GetMapping("/codef/account/delete")
+    public void codefAccountDelete(@RequestBody AccountDeleteDTO dto) throws IOException, ParseException, InterruptedException {
+        connectedService.accountDelete(dto);
     }
 }

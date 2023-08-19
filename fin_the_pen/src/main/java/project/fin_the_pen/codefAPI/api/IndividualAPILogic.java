@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * 일반 은행 개인
@@ -114,78 +112,6 @@ public class IndividualAPILogic implements APILogicInterface {
         } else {
             return null;
         }
-    }
-
-    public void accountRegister(AccountList dto)
-            throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-            InvalidKeySpecException, BadPaddingException, InvalidKeyException,
-            IOException, ParseException, InterruptedException {
-
-        String urlPath = CommonConstant.TEST_DOMAIN + "/v1/account/create";
-
-        HashMap<String, Object> bodyMap = new HashMap<String, Object>();
-        List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
-
-        log.info(dto.getAccountList().get(0).getLoginTypeLevel());
-        HashMap<String, Object> accountMap2 = new HashMap<String, Object>();
-        accountMap2.put("countryCode", dto.getAccountList().get(0).getCountryCode());
-        accountMap2.put("businessType", dto.getAccountList().get(0).getBusinessType());
-        accountMap2.put("clientType", dto.getAccountList().get(0).getClientType());
-        accountMap2.put("organization", dto.getAccountList().get(0).getOrganization());
-        accountMap2.put("loginType", dto.getAccountList().get(0).getLoginType());
-
-        //은행마다 기관코드가 다름, 우리은행 0020, 국민은행 0004
-        /*
-         로그인 제한 직전에는 "99"를 표시하고, 오류 횟수 체크가 안 되는 경우 빈 값으로 내려옵니다.
-         */
-        String password2 = dto.getAccountList().get(0).getPassword();
-        accountMap2.put("password", RSAUtil.encryptRSA(password2, CommonConstant.PUBLIC_KEY));    /**    password RSA encrypt */
-
-        accountMap2.put("id", dto.getAccountList().get(0).getId());
-        accountMap2.put("birthday", dto.getAccountList().get(0).getBirthDate());
-        list.add(accountMap2);
-
-        bodyMap.put("accountList", list);
-
-        String result = APIRequest.request(urlPath, bodyMap);
-
-        /*JSONParser parser = new JSONParser();
-        Object obj = parser.parse(result);
-        JSONObject jsonObject = (JSONObject) obj;
-
-        // static final이라 상수인데 어떻게 connected_id에 넣을 것인가?
-        CommonConstant.CONNECTED_ID = (String) jsonObject.get("connectedId");*/
-        log.info(result);
-    }
-
-    public void accountRegister()
-            throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException,
-            InvalidKeySpecException, BadPaddingException, InvalidKeyException,
-            IOException, ParseException, InterruptedException {
-
-        String urlPath = CommonConstant.TEST_DOMAIN + "/v1/account/create";
-
-        HashMap<String, Object> bodyMap = new HashMap<String, Object>();
-        List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
-
-        HashMap<String, Object> accountMap2 = new HashMap<String, Object>();
-        accountMap2.put("countryCode", "KR");
-        accountMap2.put("businessType", "BK");
-        accountMap2.put("clientType", "P");
-        accountMap2.put("organization", "0004");
-        accountMap2.put("loginType", "1");
-
-        String password2 = "fomuller@12";
-        accountMap2.put("password", RSAUtil.encryptRSA(password2, CommonConstant.PUBLIC_KEY));    /**    password RSA encrypt */
-
-        accountMap2.put("id", "ulass8846");
-        accountMap2.put("birthday", "990109");
-        list.add(accountMap2);
-
-        bodyMap.put("accountList", list);
-
-        String result = APIRequest.request(urlPath, bodyMap);
-        log.info(result);
     }
 
     /**

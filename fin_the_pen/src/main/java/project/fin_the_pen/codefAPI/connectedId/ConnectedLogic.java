@@ -19,6 +19,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
@@ -222,5 +223,26 @@ public class ConnectedLogic {
 
         String result = APIRequest.request(urlPath, bodyMap);
         log.info(result);
+    }
+
+    /**
+     * 계정 출력
+     * 등록된 커넥티드 아이디의 계정 목록을 요청.
+     * @param
+     */
+    public void accountOutputList(ConcurrentHashMap<String,String> map) {
+        String urlPath = CommonConstant.TEST_DOMAIN + CommonConstant.GET_ACCOUNTS;
+
+        HashMap<String, Object> bodyMap = new HashMap<String, Object>();
+
+        String connectedId = map.get("connectedId");
+        bodyMap.put(CommonConstant.CONNECTED_ID, connectedId);
+
+        try {
+            String result = APIRequest.request(urlPath, bodyMap);
+            log.info(result);
+        } catch (IOException | InterruptedException | ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

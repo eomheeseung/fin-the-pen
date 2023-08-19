@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 @Transactional
@@ -59,17 +60,13 @@ public class ScheduleRepository {
     }
 
     /**
-     * 전체 일정 조회
+     * 전체 일정 조회 userId에 따라서
      *
      * @param id
      * @return
      */
     public JSONArray findAllSchedule(String id) {
-        List<Schedule> scheduleList =
-                entityManager.createQuery("select s from Schedule s where s.userId = :id", Schedule.class)
-                        .setParameter("id", id)
-                        .getResultList();
-
+        List<Schedule> scheduleList = repository.findScheduleByUserId(id);
 
         log.info(String.valueOf(scheduleList.size()));
         JSONArray jsonArray = new JSONArray(new ArrayList<ScheduleResponseDTO>());
@@ -91,6 +88,7 @@ public class ScheduleRepository {
      */
     public JSONArray findMonthSchedule(String date, String userId) {
         List<Schedule> byMonthSchedule = repository.findByMonthSchedule(date, userId);
+
         JSONArray jsonArray = new JSONArray();
 
         return getJsonArrayBySchedule(byMonthSchedule, jsonArray);
@@ -154,18 +152,20 @@ public class ScheduleRepository {
     }
 
     public JSONArray findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
-        List<Schedule> resultList =
+        /*List<Schedule> resultList =
                 entityManager.createQuery("select s from Schedule s where s.userId= :userId and s.category = :categoryName", Schedule.class)
                         .setParameter("userId", currentSession)
                         .setParameter("categoryName", categoryRequestDTO.getCategoryName())
-                        .getResultList();
+                        .getResultList();*/
+        List<Schedule> resultList = repository.findScheduleByCategory(currentSession, categoryRequestDTO.getCategoryName());
         return getJsonArrayBySchedule(resultList, new JSONArray());
     }
 
     public boolean deleteSchedule(String uuid) {
         Schedule singleSchedule = getSingleSchedule(uuid);
+
         try {
-            entityManager.remove(singleSchedule);
+            repository.delete(singleSchedule);
         } catch (Exception e) {
             return false;
         }
@@ -173,32 +173,33 @@ public class ScheduleRepository {
     }
 
     private Schedule getSingleSchedule(String uuid) {
-        return entityManager.createQuery("select s from Schedule s where s.id =: uuid", Schedule.class)
+        return repository.findById(UUID.fromString(uuid)).get();
+        /*return entityManager.createQuery("select s from Schedule s where s.id =: uuid", Schedule.class)
                 .setParameter("uuid", uuid)
-                .getSingleResult();
+                .getSingleResult();*/
     }
 
     private JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, JSONArray jsonArray) {
         scheduleList.stream()
                 .forEach(schedule -> {
-            JSONObject jsonObject = new JSONObject()
-                    .put("id", schedule.getId())
-                    .put("alarm", schedule.isAlarm())
-                    .put("event_name", schedule.getEventName())
-                    .put("date", schedule.getDate())
-                    .put("start_time", schedule.getStartTime())
-                    .put("end_time", schedule.getEndTime())
-                    .put("type", schedule.getType())
-                    .put("repeating_cycle", schedule.getRepeatingCycle())
-                    .put("repeat_deadline", schedule.getRepeatDeadline())
-                    .put("repeat_endDate", schedule.getRepeatEndDate())
-                    .put("category", schedule.getCategory())
-                    .put("exclusion", schedule.isExclusion())
-                    .put("importance", schedule.getImportance())
-                    .put("expected_spending", schedule.getExpectedSpending());
+                    JSONObject jsonObject = new JSONObject()
+                            .put("id", schedule.getId())
+                            .put("alarm", schedule.isAlarm())
+                            .put("event_name", schedule.getEventName())
+                            .put("date", schedule.getDate())
+                            .put("start_time", schedule.getStartTime())
+                            .put("end_time", schedule.getEndTime())
+                            .put("type", schedule.getType())
+                            .put("repeating_cycle", schedule.getRepeatingCycle())
+                            .put("repeat_deadline", schedule.getRepeatDeadline())
+                            .put("repeat_endDate", schedule.getRepeatEndDate())
+                            .put("category", schedule.getCategory())
+                            .put("exclusion", schedule.isExclusion())
+                            .put("importance", schedule.getImportance())
+                            .put("expected_spending", schedule.getExpectedSpending());
 
-            jsonArray.put(jsonObject);
-        });
+                    jsonArray.put(jsonObject);
+                });
 
         return jsonArray;
     }

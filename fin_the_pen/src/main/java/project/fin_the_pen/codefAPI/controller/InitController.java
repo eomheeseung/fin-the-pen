@@ -17,6 +17,7 @@ import project.fin_the_pen.data.token.Token;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @Slf4j
@@ -81,5 +82,13 @@ public class InitController {
     @GetMapping("/codef/account/update")
     public void codefAccountUpdate(@RequestBody AccountUpdateDTO dto) throws IOException, ParseException, InterruptedException {
         connectedService.accountUpdate(dto);
+    }
+
+    /**
+     * 계정 목록
+     */
+    @GetMapping("/codef/account/list")
+    public void codefAccountList(@RequestBody ConcurrentHashMap<String,String> map) {
+        connectedService.accountOutputList(map);
     }
 }

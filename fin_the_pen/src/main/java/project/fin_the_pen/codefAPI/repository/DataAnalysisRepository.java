@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
+// TODO 리펙토링
 public class DataAnalysisRepository {
     @PersistenceContext
     EntityManager manager;

@@ -1,5 +1,6 @@
 package project.fin_the_pen.repository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.data.member.User;
 import project.fin_the_pen.data.member.UserRequestDTO;
@@ -13,9 +14,13 @@ import java.util.Optional;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class LoginRepository {
+
     @PersistenceContext
     EntityManager entityManager;
+
+    private final CRUDLoginRepository crudLoginRepository;
 
     public void init() {
         User user = new User();
@@ -25,7 +30,7 @@ public class LoginRepository {
         user.setPhoneNumber("010-1111-1111");
         user.setRegisterDate(java.util.Calendar.getInstance().getTime());
 
-        entityManager.persist(user);
+        crudLoginRepository.save(user);
     }
 
     /**
@@ -45,44 +50,19 @@ public class LoginRepository {
         user.setPhoneNumber(userRequestDTO.getPhone_number());
         user.setRegisterDate(userRequestDTO.getRegisterDate());
 
-        entityManager.persist(user);
+        crudLoginRepository.save(user);
         return true;
     }
 
     public List<User> findAll() {
-        return entityManager.createQuery("select u from User u", User.class).getResultList();
+        return crudLoginRepository.findAll();
     }
-
-    /*public UserResponseDTO findByUser(String id, String password) {
-        try {
-            User user = entityManager
-                    .createQuery("select u from User u where u.userId = :findId and u.password =: findPw", User.class)
-                    .setParameter("findId", id)
-                    .setParameter("findPw", password)
-                    .getSingleResult();
-
-            UserResponseDTO currentUser = new UserResponseDTO();
-            currentUser.setId(user.getId());
-            currentUser.setUser_id(user.getUserId());
-            currentUser.setName(user.getName());
-            currentUser.setBaby(user.getBaby());
-            currentUser.setRegisterDate(user.getRegisterDate());
-            currentUser.setUserRole(user.getUserRole());
-            currentUser.setPhone_number(user.getPhoneNumber());
-
-            return currentUser;
-        } catch (Exception e) {
-            return null;
-        }
-    }*/
 
     public UserResponseDTO findByUser(String id, String password) {
         try {
-            return entityManager
-                    .createQuery(
-                        "select new project.fin_the_pen.data.member.UserResponseDTO(u.id,u.userId,u.name,u.baby,u.registerDate,u.userRole,u.phoneNumber) " +
-                                "from User u " +
-                                "where u.userId = :findId and u.password =: findPw", UserResponseDTO.class)
+            return entityManager.createQuery("select new project.fin_the_pen.data.member" +
+                            ".UserResponseDTO(u.id,u.userId,u.name,u.baby, u.registerDate,u.userRole, u.phoneNumber) " +
+                            "from User u where u.userId =: findId and u.password =: findPw", UserResponseDTO.class)
                     .setParameter("findId", id)
                     .setParameter("findPw", password)
                     .getSingleResult();

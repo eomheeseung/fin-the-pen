@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -73,5 +74,12 @@ public class ConnectedService {
      */
     public void accountUpdate(AccountUpdateDTO dto) throws IOException, ParseException, InterruptedException {
         logic.accountUpdate(dto);
+    }
+
+    /**
+     * 계정 목록
+     */
+    public void accountOutputList(ConcurrentHashMap<String,String> map) {
+        logic.accountOutputList(map);
     }
 }

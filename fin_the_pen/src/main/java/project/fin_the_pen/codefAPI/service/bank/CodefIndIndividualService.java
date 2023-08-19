@@ -6,10 +6,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.codefAPI.api.IndividualAPILogic;
+import project.fin_the_pen.codefAPI.logic.IndividualAPILogic;
 import project.fin_the_pen.codefAPI.dto.bank.individual.*;
 import project.fin_the_pen.codefAPI.repository.TokenRepository;
-import project.fin_the_pen.data.token.Token;
+import project.fin_the_pen.finClient.data.token.Token;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;

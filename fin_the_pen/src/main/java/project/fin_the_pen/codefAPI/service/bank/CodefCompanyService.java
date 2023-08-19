@@ -6,7 +6,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.codefAPI.api.CompanyAPILogic;
+import project.fin_the_pen.codefAPI.logic.CompanyAPILogic;
 import project.fin_the_pen.codefAPI.dto.bank.company.*;
 
 import java.io.IOException;

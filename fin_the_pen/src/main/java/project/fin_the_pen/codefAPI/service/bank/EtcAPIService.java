@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.codefAPI.api.EtcAPILogic;
+import project.fin_the_pen.codefAPI.logic.EtcAPILogic;
 import project.fin_the_pen.codefAPI.dto.bank.etc.AuthenticationDTO;
 import project.fin_the_pen.codefAPI.dto.bank.etc.HolderAuthDTO;
 import project.fin_the_pen.codefAPI.dto.bank.etc.HolderDTO;

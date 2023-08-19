@@ -1,7 +1,7 @@
 package project.fin_the_pen.codefAPI.repository;
 
 import org.springframework.stereotype.Repository;
-import project.fin_the_pen.data.token.Token;
+import project.fin_the_pen.finClient.data.token.Token;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

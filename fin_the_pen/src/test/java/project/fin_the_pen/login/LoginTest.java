@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import project.fin_the_pen.controller.LoginController;
-import project.fin_the_pen.data.member.UserRequestDTO;
+import project.fin_the_pen.finClient.controller.LoginController;
+import project.fin_the_pen.finClient.data.member.UserRequestDTO;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;

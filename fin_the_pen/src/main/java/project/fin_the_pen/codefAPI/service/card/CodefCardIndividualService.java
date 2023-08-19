@@ -3,7 +3,7 @@ package project.fin_the_pen.codefAPI.service.card;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.codefAPI.api.CardAPILogic;
+import project.fin_the_pen.codefAPI.logic.CardAPILogic;
 import project.fin_the_pen.codefAPI.dto.card.individualcard.*;
 
 import java.io.IOException;

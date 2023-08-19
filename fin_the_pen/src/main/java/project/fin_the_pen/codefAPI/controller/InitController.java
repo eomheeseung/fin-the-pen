@@ -13,7 +13,7 @@ import project.fin_the_pen.codefAPI.dto.bank.individual.AccountList;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountUpdateDTO;
 import project.fin_the_pen.codefAPI.service.CodefPublishTokenService;
 import project.fin_the_pen.codefAPI.service.bank.CodefIndIndividualService;
-import project.fin_the_pen.data.token.Token;
+import project.fin_the_pen.finClient.data.token.Token;
 
 import java.io.IOException;
 import java.util.List;

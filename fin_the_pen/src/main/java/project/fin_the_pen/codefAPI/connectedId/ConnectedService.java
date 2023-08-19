@@ -9,7 +9,7 @@ import project.fin_the_pen.codefAPI.dto.bank.individual.AccountDeleteDTO;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountList;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountUpdateDTO;
 import project.fin_the_pen.codefAPI.repository.TokenRepository;
-import project.fin_the_pen.data.token.Token;
+import project.fin_the_pen.finClient.data.token.Token;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;

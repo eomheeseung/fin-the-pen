@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class createDTO implements IndividualDTO {
+public class CreateDTO implements IndividualDTO {
     @Builder
-    public createDTO(String countryCode, String businessType, String clientType, String organization, String loginType, String id, String password, String birthDate, String loginTypeLevel, String clientTypeLevel, String cardNo, String cardPassword) {
+    public CreateDTO(String countryCode, String businessType, String clientType, String organization, String loginType, String id, String password, String birthDate, String loginTypeLevel, String clientTypeLevel, String cardNo, String cardPassword) {
         this.countryCode = countryCode;
         this.businessType = businessType;
         this.clientType = clientType;

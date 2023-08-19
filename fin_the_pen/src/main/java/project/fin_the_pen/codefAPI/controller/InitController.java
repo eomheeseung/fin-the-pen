@@ -10,6 +10,7 @@ import project.fin_the_pen.codefAPI.connectedId.ConnectedService;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountAddList;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountDeleteDTO;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountList;
+import project.fin_the_pen.codefAPI.dto.bank.individual.AccountUpdateDTO;
 import project.fin_the_pen.codefAPI.service.CodefPublishTokenService;
 import project.fin_the_pen.codefAPI.service.bank.CodefIndIndividualService;
 import project.fin_the_pen.data.token.Token;
@@ -72,5 +73,13 @@ public class InitController {
     @GetMapping("/codef/account/delete")
     public void codefAccountDelete(@RequestBody AccountDeleteDTO dto) throws IOException, ParseException, InterruptedException {
         connectedService.accountDelete(dto);
+    }
+
+    /**
+     * 계정 수정
+     */
+    @GetMapping("/codef/account/update")
+    public void codefAccountUpdate(@RequestBody AccountUpdateDTO dto) throws IOException, ParseException, InterruptedException {
+        connectedService.accountUpdate(dto);
     }
 }

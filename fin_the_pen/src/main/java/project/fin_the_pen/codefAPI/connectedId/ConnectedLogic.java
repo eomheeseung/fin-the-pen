@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountAddList;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountDeleteDTO;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountList;
-import project.fin_the_pen.codefAPI.dto.bank.individual.createDTO;
+import project.fin_the_pen.codefAPI.dto.bank.individual.*;
 import project.fin_the_pen.codefAPI.util.APIRequest;
 import project.fin_the_pen.codefAPI.util.CommonConstant;
 import project.fin_the_pen.codefAPI.util.RSAUtil;
@@ -100,7 +97,9 @@ public class ConnectedLogic {
     }
 
     /**
-     * TODO connectedId 계정추가 부분인데 나중에 해결해야 함... 동시성 오류
+     * 계정 추가
+     * 커넥티드 아이디를 생성한 엔드 유저가 새로운 기관의 계정 정보를 추가하고 싶은 경우
+     *
      * @param addList
      * @throws IOException
      * @throws ParseException
@@ -109,27 +108,10 @@ public class ConnectedLogic {
     public void accountAdd(AccountAddList addList) throws IOException, ParseException, InterruptedException {
         String urlPath = CommonConstant.TEST_DOMAIN + CommonConstant.ADD_ACCOUNT;
 
-        List<createDTO> accountList = addList.getAccountList();
+        List<CreateDTO> accountList = addList.getAccountList();
 
-        /*for (createDTO obj : accountList) {
+        addList.getAccountList().add(accountList.stream().iterator().next());
 
-            // Create DTO object and populate fields from accountJson
-            createDTO accountDTO = createDTO.builder().countryCode(obj.getCountryCode())
-                    .businessType(obj.getBusinessType())
-                    .clientType(obj.getClientType())
-                    .organization(obj.getOrganization())
-                    .loginType(obj.getLoginType())
-                    .id(obj.getId())
-                    .password(obj.getPassword())
-                    .birthDate(obj.getBirthDate())
-                    .loginTypeLevel(obj.getLoginTypeLevel())
-                    .clientTypeLevel(obj.getClientTypeLevel())
-                    .cardNo(obj.getCardNo())
-                    .cardPassword(obj.getCardPassword())
-                    .build();
-
-            addList.getAccountList().add(accountDTO);
-        }*/
 
         HashMap<String, Object> bodyMap = new HashMap<String, Object>();
         List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
@@ -139,7 +121,7 @@ public class ConnectedLogic {
         accountMap1.put("businessType", addList.getAccountList().get(0).getBusinessType());  // 업무구분코드
         accountMap1.put("clientType", addList.getAccountList().get(0).getClientType());   // 고객구분(P: 개인, B: 기업)
         accountMap1.put("organization", addList.getAccountList().get(0).getOrganization());// 기관코드
-        accountMap1.put("loginType", addList.getAccountList().get(0).getLoginTypeLevel());   // 로그인타입 (0: 인증서, 1: ID/PW)
+        accountMap1.put("loginType", addList.getAccountList().get(0).getLoginType());   // 로그인타입 (0: 인증서, 1: ID/PW)
 
         String password1 = addList.getAccountList().get(0).getPassword();
 
@@ -150,8 +132,11 @@ public class ConnectedLogic {
             throw new RuntimeException(e);
         }    /**    password RSA encrypt */
 
-//        accountMap1.put("keyFile", "BASE64로 Encoding된 엔드유저의 인증서 key파일 문자열");
-//        accountMap1.put("derFile", "BASE64로 Encoding된 엔드유저의 인증서 der파일 문자열");
+        if (addList.getAccountList().get(0).getLoginType().toString().equals("0")) {
+            accountMap1.put("keyFile", "BASE64로 Encoding된 엔드유저의 인증서 key파일 문자열");
+            accountMap1.put("derFile", "BASE64로 Encoding된 엔드유저의 인증서 der파일 문자열");
+        }
+
         list.add(accountMap1);
 
         bodyMap.put("accountList", list);
@@ -178,17 +163,62 @@ public class ConnectedLogic {
         List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
 
         HashMap<String, Object> accountMap1 = new HashMap<String, Object>();
-        accountMap1.put("countryCode",	dto.getAccountList().get(0).getCountryCode());  // 국가코드
-        accountMap1.put("businessType",	dto.getAccountList().get(0).getBusinessType());  // 업무구분코드
-        accountMap1.put("clientType",  	dto.getAccountList().get(0).getClientType());   // 고객구분(P: 개인, B: 기업)
-        accountMap1.put("organization",	dto.getAccountList().get(0).getOrganization());// 기관코드
-        accountMap1.put("loginType",  	dto.getAccountList().get(0).getLoginType());   // 로그인타입 (0: 인증서, 1: ID/PW)
+        accountMap1.put("countryCode", dto.getAccountList().get(0).getCountryCode());  // 국가코드
+        accountMap1.put("businessType", dto.getAccountList().get(0).getBusinessType());  // 업무구분코드
+        accountMap1.put("clientType", dto.getAccountList().get(0).getClientType());   // 고객구분(P: 개인, B: 기업)
+        accountMap1.put("organization", dto.getAccountList().get(0).getOrganization());// 기관코드
+        accountMap1.put("loginType", dto.getAccountList().get(0).getLoginType());   // 로그인타입 (0: 인증서, 1: ID/PW)
         list.add(accountMap1);
 
         bodyMap.put("accountList", list);
 
         String connectedId = dto.getConnectedId();
         bodyMap.put(CommonConstant.CONNECTED_ID, connectedId);
+
+        String result = APIRequest.request(urlPath, bodyMap);
+        log.info(result);
+    }
+
+    /**
+     * 계정 수정
+     * 등록된 엔드 유저의 계정 정보를 수정
+     * 인증서 갱신/재발급, 비밀번호 변경 등 계정등록시 사용된 계정정보가 변경된 경우,
+     * 기존 발급된 커넥티드 아이디에 해당하는 계정정보를 변경된 계정정보로 계정수정이 반드시 필요.
+     */
+    public void accountUpdate(AccountUpdateDTO dto) throws IOException, ParseException, InterruptedException {
+        String urlPath = CommonConstant.TEST_DOMAIN + CommonConstant.UPDATE_ACCOUNT;
+
+        HashMap<String, Object> bodyMap = new HashMap<String, Object>();
+        List<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
+
+        HashMap<String, Object> accountMap1 = new HashMap<String, Object>();
+        accountMap1.put("countryCode", dto.getAccountList().get(0).getCountryCode());  // 국가코드
+        accountMap1.put("businessType", dto.getAccountList().get(0).getBusinessType());  // 업무구분코드
+        accountMap1.put("clientType", dto.getAccountList().get(0).getClientType());   // 고객구분(P: 개인, B: 기업)
+        accountMap1.put("organization", dto.getAccountList().get(0).getOrganization());// 기관코드
+        accountMap1.put("loginType", dto.getAccountList().get(0).getLoginType());   // 로그인타입 (0: 인증서, 1: ID/PW)
+
+        String password1 = dto.getAccountList().get(0).getPassword();
+
+        try {
+            accountMap1.put("password", RSAUtil.encryptRSA(password1, CommonConstant.PUBLIC_KEY));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException |
+                 IllegalBlockSizeException | BadPaddingException e) {
+            throw new RuntimeException(e);
+        }    /**    password RSA encrypt */
+
+        if (dto.getAccountList().get(0).getLoginType().toString().equals("0")) {
+            accountMap1.put("keyFile", "BASE64로 Encoding된 엔드유저의 인증서 key파일 문자열");
+            accountMap1.put("derFile", "BASE64로 Encoding된 엔드유저의 인증서 der파일 문자열");
+        }
+
+        list.add(accountMap1);
+
+        bodyMap.put("accountList", list);
+
+        String connectedId = dto.getConnectedId();
+        bodyMap.put(CommonConstant.CONNECTED_ID, connectedId);
+
 
         String result = APIRequest.request(urlPath, bodyMap);
         log.info(result);

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountAddList;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountDeleteDTO;
 import project.fin_the_pen.codefAPI.dto.bank.individual.AccountList;
+import project.fin_the_pen.codefAPI.dto.bank.individual.AccountUpdateDTO;
 import project.fin_the_pen.codefAPI.repository.TokenRepository;
 import project.fin_the_pen.data.token.Token;
 
@@ -65,5 +66,12 @@ public class ConnectedService {
      */
     public void accountDelete(AccountDeleteDTO dto) throws IOException, ParseException, InterruptedException {
         logic.accountDelete(dto);
+    }
+
+    /**
+     * 계정 수정
+     */
+    public void accountUpdate(AccountUpdateDTO dto) throws IOException, ParseException, InterruptedException {
+        logic.accountUpdate(dto);
     }
 }

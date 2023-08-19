@@ -7,5 +7,5 @@ import java.util.List;
 
 @Getter
 public class AccountList {
-    private List<createDTO> accountList = new ArrayList<>();
+    private List<CreateDTO> accountList = new ArrayList<>();
 }

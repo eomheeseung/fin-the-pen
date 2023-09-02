@@ -2,9 +2,9 @@ package project.fin_the_pen.finClient.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.finClient.data.member.User;
-import project.fin_the_pen.finClient.data.member.UserRequestDTO;
-import project.fin_the_pen.finClient.data.member.UserResponseDTO;
+import project.fin_the_pen.finClient.data.user.User;
+import project.fin_the_pen.finClient.data.user.UserRequestDTO;
+import project.fin_the_pen.finClient.data.user.UserResponseDTO;
 import project.fin_the_pen.finClient.repository.LoginRepository;
 
 import java.util.List;

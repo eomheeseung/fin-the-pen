@@ -15,6 +15,16 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+/*
+TODO
+ 1.
+ 모든 api를 호출할 때 connectedId를 수동으로 입력했는데 이제는 db에 있는 값을 꺼내서 쓰기 때문에
+ 모든 controller에 대한 dto들을 수정해야 함.
+ How) connectedID 상수를 쓰던지 해서....
+ 2.
+ connectedId를 유저별로 어떻게 가져올 것인지
+ Ex) 하나의 테이블에 connectedId를 넣어놓는다고 하면 유저가 3명일때 어떻게 구분하여 쿼리로 가져올 것인지
+ */
 public class Bank2Controller {
     private final Bank2APIService bank2APIService;
     /**

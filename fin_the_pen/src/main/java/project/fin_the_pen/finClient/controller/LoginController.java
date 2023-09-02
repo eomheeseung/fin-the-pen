@@ -3,9 +3,9 @@ package project.fin_the_pen.finClient.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import project.fin_the_pen.finClient.data.member.User;
-import project.fin_the_pen.finClient.data.member.UserRequestDTO;
-import project.fin_the_pen.finClient.data.member.UserResponseDTO;
+import project.fin_the_pen.finClient.data.user.User;
+import project.fin_the_pen.finClient.data.user.UserRequestDTO;
+import project.fin_the_pen.finClient.data.user.UserResponseDTO;
 import project.fin_the_pen.finClient.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;

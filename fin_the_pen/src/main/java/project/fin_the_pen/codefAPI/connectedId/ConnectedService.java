@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountAddList;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountDeleteDTO;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountList;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountUpdateDTO;
+import project.fin_the_pen.codefAPI.dto.bank.individual.*;
 import project.fin_the_pen.codefAPI.repository.TokenRepository;
 import project.fin_the_pen.finClient.data.token.Token;
 
@@ -18,6 +15,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ConcurrentModificationException;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -49,7 +47,7 @@ public class ConnectedService {
         } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
                  InvalidKeySpecException | BadPaddingException | InvalidKeyException | IOException | ParseException |
                  InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new ConcurrentModificationException("connect error");
         }
         /*token = tokenRepository.findOneToken();
         apiLogic.accountRegister(token.getAccessToken());*/
@@ -81,5 +79,12 @@ public class ConnectedService {
      */
     public void accountOutputList(ConcurrentHashMap<String,String> map) {
         logic.accountOutputList(map);
+    }
+
+    /**
+     * 계정 추가 - 레퍼런스
+     */
+    public void accountReferenceAdd(AccountReferenceAddList list) {
+        logic.accountReferenceAdd(list);
     }
 }

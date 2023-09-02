@@ -3,9 +3,11 @@ package project.fin_the_pen.codefAPI.dto.bank.individual;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
+@Setter
 public class CreateDTO implements IndividualDTO {
     @Builder
     public CreateDTO(String countryCode, String businessType, String clientType, String organization, String loginType, String id, String password, String birthDate, String loginTypeLevel, String clientTypeLevel, String cardNo, String cardPassword) {

@@ -4,15 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.codefAPI.connectedId.ConnectedService;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountAddList;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountDeleteDTO;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountList;
-import project.fin_the_pen.codefAPI.dto.bank.individual.AccountUpdateDTO;
+import project.fin_the_pen.codefAPI.dto.bank.individual.*;
 import project.fin_the_pen.codefAPI.service.CodefPublishTokenService;
 import project.fin_the_pen.codefAPI.service.bank.CodefIndIndividualService;
+import project.fin_the_pen.customException.ConnectedSaveException;
 import project.fin_the_pen.finClient.data.token.Token;
 
 import java.io.IOException;
@@ -54,9 +53,33 @@ public class InitController {
      *
      * @param list
      */
-    @GetMapping("codef/accountCreate")
+//    @GetMapping("codef/accountCreate")
     public void codefAccountCreate(@RequestBody AccountList list) {
         connectedService.accountCreate(list);
+    }
+
+    /**
+     * connectedId 발급 front 연동
+     */
+    @PostMapping("codef/accountCreate")
+    public boolean codeAccountCreate(@RequestBody AccountList list) {
+        log.info(list.getAccountList().get(0).getId());
+
+        List<CreateDTO> innerList = list.getAccountList();
+
+        for (CreateDTO createDTO : innerList) {
+            createDTO.setCountryCode("KR");
+            createDTO.setLoginType("1");
+            createDTO.setClientType("P");
+        }
+
+        try {
+            // 성공하면 true, 실패하면 false
+            connectedService.accountCreate(list);
+            return true;
+        } catch (ConnectedSaveException e) {
+            return false;
+        }
     }
 
     /**
@@ -88,7 +111,15 @@ public class InitController {
      * 계정 목록
      */
     @GetMapping("/codef/account/list")
-    public void codefAccountList(@RequestBody ConcurrentHashMap<String,String> map) {
+    public void codefAccountList(@RequestBody ConcurrentHashMap<String, String> map) {
         connectedService.accountOutputList(map);
+    }
+
+    /**
+     * 계정 추가 (레퍼런스)
+     */
+    @GetMapping("codef/account/reference-add")
+    public void codefAccountReferenceAdd(@RequestBody AccountReferenceAddList list) {
+        connectedService.accountReferenceAdd(list);
     }
 }

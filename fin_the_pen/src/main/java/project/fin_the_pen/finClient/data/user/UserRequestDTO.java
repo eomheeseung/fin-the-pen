@@ -1,4 +1,4 @@
-package project.fin_the_pen.finClient.data.member;
+package project.fin_the_pen.finClient.data.user;
 
 import lombok.Data;
 

@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.Rollback;
 import project.fin_the_pen.finClient.controller.ScheduleController;
-import project.fin_the_pen.finClient.data.member.UserResponseDTO;
+import project.fin_the_pen.finClient.data.user.UserResponseDTO;
 import project.fin_the_pen.login.LoginTest;
 
 import javax.annotation.PostConstruct;

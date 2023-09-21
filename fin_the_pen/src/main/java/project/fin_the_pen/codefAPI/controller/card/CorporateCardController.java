@@ -20,7 +20,7 @@ public class CorporateCardController {
     /**
      * 당일 승인내역
      */
-    @GetMapping("codef/the-day-approval-list")
+    @GetMapping("/codef/the-day-approval-list")
     public String cardTheDayApprovalList(@RequestBody CardDayApprovalListDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardCorporateService.cardDayApproval(dto);
         return result;
@@ -29,7 +29,7 @@ public class CorporateCardController {
     /**
      * 매입내역
      */
-    @GetMapping("codef/account/purchase-details")
+    @GetMapping("/codef/account/purchase-details")
     public String cardPurchaseDetails(@RequestBody CardPurchaseDetailsDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardCorporateService.cardPurchaseDetails(dto);
         return result;
@@ -38,7 +38,7 @@ public class CorporateCardController {
     /**
      * 보유카드
      */
-    @GetMapping("codef/account/card-list")
+    @GetMapping("/codef/account/card-list")
     public String CardCorporateList(@RequestBody CardCorporateListDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardCorporateService.corporateList(dto);
         return result;
@@ -47,7 +47,7 @@ public class CorporateCardController {
     /**
      * 기업 승인내역
      */
-    @GetMapping("codef/account/approval-list")
+    @GetMapping("/codef/account/approval-list")
     public String corporateApproval(@RequestBody CorporateApprovalDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardCorporateService.cardApproval(dto);
         return result;
@@ -65,7 +65,7 @@ public class CorporateCardController {
     /**
      * 한도조회
      */
-    @GetMapping("codef/corporate/account/limit")
+    @GetMapping("/codef/corporate/account/limit")
     public String corporateAccountLimit(@RequestBody CorporateLimitDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardCorporateService.corporateLimit(dto);
         return result;
@@ -74,7 +74,7 @@ public class CorporateCardController {
     /**
      * 가맹점번호 조회
      */
-    @GetMapping("codef/corporate-number")
+    @GetMapping("/codef/corporate/number/inquiry")
     public String corporateNumber(@RequestBody CorporateNumberDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardCorporateService.corporateNumber(dto);
         return result;

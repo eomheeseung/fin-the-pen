@@ -2,6 +2,7 @@ package project.fin_the_pen.finClient.data.schedule;
 
 import lombok.Builder;
 import lombok.Data;
+import project.fin_the_pen.finClient.data.schedule.type.ScheduleType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,8 +16,9 @@ public class Schedule {
 
     @Builder
     public Schedule(String id, String userId, String eventName, boolean alarm, String date, String startTime,
-                    String endTime, String category, String type, int expectedSpending, String repeatingCycle,
+                    String endTime, String category, ScheduleType type, int expectedSpending, String repeatingCycle,
                     String repeatDeadline, String repeatEndDate, boolean exclusion, String importance) {
+
         this.id = id;
         this.userId = userId;
         this.eventName = eventName;
@@ -33,6 +35,7 @@ public class Schedule {
         this.exclusion = exclusion;
         this.importance = importance;
     }
+
     @Id
     @Column(name = "id")
     private String id;
@@ -59,13 +62,14 @@ public class Schedule {
     private String category;
 
     @Column(name = "type")
-    private String type;
+    private ScheduleType type;
 
     @Column(name = "expected_spending")
     private int expectedSpending;
 
     @Column(name = "repeating_cycle")
     private String repeatingCycle;
+
     @Column(name = "repeat_deadline")
     private String repeatDeadline;
 

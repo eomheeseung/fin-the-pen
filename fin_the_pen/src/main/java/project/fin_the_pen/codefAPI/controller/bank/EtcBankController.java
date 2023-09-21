@@ -21,7 +21,7 @@ public class EtcBankController {
     /**
      * 계좌인증 (1원 이체)
      */
-    @GetMapping("codef/account-authentication")
+    @GetMapping("/codef/account-authentication")
     public String accountAuthentication(@RequestBody AuthenticationDTO dto) throws IOException, ParseException, InterruptedException {
         String result = etcAPIService.authentication(dto);
         return result;
@@ -30,7 +30,7 @@ public class EtcBankController {
     /**
      * 예금주명
      */
-    @GetMapping("codef/holder")
+    @GetMapping("/codef/holder")
     public String holder(@RequestBody HolderDTO dto) throws IOException, ParseException, InterruptedException {
         String result = etcAPIService.holder(dto);
         return result;
@@ -39,7 +39,7 @@ public class EtcBankController {
     /**
      * 예금주명 인증 (계좌 실명 인증)
      */
-    @GetMapping("codef/holder-authentication")
+    @GetMapping("/codef/holder-authentication")
     public String holderAuthentication(@RequestBody HolderAuthDTO dto) throws IOException, ParseException, InterruptedException {
         String result = etcAPIService.holderAuth(dto);
         return result;

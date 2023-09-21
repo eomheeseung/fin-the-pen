@@ -97,7 +97,7 @@ public class BankController {
     /**
      * 수시입출 과거 거래내역
      */
-    @GetMapping("codef/occasionalPast")
+    @GetMapping("/codef/occasionalPast")
     public String occasionalPast(@RequestBody OccasionalPastDTO dto) throws IOException, ParseException, InterruptedException {
         String result = apiService.occasionalPast(dto);
         return result;
@@ -106,7 +106,7 @@ public class BankController {
     /**
      * 적금 거래내역
      */
-    @GetMapping("codef/saving-transaction")
+    @GetMapping("/codef/saving-transaction")
     public String savingTransaction(@RequestBody SavingTransactionDTO dto) throws IOException, ParseException, InterruptedException {
         String result = apiService.savingTransaction(dto);
         return result;

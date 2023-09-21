@@ -84,7 +84,7 @@ public class ConnectedService {
     /**
      * 계정 추가 - 레퍼런스
      */
-    public void accountReferenceAdd(AccountReferenceAddList list) {
+    public void accountReferenceAdd(AccountReferenceAddList list) throws IOException, ParseException, InterruptedException {
         logic.accountReferenceAdd(list);
     }
 }

@@ -61,7 +61,7 @@ public class InitController {
     /**
      * connectedId 발급 front 연동
      */
-    @PostMapping("codef/accountCreate")
+    @PostMapping("/codef/accountCreate")
     public boolean codeAccountCreate(@RequestBody AccountList list) {
         log.info(list.getAccountList().get(0).getId());
 
@@ -118,8 +118,9 @@ public class InitController {
     /**
      * 계정 추가 (레퍼런스)
      */
-    @GetMapping("codef/account/reference-add")
-    public void codefAccountReferenceAdd(@RequestBody AccountReferenceAddList list) {
+    @PostMapping("/codef/account/reference-add")
+    public void codefAccountReferenceAdd(@RequestBody AccountReferenceAddList list)
+            throws IOException, ParseException, InterruptedException {
         connectedService.accountReferenceAdd(list);
     }
 }

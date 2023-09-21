@@ -7,11 +7,13 @@ import org.springframework.stereotype.Repository;
 import project.fin_the_pen.finClient.data.schedule.Schedule;
 
 import java.util.List;
-import java.util.UUID;
 
-// <T Entity, ID>
+/*
+<T Entity, ID>
+JpaRepository 내부에 @Transactional 존재
+ */
 @Repository
-public interface CRUDScheduleRepository extends JpaRepository<Schedule, UUID> {
+public interface CRUDScheduleRepository extends JpaRepository<Schedule, String> {
     @Query("SELECT s FROM Schedule s WHERE s.date LIKE CONCAT('%',:date,'%') and s.userId = :userId")
     List<Schedule> findByMonthSchedule(@Param("date") String date, @Param("userId") String userId);
 

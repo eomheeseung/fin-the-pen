@@ -30,8 +30,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class ConnectedLogic {
     private final ConnectedRepository connectedRepository;
+
     /**
      * connectedId 발급
+     *
      * @param dto
      * @throws NoSuchPaddingException
      * @throws IllegalBlockSizeException
@@ -96,6 +98,7 @@ public class ConnectedLogic {
 
         IndividualConnectedID individualConnectedID = new IndividualConnectedID();
         individualConnectedID.setConnectedId(innerJson.get("connectedId").toString());
+
 
         connectedRepository.save(individualConnectedID);
     }
@@ -261,9 +264,10 @@ public class ConnectedLogic {
     /**
      * 계정 출력
      * 등록된 커넥티드 아이디의 계정 목록을 요청.
+     *
      * @param
      */
-    public void accountOutputList(ConcurrentHashMap<String,String> map) {
+    public void accountOutputList(ConcurrentHashMap<String, String> map) {
         String urlPath = CommonConstant.TEST_DOMAIN + CommonConstant.GET_ACCOUNTS;
 
         HashMap<String, Object> bodyMap = new HashMap<String, Object>();
@@ -286,10 +290,10 @@ public class ConnectedLogic {
      * 현재 저장되어 있는 정보(countryCode...)와 추가할 정보(list안에 있는 countryCode..)가 request이름은 같아도 서로 다르다!!
      *
      */
-    public void accountReferenceAdd(AccountReferenceAddList addList) {
+    /*public void accountReferenceAdd(AccountReferenceAddList addList) {
         String urlPath = CommonConstant.TEST_DOMAIN + "/v1/account/reference-add";
 
-        List<CreateDTO> accountList = addList.getAccountList();
+        List<ReferenceAddDTO> accountList = addList.getAccountList();
 
         addList.getAccountList().add(accountList.stream().iterator().next());
 
@@ -311,7 +315,11 @@ public class ConnectedLogic {
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException |
                  IllegalBlockSizeException | BadPaddingException e) {
             throw new RuntimeException(e);
-        }    /**    password RSA encrypt */
+        }    */
+
+    /**
+     * password RSA encrypt
+     *//*
 
         if (addList.getAccountList().get(0).getLoginType().toString().equals("0")) {
             accountMap1.put("keyFile", "BASE64로 Encoding된 엔드유저의 인증서 key파일 문자열");
@@ -332,5 +340,24 @@ public class ConnectedLogic {
         } catch (Exception e) {
             throw new RuntimeException("fail");
         }
+    }*/
+    public void accountReferenceAdd(AccountReferenceAddList addList) throws IOException, ParseException, InterruptedException {
+        String urlPath = CommonConstant.TEST_DOMAIN + "/v1/account/reference-add";
+
+        HashMap<String, Object> registerMap = getRegisterMap(new HashMap<>(), addList);
+
+        String result = APIRequest.request(urlPath, registerMap);
+        log.info(result);
+    }
+
+    private HashMap<String, Object> getRegisterMap(HashMap<String, Object> map, AccountReferenceAddList list) {
+        map.put("connectedId",list.getConnectedId());
+        map.put("countryCode", list.getCountryCode());
+        map.put("businessType", list.getBusinessType());
+        map.put("organization", list.getOrganization());
+        map.put("clientType", list.getClientType());
+
+        map.put("accountList", list.getAccountList());
+        return map;
     }
 }

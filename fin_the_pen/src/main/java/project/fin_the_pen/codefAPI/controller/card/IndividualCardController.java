@@ -26,7 +26,7 @@ public class IndividualCardController {
      * @throws ParseException
      * @throws InterruptedException
      */
-    @GetMapping("codef/card/member-store/detail")
+    @GetMapping("/codef/card/member-store/detail")
     public String cardMemberStoreDetail(@RequestBody CardMemberStoreDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.memberStoreDetail(dto);
         return result;
@@ -41,7 +41,7 @@ public class IndividualCardController {
      * @throws ParseException
      * @throws InterruptedException
      */
-    @GetMapping("codef/card/member_store/bulk")
+    @GetMapping("/codef/card/member-store/bulk")
     public String cardMemberStoreBulk(@RequestBody CardMemberStoreBulkDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.memberStoreBulk(dto);
         return result;
@@ -51,7 +51,7 @@ public class IndividualCardController {
      * 등록여부
      * 현대카드 : 0302, 우리카드 : 0309, KB카드 : 0301
      */
-    @GetMapping("codef/card/user/registration-status")
+    @GetMapping("/codef/card/user/registration-status")
     public String cardUserRegistrationStatus(@RequestBody CardRegistrationStatusDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.cardRegistration(dto);
         return result;
@@ -60,7 +60,7 @@ public class IndividualCardController {
     /**
      * 보유카드
      */
-    @GetMapping("codef/card/account/card-list")
+    @GetMapping("/codef/card/account/card-list")
     public String cardAccountList(@RequestBody CardAccountListDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.cardAccountList(dto);
         return result;
@@ -69,7 +69,7 @@ public class IndividualCardController {
     /**
      * 개인 승인내역
      */
-    @GetMapping("codef/card/approval-list")
+    @GetMapping("/codef/card/approval-list")
     public String cardApprovalList(@RequestBody CardApprovalListDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.cardApprovalList(dto);
         return result;
@@ -78,7 +78,7 @@ public class IndividualCardController {
     /**
      * 실적조회
      */
-    @GetMapping("codef/card/result-check-list")
+    @GetMapping("/codef/card/result-check-list")
     public String cardResultCheckList(@RequestBody CardResultCheckListDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.cardResultCheckList(dto);
         return result;
@@ -87,7 +87,7 @@ public class IndividualCardController {
     /**
      * 청구내역
      */
-    @GetMapping("codef/card/billing-list")
+    @GetMapping("/codef/card/billing-list")
     public String cardBillingList(@RequestBody CardBillingListDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.cardBillingList(dto);
         return result;
@@ -96,7 +96,7 @@ public class IndividualCardController {
     /**
      * 한도조회
      */
-    @GetMapping("codef/card/account/limit")
+    @GetMapping("/codef/card/account/limit")
     public String cardAccountLimit(@RequestBody CardAccountLimitDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.cardAccountLimit(dto);
         return result;
@@ -105,7 +105,7 @@ public class IndividualCardController {
     /**
      * 후불하이패스 이용내역
      */
-    @GetMapping("codef/deferred-payment/hi-pass")
+    @GetMapping("/codef/deferred-payment/hi-pass")
     public String cardHiPass(@RequestBody CardHiPassDTO dto) throws IOException, ParseException, InterruptedException {
         String result = cardIndividualService.cardHiPass(dto);
         return result;

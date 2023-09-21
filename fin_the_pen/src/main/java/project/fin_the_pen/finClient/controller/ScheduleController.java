@@ -25,6 +25,7 @@ public class ScheduleController {
     public boolean registerSchedule(@RequestBody ScheduleRequestDTO scheduleRequestDTO, HttpSession session) {
         scheduleRequestDTO.setUserId(session.getAttribute("session").toString());
         log.info(session.getAttribute("session").toString());
+
         try {
             scheduleService.registerSchedule(scheduleRequestDTO);
         } catch (Exception e) {
@@ -59,7 +60,6 @@ public class ScheduleController {
     }
 
     @PostMapping("/deleteSchedule")
-//    @ResponseBody
     public boolean deleteSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("id"));
         if (scheduleService.deleteSchedule(map.get("id"))) {
@@ -70,7 +70,6 @@ public class ScheduleController {
     }
 
     @PostMapping("/getMonthSchedules")
-//    @ResponseBody
     public String findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
         return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id")).toString();
@@ -86,7 +85,11 @@ public class ScheduleController {
     @ResponseBody
     public ScheduleResponseDTO findOne(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(String.valueOf(map.get("id")));
-        return scheduleService.findOne(map.get("id"));
+
+        ScheduleResponseDTO find = scheduleService.findOne(map.get("id"));
+        log.info(find.getId());
+
+        return find;
     }
 
     @PostMapping("/findCategory")

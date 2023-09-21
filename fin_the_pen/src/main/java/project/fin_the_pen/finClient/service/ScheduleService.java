@@ -1,25 +1,46 @@
 package project.fin_the_pen.finClient.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
+import project.fin_the_pen.finClient.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.data.schedule.category.CategoryRequestDTO;
+import project.fin_the_pen.finClient.data.schedule.type.ScheduleType;
 import project.fin_the_pen.finClient.repository.ScheduleRepository;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
     public Boolean registerSchedule(ScheduleRequestDTO scheduleRequestDTO) {
         try {
-            scheduleRepository.registerSchedule(scheduleRequestDTO);
+            if (scheduleRequestDTO.getType().equals("+")) {
+                isType(scheduleRequestDTO, (dto) ->
+                        scheduleRepository.registerSchedule(scheduleRequestDTO, ScheduleType.Deposit));
+            } else {
+                isType(scheduleRequestDTO, (dto) ->
+                        scheduleRepository.registerSchedule(scheduleRequestDTO, ScheduleType.Withdraw));
+            }
+
         } catch (Exception e) {
             return null;
         }
         return true;
+    }
+
+    /**
+     * template callback
+     *
+     * @param scheduleRequestDTO
+     * @param callback
+     */
+    private void isType(ScheduleRequestDTO scheduleRequestDTO, ScheduleTypeFunc callback) {
+        callback.callbackMethod(scheduleRequestDTO);
     }
 
     public JSONArray findAllSchedule(String id) {

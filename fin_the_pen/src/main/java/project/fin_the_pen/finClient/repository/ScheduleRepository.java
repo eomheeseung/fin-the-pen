@@ -9,34 +9,30 @@ import project.fin_the_pen.finClient.data.schedule.Schedule;
 import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
 import project.fin_the_pen.finClient.data.schedule.category.CategoryRequestDTO;
+import project.fin_the_pen.finClient.data.schedule.type.ScheduleType;
+import project.fin_the_pen.finClient.util.ScheduleTypeFunc;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-@Transactional
 @Slf4j
 @RequiredArgsConstructor
 public class ScheduleRepository {
-    @PersistenceContext
-    EntityManager entityManager;
-
     private final CRUDScheduleRepository repository;
 
-    public Boolean registerSchedule(ScheduleRequestDTO scheduleRequestDTO) {
+    public Boolean registerSchedule(ScheduleRequestDTO dto, ScheduleType scheduleType) {
         try {
-            Schedule schedule = new Schedule(scheduleRequestDTO.getId(), scheduleRequestDTO.getUserId(),
-                    scheduleRequestDTO.getEventName(), scheduleRequestDTO.isAlarm(), scheduleRequestDTO.getDate(),
-                    scheduleRequestDTO.getStartTime(), scheduleRequestDTO.getEndTime(), scheduleRequestDTO.getCategory(),
-                    scheduleRequestDTO.getType(), scheduleRequestDTO.getExpectedSpending(), scheduleRequestDTO.getRepeatingCycle(),
-                    scheduleRequestDTO.getRepeatDeadLine(), scheduleRequestDTO.getRepeatEndDate(),
-                    scheduleRequestDTO.isExclusion(), scheduleRequestDTO.getImportance());
-            entityManager.persist(schedule);
+            Schedule schedule = Schedule.builder().id(dto.getId()).userId(dto.getUserId())
+                    .eventName(dto.getEventName()).alarm(dto.isAlarm()).date(dto.getDate())
+                    .startTime(dto.getStartTime()).endTime(dto.getEndTime()).category(dto.getCategory())
+                    .type(scheduleType).expectedSpending(dto.getExpectedSpending()).repeatingCycle(dto.getRepeatingCycle())
+                    .repeatDeadline(dto.getRepeatDeadLine()).repeatEndDate(dto.getRepeatEndDate())
+                    .exclusion(dto.isExclusion()).importance(dto.getImportance()).build();
+
+            repository.save(schedule);
             log.info(schedule.getUserId());
+
         } catch (Exception e) {
             return null;
         }
@@ -123,6 +119,7 @@ public class ScheduleRepository {
         return scheduleResponseDTO;
     }
 
+
     public boolean modifySchedule(ScheduleRequestDTO scheduleRequestDTO) {
         Schedule findSchedule = getSingleSchedule(scheduleRequestDTO.getId());
 
@@ -139,16 +136,36 @@ public class ScheduleRepository {
                 findSchedule.setRepeatDeadline(scheduleRequestDTO.getRepeatDeadLine());
                 findSchedule.setRepeatEndDate(scheduleRequestDTO.getRepeatEndDate());
                 findSchedule.setCategory(scheduleRequestDTO.getCategory());
-                findSchedule.setType(scheduleRequestDTO.getType());
+
+                isType(scheduleRequestDTO, dto -> {
+                    if (dto.getType().equals("+")) {
+                        findSchedule.setType(ScheduleType.Deposit);
+                    } else {
+                        findSchedule.setType(ScheduleType.Withdraw);
+                    }
+                });
+
+
                 findSchedule.setExpectedSpending(scheduleRequestDTO.getExpectedSpending());
                 findSchedule.setImportance(scheduleRequestDTO.getImportance());
                 findSchedule.setExclusion(scheduleRequestDTO.isExclusion());
-                entityManager.merge(findSchedule);
+//                entityManager.merge(findSchedule);
+                repository.save(findSchedule);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return true;
+    }
+
+    /**
+     * callback method
+     * enum type에 따라서 다르게 overriding
+     * @param dto
+     * @param callBack
+     */
+    private void isType(ScheduleRequestDTO dto, ScheduleTypeFunc callBack) {
+        callBack.callbackMethod(dto);
     }
 
     public JSONArray findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
@@ -173,10 +190,7 @@ public class ScheduleRepository {
     }
 
     private Schedule getSingleSchedule(String uuid) {
-        return repository.findById(UUID.fromString(uuid)).get();
-        /*return entityManager.createQuery("select s from Schedule s where s.id =: uuid", Schedule.class)
-                .setParameter("uuid", uuid)
-                .getSingleResult();*/
+        return repository.findById(uuid).get();
     }
 
     private JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, JSONArray jsonArray) {

@@ -2,12 +2,17 @@ package project.fin_the_pen.finClient.data.schedule;
 
 import lombok.Builder;
 import lombok.Data;
+import project.fin_the_pen.finClient.data.schedule.type.PriceType;
 import project.fin_the_pen.finClient.data.schedule.type.ScheduleType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * master table 개념
+ * why) key를 string으로 했지..?
+ */
 @Entity
 @Data
 public class Schedule {
@@ -16,9 +21,8 @@ public class Schedule {
 
     @Builder
     public Schedule(String id, String userId, String eventName, boolean alarm, String date, String startTime,
-                    String endTime, String category, ScheduleType type, int expectedSpending, String repeatingCycle,
+                    String endTime, String category, PriceType type, int expectedSpending, String repeatingCycle,
                     String repeatDeadline, String repeatEndDate, boolean exclusion, String importance) {
-
         this.id = id;
         this.userId = userId;
         this.eventName = eventName;
@@ -62,7 +66,7 @@ public class Schedule {
     private String category;
 
     @Column(name = "type")
-    private ScheduleType type;
+    private PriceType type;
 
     @Column(name = "expected_spending")
     private int expectedSpending;
@@ -81,4 +85,8 @@ public class Schedule {
 
     @Column(name = "importance")
     private String importance;
+
+    // ScheduleType로 하나 만들어야 함.
+    @Column(name = "schedule_type")
+    private ScheduleType scheduleType;
 }

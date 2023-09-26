@@ -9,7 +9,7 @@ import project.fin_the_pen.finClient.data.schedule.Schedule;
 import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
 import project.fin_the_pen.finClient.data.schedule.category.CategoryRequestDTO;
-import project.fin_the_pen.finClient.data.schedule.type.ScheduleType;
+import project.fin_the_pen.finClient.data.schedule.type.PriceType;
 import project.fin_the_pen.finClient.util.ScheduleTypeFunc;
 
 import java.util.ArrayList;
@@ -21,12 +21,12 @@ import java.util.List;
 public class ScheduleRepository {
     private final CRUDScheduleRepository repository;
 
-    public Boolean registerSchedule(ScheduleRequestDTO dto, ScheduleType scheduleType) {
+    public Boolean registerSchedule(ScheduleRequestDTO dto, PriceType priceType) {
         try {
             Schedule schedule = Schedule.builder().id(dto.getId()).userId(dto.getUserId())
                     .eventName(dto.getEventName()).alarm(dto.isAlarm()).date(dto.getDate())
                     .startTime(dto.getStartTime()).endTime(dto.getEndTime()).category(dto.getCategory())
-                    .type(scheduleType).expectedSpending(dto.getExpectedSpending()).repeatingCycle(dto.getRepeatingCycle())
+                    .type(priceType).expectedSpending(dto.getExpectedSpending()).repeatingCycle(dto.getRepeatingCycle())
                     .repeatDeadline(dto.getRepeatDeadLine()).repeatEndDate(dto.getRepeatEndDate())
                     .exclusion(dto.isExclusion()).importance(dto.getImportance()).build();
 
@@ -139,9 +139,9 @@ public class ScheduleRepository {
 
                 isType(scheduleRequestDTO, dto -> {
                     if (dto.getType().equals("+")) {
-                        findSchedule.setType(ScheduleType.Deposit);
+                        findSchedule.setType(PriceType.Deposit);
                     } else {
-                        findSchedule.setType(ScheduleType.Withdraw);
+                        findSchedule.setType(PriceType.Withdraw);
                     }
                 });
 

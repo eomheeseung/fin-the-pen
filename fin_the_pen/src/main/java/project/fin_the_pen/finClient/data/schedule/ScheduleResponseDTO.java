@@ -2,7 +2,7 @@ package project.fin_the_pen.finClient.data.schedule;
 
 import lombok.Builder;
 import lombok.Data;
-import project.fin_the_pen.finClient.data.schedule.type.ScheduleType;
+import project.fin_the_pen.finClient.data.schedule.type.PriceType;
 
 @Data
 @Builder
@@ -23,7 +23,7 @@ public class ScheduleResponseDTO {
     TODO
      1. response 할 때 어떻게 보여줄지..
      */
-    private ScheduleType type;
+    private PriceType type;
 
     private int expectedSpending;
     private boolean exclusion;

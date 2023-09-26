@@ -8,7 +8,7 @@ import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
 import project.fin_the_pen.finClient.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.data.schedule.category.CategoryRequestDTO;
-import project.fin_the_pen.finClient.data.schedule.type.ScheduleType;
+import project.fin_the_pen.finClient.data.schedule.type.PriceType;
 import project.fin_the_pen.finClient.repository.ScheduleRepository;
 
 @Service
@@ -21,10 +21,10 @@ public class ScheduleService {
         try {
             if (scheduleRequestDTO.getType().equals("+")) {
                 isType(scheduleRequestDTO, (dto) ->
-                        scheduleRepository.registerSchedule(scheduleRequestDTO, ScheduleType.Deposit));
+                        scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Deposit));
             } else {
                 isType(scheduleRequestDTO, (dto) ->
-                        scheduleRepository.registerSchedule(scheduleRequestDTO, ScheduleType.Withdraw));
+                        scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Withdraw));
             }
 
         } catch (Exception e) {

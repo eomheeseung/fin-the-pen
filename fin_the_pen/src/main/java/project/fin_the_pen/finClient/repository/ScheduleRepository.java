@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
+import project.fin_the_pen.finClient.data.schedule.RegularSchedule;
 import project.fin_the_pen.finClient.data.schedule.Schedule;
 import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
 import project.fin_the_pen.finClient.data.schedule.category.CategoryRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.type.PriceType;
+import project.fin_the_pen.finClient.data.schedule.type.RegularType;
 import project.fin_the_pen.finClient.util.ScheduleTypeFunc;
 
 import java.util.ArrayList;
@@ -20,13 +22,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleRepository {
     private final CRUDScheduleRepository repository;
+    private final CRUDRegularScheduleRepository regularScheduleRepository;
 
-    public Boolean registerSchedule(ScheduleRequestDTO dto, PriceType priceType) {
+    public Boolean registerSchedule(ScheduleRequestDTO dto, PriceType priceType, RegularType regularType) {
         try {
             Schedule schedule = Schedule.builder().id(dto.getId()).userId(dto.getUserId())
                     .eventName(dto.getEventName()).alarm(dto.isAlarm()).date(dto.getDate())
                     .startTime(dto.getStartTime()).endTime(dto.getEndTime()).category(dto.getCategory())
-                    .type(priceType).expectedSpending(dto.getExpectedSpending()).repeatingCycle(dto.getRepeatingCycle())
+                    .priceType(priceType).regularType(regularType).expectedSpending(dto.getExpectedSpending()).repeatingCycle(dto.getRepeatingCycle())
                     .repeatDeadline(dto.getRepeatDeadLine()).repeatEndDate(dto.getRepeatEndDate())
                     .exclusion(dto.isExclusion()).importance(dto.getImportance()).build();
 
@@ -110,7 +113,7 @@ public class ScheduleRepository {
                 .repeatDeadline(findSchedule.getRepeatDeadline())
                 .repeatEndDate(findSchedule.getRepeatEndDate())
                 .category(findSchedule.getCategory())
-                .type(findSchedule.getType())
+                .type(findSchedule.getPriceType())
                 .expectedSpending(findSchedule.getExpectedSpending())
                 .importance(findSchedule.getImportance())
                 .exclusion(findSchedule.isExclusion())
@@ -126,34 +129,72 @@ public class ScheduleRepository {
         if (findSchedule == null) {
             return false;
         } else {
-            try {
-                findSchedule.setEventName(scheduleRequestDTO.getEventName());
-                findSchedule.setAlarm(scheduleRequestDTO.isAlarm());
-                findSchedule.setDate(scheduleRequestDTO.getDate());
-                findSchedule.setStartTime(scheduleRequestDTO.getStartTime());
-                findSchedule.setEndTime(scheduleRequestDTO.getEndTime());
-                findSchedule.setRepeatingCycle(scheduleRequestDTO.getRepeatingCycle());
-                findSchedule.setRepeatDeadline(scheduleRequestDTO.getRepeatDeadLine());
-                findSchedule.setRepeatEndDate(scheduleRequestDTO.getRepeatEndDate());
-                findSchedule.setCategory(scheduleRequestDTO.getCategory());
+            if (!findSchedule.getRegularType().equals(RegularType.None)) {
+                RegularType regularType = null;
+                PriceType priceType = null;
 
-                isType(scheduleRequestDTO, dto -> {
-                    if (dto.getType().equals("+")) {
-                        findSchedule.setType(PriceType.Deposit);
-                    } else {
-                        findSchedule.setType(PriceType.Withdraw);
-                    }
-                });
+                if (scheduleRequestDTO.getRegularType().equals("deposit")) {
+                    regularType = RegularType.Deposit;
+                } else if (scheduleRequestDTO.getRegularType().equals("withdrawal")) {
+                    regularType = RegularType.Withdrawal;
+                }
+
+                if (scheduleRequestDTO.getPriceType().equals("+")) {
+                    priceType = PriceType.Plus;
+                } else if (scheduleRequestDTO.getRegularType().equals("withdrawal")) {
+                    priceType = PriceType.Minus;
+                }
 
 
-                findSchedule.setExpectedSpending(scheduleRequestDTO.getExpectedSpending());
-                findSchedule.setImportance(scheduleRequestDTO.getImportance());
-                findSchedule.setExclusion(scheduleRequestDTO.isExclusion());
+                RegularSchedule regularSchedule = RegularSchedule.builder().userId(findSchedule.getUserId())
+                        .scheduleId(findSchedule.getId())
+                        .eventName(scheduleRequestDTO.getEventName())
+                        .alarm(scheduleRequestDTO.isAlarm())
+                        .date(scheduleRequestDTO.getDate())
+                        .startTime(scheduleRequestDTO.getStartTime())
+                        .endTime(scheduleRequestDTO.getEndTime())
+                        .repeatingCycle(scheduleRequestDTO.getRepeatingCycle())
+                        .repeatDeadline(scheduleRequestDTO.getRepeatDeadLine())
+                        .repeatEndDate(scheduleRequestDTO.getRepeatEndDate())
+                        .category(scheduleRequestDTO.getCategory())
+                        .expectedSpending(scheduleRequestDTO.getExpectedSpending())
+                        .importance(scheduleRequestDTO.getImportance())
+                        .exclusion(scheduleRequestDTO.isExclusion())
+                        .regularType(regularType)
+                        .priceType(priceType).build();
+                regularScheduleRepository.save(regularSchedule);
+
+            } else {
+                try {
+                    findSchedule.setEventName(scheduleRequestDTO.getEventName());
+                    findSchedule.setAlarm(scheduleRequestDTO.isAlarm());
+                    findSchedule.setDate(scheduleRequestDTO.getDate());
+                    findSchedule.setStartTime(scheduleRequestDTO.getStartTime());
+                    findSchedule.setEndTime(scheduleRequestDTO.getEndTime());
+                    findSchedule.setRepeatingCycle(scheduleRequestDTO.getRepeatingCycle());
+                    findSchedule.setRepeatDeadline(scheduleRequestDTO.getRepeatDeadLine());
+                    findSchedule.setRepeatEndDate(scheduleRequestDTO.getRepeatEndDate());
+                    findSchedule.setCategory(scheduleRequestDTO.getCategory());
+
+                    isType(scheduleRequestDTO, dto -> {
+                        if (dto.getPriceType().equals("+")) {
+                            findSchedule.setPriceType(PriceType.Plus);
+                        } else {
+                            findSchedule.setPriceType(PriceType.Minus);
+                        }
+                    });
+
+
+                    findSchedule.setExpectedSpending(scheduleRequestDTO.getExpectedSpending());
+                    findSchedule.setImportance(scheduleRequestDTO.getImportance());
+                    findSchedule.setExclusion(scheduleRequestDTO.isExclusion());
 //                entityManager.merge(findSchedule);
-                repository.save(findSchedule);
-            } catch (Exception e) {
-                e.printStackTrace();
+                    repository.save(findSchedule);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+
         }
         return true;
     }
@@ -161,6 +202,7 @@ public class ScheduleRepository {
     /**
      * callback method
      * enum type에 따라서 다르게 overriding
+     *
      * @param dto
      * @param callBack
      */
@@ -203,7 +245,7 @@ public class ScheduleRepository {
                             .put("date", schedule.getDate())
                             .put("start_time", schedule.getStartTime())
                             .put("end_time", schedule.getEndTime())
-                            .put("type", schedule.getType())
+                            .put("type", schedule.getPriceType())
                             .put("repeating_cycle", schedule.getRepeatingCycle())
                             .put("repeat_deadline", schedule.getRepeatDeadline())
                             .put("repeat_endDate", schedule.getRepeatEndDate())

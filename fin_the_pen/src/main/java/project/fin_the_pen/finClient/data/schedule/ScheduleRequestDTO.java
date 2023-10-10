@@ -41,13 +41,15 @@ public class ScheduleRequestDTO {
     @JsonProperty(value = "category")
     private String category;
 
-
     /*
     TODO
      1. request를 front에서 받을 때 string 형태로 받음.
      */
     @JsonProperty(value = "type")
-    private String type;
+    private String priceType;
+
+    @JsonProperty(value = "regular_type")
+    private String regularType;
 
     @JsonProperty(value = "expected_spending")
     private int expectedSpending;

@@ -3,16 +3,18 @@ package project.fin_the_pen.finClient.data.schedule.type;
 import lombok.Getter;
 
 @Getter
-public enum PriceType {
-    Plus("plus", 0L),
+public enum RegularType {
+    None("none", 0L),
 
-    Minus("minus", 1L);
+    Deposit("deposit", 1L),
+
+    Withdrawal("withdrawal", 2L);
+
 
     private final String type;
-
     private final Long sortNum;
 
-    PriceType(String type, Long sortNum) {
+    RegularType(String type, Long sortNum) {
         this.type = type;
         this.sortNum = sortNum;
     }

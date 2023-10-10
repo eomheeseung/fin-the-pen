@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
+import project.fin_the_pen.finClient.data.schedule.type.RegularType;
 import project.fin_the_pen.finClient.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.data.schedule.category.CategoryRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.type.PriceType;
@@ -18,14 +19,34 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
     public Boolean registerSchedule(ScheduleRequestDTO scheduleRequestDTO) {
+        // 일정이 정기적인 일정인지 아닌지
         try {
-            if (scheduleRequestDTO.getType().equals("+")) {
-                isType(scheduleRequestDTO, (dto) ->
-                        scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Deposit));
-            } else {
-                isType(scheduleRequestDTO, (dto) ->
-                        scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Withdraw));
+            if (scheduleRequestDTO.getRegularType().equals("none")) {
+                if (scheduleRequestDTO.getPriceType().equals("+")) {
+                    isType(scheduleRequestDTO, (dto) ->
+                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.None));
+                } else {
+                    isType(scheduleRequestDTO, (dto) ->
+                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.None));
+                }
+            } else if (scheduleRequestDTO.getRegularType().equals("deposit")) {
+                if (scheduleRequestDTO.getPriceType().equals("+")) {
+                    isType(scheduleRequestDTO, (dto) ->
+                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.Deposit));
+                } else {
+                    isType(scheduleRequestDTO, (dto) ->
+                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.Deposit));
+                }
+            } else if (scheduleRequestDTO.getRegularType().equals("withdrawal")) {
+                if (scheduleRequestDTO.getPriceType().equals("+")) {
+                    isType(scheduleRequestDTO, (dto) ->
+                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.Withdrawal));
+                } else {
+                    isType(scheduleRequestDTO, (dto) ->
+                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.Withdrawal));
+                }
             }
+
 
         } catch (Exception e) {
             return null;

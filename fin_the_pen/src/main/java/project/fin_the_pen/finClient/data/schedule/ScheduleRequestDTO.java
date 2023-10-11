@@ -48,8 +48,8 @@ public class ScheduleRequestDTO {
     @JsonProperty(value = "type")
     private String priceType;
 
-    @JsonProperty(value = "regular_type")
-    private String regularType;
+    /*@JsonProperty(value = "regular_type")
+    private String regularType;*/
 
     @JsonProperty(value = "expected_spending")
     private int expectedSpending;

@@ -21,7 +21,7 @@ public class ScheduleService {
     public Boolean registerSchedule(ScheduleRequestDTO scheduleRequestDTO) {
         // 일정이 정기적인 일정인지 아닌지
         try {
-            if (scheduleRequestDTO.getRegularType().equals("none")) {
+            if (scheduleRequestDTO.getRepeatingCycle().equals("없음")) {
                 if (scheduleRequestDTO.getPriceType().equals("+")) {
                     isType(scheduleRequestDTO, (dto) ->
                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.None));
@@ -29,26 +29,19 @@ public class ScheduleService {
                     isType(scheduleRequestDTO, (dto) ->
                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.None));
                 }
-            } else if (scheduleRequestDTO.getRegularType().equals("deposit")) {
+            } else {
+                // +가 정기 입금이라고 하자.
                 if (scheduleRequestDTO.getPriceType().equals("+")) {
                     isType(scheduleRequestDTO, (dto) ->
                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.Deposit));
-                } else {
-                    isType(scheduleRequestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.Deposit));
-                }
-            } else if (scheduleRequestDTO.getRegularType().equals("withdrawal")) {
-                if (scheduleRequestDTO.getPriceType().equals("+")) {
-                    isType(scheduleRequestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.Withdrawal));
                 } else {
                     isType(scheduleRequestDTO, (dto) ->
                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.Withdrawal));
                 }
             }
 
-
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             return null;
         }
         return true;

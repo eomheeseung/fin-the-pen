@@ -29,7 +29,8 @@ public class ScheduleRepository {
             Schedule schedule = Schedule.builder().id(dto.getId()).userId(dto.getUserId())
                     .eventName(dto.getEventName()).alarm(dto.isAlarm()).date(dto.getDate())
                     .startTime(dto.getStartTime()).endTime(dto.getEndTime()).category(dto.getCategory())
-                    .priceType(priceType).regularType(regularType).expectedSpending(dto.getExpectedSpending()).repeatingCycle(dto.getRepeatingCycle())
+                    .priceType(priceType).regularType(regularType).expectedSpending(dto.getExpectedSpending())
+                    .repeatingCycle(dto.getRepeatingCycle())
                     .repeatDeadline(dto.getRepeatDeadLine()).repeatEndDate(dto.getRepeatEndDate())
                     .exclusion(dto.isExclusion()).importance(dto.getImportance()).build();
 
@@ -122,7 +123,6 @@ public class ScheduleRepository {
         return scheduleResponseDTO;
     }
 
-
     public boolean modifySchedule(ScheduleRequestDTO scheduleRequestDTO) {
         Schedule findSchedule = getSingleSchedule(scheduleRequestDTO.getId());
 
@@ -133,16 +133,14 @@ public class ScheduleRepository {
                 RegularType regularType = null;
                 PriceType priceType = null;
 
-                if (scheduleRequestDTO.getRegularType().equals("deposit")) {
-                    regularType = RegularType.Deposit;
-                } else if (scheduleRequestDTO.getRegularType().equals("withdrawal")) {
-                    regularType = RegularType.Withdrawal;
-                }
-
-                if (scheduleRequestDTO.getPriceType().equals("+")) {
-                    priceType = PriceType.Plus;
-                } else if (scheduleRequestDTO.getRegularType().equals("withdrawal")) {
-                    priceType = PriceType.Minus;
+                if (!scheduleRequestDTO.getRepeatingCycle().equals("없음")) {
+                    if (scheduleRequestDTO.getPriceType().equals("+")) {
+                        priceType = PriceType.Plus;
+                        regularType = RegularType.Deposit;
+                    } else {
+                        priceType = PriceType.Minus;
+                        regularType = RegularType.Withdrawal;
+                    }
                 }
 
 
@@ -162,6 +160,7 @@ public class ScheduleRepository {
                         .exclusion(scheduleRequestDTO.isExclusion())
                         .regularType(regularType)
                         .priceType(priceType).build();
+
                 regularScheduleRepository.save(regularSchedule);
 
             } else {

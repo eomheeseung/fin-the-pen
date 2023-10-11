@@ -10,7 +10,6 @@ public enum RegularType {
 
     Withdrawal("withdrawal", 2L);
 
-
     private final String type;
     private final Long sortNum;
 

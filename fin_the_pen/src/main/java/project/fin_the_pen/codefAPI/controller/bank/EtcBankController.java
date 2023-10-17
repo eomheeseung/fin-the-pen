@@ -2,8 +2,10 @@ package project.fin_the_pen.codefAPI.controller.bank;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.codefAPI.dto.bank.etc.AuthenticationDTO;
@@ -21,10 +23,10 @@ public class EtcBankController {
     /**
      * 계좌인증 (1원 이체)
      */
-    @GetMapping("/codef/account-authentication")
-    public String accountAuthentication(@RequestBody AuthenticationDTO dto) throws IOException, ParseException, InterruptedException {
-        String result = etcAPIService.authentication(dto);
-        return result;
+    @PostMapping("/codef/account-authentication")
+    public JSONObject accountAuthentication(@RequestBody AuthenticationDTO dto) throws IOException, ParseException, InterruptedException {
+        org.json.simple.JSONObject jsonObject = etcAPIService.authentication(dto);
+        return jsonObject;
     }
 
     /**

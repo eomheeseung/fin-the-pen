@@ -149,7 +149,7 @@ public class IndividualAPILogic implements APILogicInterface {
         HashMap<String, Object> registerMap = getRegisterMap(new HashMap<>(), dto);
 
         String result = APIRequest.request(urlPath, registerMap);
-        log.info(result);
+//        log.info(result);
 
         return result;
     }

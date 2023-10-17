@@ -1,9 +1,8 @@
 package project.fin_the_pen.codefAPI.service.bank;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -21,7 +20,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * API를 호출 => 받아온 API 데이터, DB 데이터 를 여기서 처리
@@ -78,58 +76,45 @@ public class CodefIndIndividualService {
 
     /**
      * 보유계좌
-     *
+     * TODO 1. 이거 objectMapper로 리팩토링하면 오류남.
+     * @param dto
      * @return
-     * @throws IOException
      * @throws ParseException
      * @throws InterruptedException
      */
-    // string으로 던질 때
-    /*public String accountList(AccountDTO dto)
-            throws IOException, ParseException, InterruptedException {
+    public JSONObject accountList(AccountDTO dto) throws ParseException, InterruptedException, IOException {
         JSONParser jsonParser = new JSONParser();
         Object obj = null;
 
         obj = jsonParser.parse(apiLogic.accountList(dto));
         JSONObject jsonObject = (JSONObject) obj;
 
-        return jsonObject.toJSONString();
-    }*/
-
-    // json으로 던질 때
-    public JSONObject accountList(AccountDTO dto) throws ParseException, InterruptedException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        JSONObject innerJson = (JSONObject) jsonObject.get("result");
         JSONObject responseJson = new JSONObject();
 
-        try {
-            String jsonResult = apiLogic.accountList(dto);
+        if (!innerJson.get("code").equals("CF-00000")) {
+            return (JSONObject) responseJson.put("data", "error");
+        } else {
+            JSONObject targetJson = (JSONObject) jsonObject.get("data");
+            JSONArray targetArray = (JSONArray) targetJson.get("resDepositTrust");
+            JSONArray responseJsonArray = new JSONArray();
 
-            Map<String, Object> resultMap = objectMapper.readValue(jsonResult, new TypeReference<>() {
-            });
-            Map<String, Object> result = (Map<String, Object>) resultMap.get("result");
+            for (Object o : targetArray) {
+                JSONObject tmpJson = (JSONObject) o;
 
-            if ("CF-00000".equals(result.get("code"))) {
-                List<Map<String, Object>> targetList = (List<Map<String, Object>>) resultMap.get("data.resDepositTrust");
-                org.json.simple.JSONArray responseJsonArray = new org.json.simple.JSONArray();
-
-                for (Map<String, Object> item : targetList) {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("resAccountDisplay", item.get("resAccountDisplay"));
-                    jsonObject.put("resAccountName", item.get("resAccountName"));
-                    jsonObject.put("resAccountBalance", item.get("resAccountBalance"));
-                    responseJsonArray.add(jsonObject);
-                }
-
-                responseJson.put("data", responseJsonArray);
-            } else {
-                responseJson.put("data", "error");
+                JSONObject jsonObject1 = new JSONObject();
+                jsonObject1.put("resAccountDisplay", tmpJson.get("resAccountDisplay"));
+                jsonObject1.put("resAccountName", tmpJson.get("resAccountName"));
+                jsonObject1.put("resAccountBalance", tmpJson.get("resAccountBalance"));
+                responseJsonArray.add(jsonObject1);
             }
-        } catch (IOException e) {
-            throw new RuntimeException("I/O Error");
-        }
 
-        return responseJson;
+            responseJson.put("data", responseJsonArray);
+            return responseJson;
+        }
     }
+
+
 
     /**
      * 빠른 조회

@@ -49,16 +49,19 @@ public class BankController {
      * @return
      * @throws IOException
      * @throws ParseException
-     * @throws InterruptedException
-     * return json
+     * @throws InterruptedException return json
      */
     @GetMapping("codef/accountList")
-    public JSONObject accountList(@RequestBody AccountDTO dto) throws ParseException, InterruptedException {
+    public JSONObject accountList(@RequestBody AccountDTO dto)
+            throws ParseException, InterruptedException {
+
         JSONObject jsonObject = null;
+
         try {
             jsonObject = apiService.accountList(dto);
             return jsonObject;
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | IOException e) {
+            jsonObject = new JSONObject();
             jsonObject.put("data", "error");
             return jsonObject;
         }
@@ -103,7 +106,7 @@ public class BankController {
     /**
      * 수시입출 과거 거래내역
      */
-    @GetMapping("/codef/occasionalPast")
+    @PostMapping("/codef/occasionalPast")
     public String occasionalPast(@RequestBody OccasionalPastDTO dto) throws IOException, ParseException, InterruptedException {
         String result = apiService.occasionalPast(dto);
         return result;
@@ -117,6 +120,4 @@ public class BankController {
         String result = apiService.savingTransaction(dto);
         return result;
     }
-
-
 }

@@ -42,6 +42,7 @@ public class LoginController {
     @PostMapping("/fin-the-pen-web/sign-up")
     public boolean signIn(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());
+
         // 이 경우 아이디 비밀번호가 중복되므로 회원가입창으로 리다이렉트
         if (!loginService.joinUser(userRequestDTO)) {
             log.info("회원가입 - 중복된 아이디, 패드워드 존재");
@@ -53,7 +54,6 @@ public class LoginController {
 
 
     @GetMapping("findUser")
-    @ResponseBody
     public User findUser() {
         Optional<User> optionalUser = loginService.TempFindUser();
         return optionalUser.get();
@@ -88,7 +88,6 @@ public class LoginController {
     }*/
 
     @PostMapping("/fin-the-pen-web/sign-in")
-    @ResponseBody
     public UserResponseDTO apiLogin(@RequestBody UserRequestDTO userRequestDTO, HttpServletRequest request) throws IOException {
         try {
             currentUser = loginService.findByUser(userRequestDTO.getUser_id(), userRequestDTO.getPassword());

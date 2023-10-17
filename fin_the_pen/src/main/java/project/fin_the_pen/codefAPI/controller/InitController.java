@@ -76,6 +76,7 @@ public class InitController {
         try {
             // 성공하면 true, 실패하면 false
             connectedService.accountCreate(list);
+            //TODO 성공하면 true, 실패하면 false로 front에 알려줄 것임
             return true;
         } catch (ConnectedSaveException e) {
             return false;

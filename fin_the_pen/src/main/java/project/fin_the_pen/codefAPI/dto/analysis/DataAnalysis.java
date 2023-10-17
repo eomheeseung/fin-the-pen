@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class DataAnalysis {
     // 고유키
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_table_id")
     private Long id;
 
@@ -95,6 +95,7 @@ public class DataAnalysis {
     @Column
     private String resAccountDesc3;
     // 거래내역 비고 4
+    // 거래점
     @Column
     private String resAccountDesc4;
     // 거래 후 잔액

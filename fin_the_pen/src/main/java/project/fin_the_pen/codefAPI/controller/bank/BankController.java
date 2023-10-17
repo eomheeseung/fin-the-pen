@@ -2,6 +2,7 @@ package project.fin_the_pen.codefAPI.controller.bank;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,15 +33,12 @@ public class BankController {
      */
     @GetMapping("codef/registerStatus")
     public String registerStatus(@RequestBody AccountDTO dto) throws IOException, ParseException, InterruptedException {
-        String result = apiService.registerStatus(dto);
-
-        if (result.equals("error")) {
-            return "system error";
-        }
-        if (result.equals("true")) {
+        try {
+            String result = apiService.registerStatus(dto);
             return "true";
-        } else {
-            return result;
+        } catch (RuntimeException e) {
+            // 등록여부가 실패하면 EX 받아서 front에 "false"를 던짐.
+            return "false";
         }
     }
 
@@ -52,11 +50,18 @@ public class BankController {
      * @throws IOException
      * @throws ParseException
      * @throws InterruptedException
+     * return json
      */
     @GetMapping("codef/accountList")
-    public String accountList(@RequestBody AccountDTO dto) throws IOException, ParseException, InterruptedException {
-        String result = apiService.accountList(dto);
-        return result;
+    public JSONObject accountList(@RequestBody AccountDTO dto) throws ParseException, InterruptedException {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = apiService.accountList(dto);
+            return jsonObject;
+        } catch (RuntimeException e) {
+            jsonObject.put("data", "error");
+            return jsonObject;
+        }
     }
 
     /**
@@ -83,6 +88,7 @@ public class BankController {
     }*/
 
     /**
+     * 수시입출 거래내역
      * test
      */
     @PostMapping("/codef/occasionalAccount")
@@ -111,17 +117,6 @@ public class BankController {
         String result = apiService.savingTransaction(dto);
         return result;
     }
-
-    // ========= 저축은행 ==========
-
-
-    //================== 카드 ===============
-
-
-    //=========== 카드 법인 ===========
-
-
-    // =========== 가맹점번호 조회 ===========
 
 
 }

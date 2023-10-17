@@ -165,7 +165,7 @@ public class DataAnalysisRepository {
         JSONObject shortJson = (JSONObject) jsonObject.get("resLimitOfShortLoanList");
 
 
-        DataAccountLimit dataAccountLimit = DataAccountLimit.builder()
+        DataAmountLimit dataAmountLimit = DataAmountLimit.builder()
                 .resCardCompany(jsonObject.get("resCardCompany").toString())
                 .resUsedAmount(totalJson.get("resUsedAmount").toString())
                 .resLimitAmount(totalJson.get("resLimitAmount").toString())
@@ -181,7 +181,7 @@ public class DataAnalysisRepository {
                 .resShortRemainLimit(shortJson.get("resRemainLimit").toString())
                 .build();
 
-        manager.persist(dataAccountLimit);
+        manager.persist(dataAmountLimit);
     }
 
     // 하이패스

@@ -37,7 +37,6 @@ public class ScheduleController {
     }
 
     @PostMapping("/getAllSchedules")
-//    @ResponseBody
     public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("user_id"));
         log.info("json return");

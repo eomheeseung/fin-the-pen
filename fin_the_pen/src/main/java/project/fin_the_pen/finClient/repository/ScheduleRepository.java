@@ -32,7 +32,8 @@ public class ScheduleRepository {
                     .priceType(priceType).regularType(regularType).expectedSpending(dto.getExpectedSpending())
                     .repeatingCycle(dto.getRepeatingCycle())
                     .repeatDeadline(dto.getRepeatDeadLine()).repeatEndDate(dto.getRepeatEndDate())
-                    .exclusion(dto.isExclusion()).importance(dto.getImportance()).build();
+                    .exclusion(dto.isExclusion()).importance(dto.getImportance())
+                    .build();
 
             repository.save(schedule);
             log.info(schedule.getUserId());
@@ -162,7 +163,6 @@ public class ScheduleRepository {
                         .priceType(priceType).build();
 
                 regularScheduleRepository.save(regularSchedule);
-
             } else {
                 try {
                     findSchedule.setEventName(scheduleRequestDTO.getEventName());

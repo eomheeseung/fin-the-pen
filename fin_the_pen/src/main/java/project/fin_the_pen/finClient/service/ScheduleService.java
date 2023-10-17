@@ -30,7 +30,7 @@ public class ScheduleService {
                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.None));
                 }
             } else {
-                // +가 정기 입금이라고 하자.
+                // +가 정기 입금, -가 출금
                 if (scheduleRequestDTO.getPriceType().equals("+")) {
                     isType(scheduleRequestDTO, (dto) ->
                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.Deposit));
@@ -40,8 +40,7 @@ public class ScheduleService {
                 }
             }
 
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             return null;
         }
         return true;

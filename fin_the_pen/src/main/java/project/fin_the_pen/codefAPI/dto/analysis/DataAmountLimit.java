@@ -8,12 +8,12 @@ import javax.persistence.*;
  * 한도조회
  */
 @Entity
-@Table(name = "account_limit")
-public class DataAccountLimit {
-    public DataAccountLimit() {
+@Table(name = "amount_limit")
+public class DataAmountLimit {
+    public DataAmountLimit() {
     }
     @Builder
-    public DataAccountLimit(String resCardCompany, String resUsedAmount, String resLimitAmount, String resRemainLimit, String resFullUsedAmount, String resFullLimitAmount, String resFullRemainLimit, String resInstallUsedAmount, String resInstallLimitAmount, String resInstallRemainLimit, String resShortUsedAmount, String resShortLimitAmount, String resShortRemainLimit) {
+    public DataAmountLimit(String resCardCompany, String resUsedAmount, String resLimitAmount, String resRemainLimit, String resFullUsedAmount, String resFullLimitAmount, String resFullRemainLimit, String resInstallUsedAmount, String resInstallLimitAmount, String resInstallRemainLimit, String resShortUsedAmount, String resShortLimitAmount, String resShortRemainLimit) {
         this.resCardCompany = resCardCompany;
         this.resUsedAmount = resUsedAmount;
         this.resLimitAmount = resLimitAmount;

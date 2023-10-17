@@ -1,13 +1,15 @@
 package project.fin_the_pen.codefAPI.service.bank;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.codefAPI.logic.IndividualAPILogic;
 import project.fin_the_pen.codefAPI.dto.bank.individual.*;
+import project.fin_the_pen.codefAPI.logic.IndividualAPILogic;
 import project.fin_the_pen.codefAPI.repository.TokenRepository;
 import project.fin_the_pen.finClient.data.token.Token;
 
@@ -19,6 +21,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * API를 호출 => 받아온 API 데이터, DB 데이터 를 여기서 처리
@@ -50,26 +53,27 @@ public class CodefIndIndividualService {
      * @throws RuntimeException
      */
     public String registerStatus(AccountDTO dto) throws RuntimeException, IOException, ParseException, InterruptedException {
-        return apiLogic.registrationStatus(dto);
-        /*JSONParser jsonParser = new JSONParser();
+//        return apiLogic.registrationStatus(dto);
+        JSONParser jsonParser = new JSONParser();
         Object obj = null;
 
         try {
-            obj = jsonParser.parse(apiLogic.registrationStatus(dto));
-        } catch (ParseException | IOException | InterruptedException e) {
-            return "error";
+            String logStr = apiLogic.registrationStatus(dto);
+            log.info(logStr);
+            obj = jsonParser.parse(logStr);
+        } catch (ParseException | IOException | InterruptedException | NullPointerException e) {
+            throw new RuntimeException("error");
         }
 
-
         JSONObject jsonObj = (JSONObject) obj;
-        String status = (String) jsonObj.get("resRegistrationStatus");
-        log.info(status);
+        JSONObject innerJson = (JSONObject) jsonObj.get("data");
+        String status = innerJson.get("resRegistrationStatus").toString();
 
         if (status.equals("0")) {
             return status;
         } else {
             return "true";
-        }*/
+        }
     }
 
     /**
@@ -80,7 +84,8 @@ public class CodefIndIndividualService {
      * @throws ParseException
      * @throws InterruptedException
      */
-    public String accountList(AccountDTO dto)
+    // string으로 던질 때
+    /*public String accountList(AccountDTO dto)
             throws IOException, ParseException, InterruptedException {
         JSONParser jsonParser = new JSONParser();
         Object obj = null;
@@ -89,6 +94,41 @@ public class CodefIndIndividualService {
         JSONObject jsonObject = (JSONObject) obj;
 
         return jsonObject.toJSONString();
+    }*/
+
+    // json으로 던질 때
+    public JSONObject accountList(AccountDTO dto) throws ParseException, InterruptedException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JSONObject responseJson = new JSONObject();
+
+        try {
+            String jsonResult = apiLogic.accountList(dto);
+
+            Map<String, Object> resultMap = objectMapper.readValue(jsonResult, new TypeReference<>() {
+            });
+            Map<String, Object> result = (Map<String, Object>) resultMap.get("result");
+
+            if ("CF-00000".equals(result.get("code"))) {
+                List<Map<String, Object>> targetList = (List<Map<String, Object>>) resultMap.get("data.resDepositTrust");
+                org.json.simple.JSONArray responseJsonArray = new org.json.simple.JSONArray();
+
+                for (Map<String, Object> item : targetList) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("resAccountDisplay", item.get("resAccountDisplay"));
+                    jsonObject.put("resAccountName", item.get("resAccountName"));
+                    jsonObject.put("resAccountBalance", item.get("resAccountBalance"));
+                    responseJsonArray.add(jsonObject);
+                }
+
+                responseJson.put("data", responseJsonArray);
+            } else {
+                responseJson.put("data", "error");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("I/O Error");
+        }
+
+        return responseJson;
     }
 
     /**

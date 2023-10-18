@@ -25,17 +25,17 @@ public class EtcBankController {
      */
     @PostMapping("/codef/account-authentication")
     public JSONObject accountAuthentication(@RequestBody AuthenticationDTO dto) throws IOException, ParseException, InterruptedException {
-        org.json.simple.JSONObject jsonObject = etcAPIService.authentication(dto);
+        JSONObject jsonObject = etcAPIService.authentication(dto);
         return jsonObject;
     }
 
     /**
      * 예금주명
      */
-    @GetMapping("/codef/holder")
-    public String holder(@RequestBody HolderDTO dto) throws IOException, ParseException, InterruptedException {
-        String result = etcAPIService.holder(dto);
-        return result;
+    @PostMapping("/codef/holder")
+    public JSONObject holder(@RequestBody HolderDTO dto) throws IOException, ParseException, InterruptedException {
+        JSONObject jsonObject = etcAPIService.holder(dto);
+        return jsonObject;
     }
 
     /**

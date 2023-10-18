@@ -1,5 +1,7 @@
 package project.fin_the_pen.codefAPI.service.bank;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -35,6 +37,8 @@ public class CodefIndIndividualService {
     private final TokenRepository tokenRepository;
     private Token token;
     private final IndividualAPILogic apiLogic;
+    private final ObjectMapper objectMapper;
+    private JSONParser parser = new JSONParser();
 
 
     public List<Token> findToken() {
@@ -52,13 +56,12 @@ public class CodefIndIndividualService {
      */
     public String registerStatus(AccountDTO dto) throws RuntimeException, IOException, ParseException, InterruptedException {
 //        return apiLogic.registrationStatus(dto);
-        JSONParser jsonParser = new JSONParser();
         Object obj = null;
 
         try {
             String logStr = apiLogic.registrationStatus(dto);
             log.info(logStr);
-            obj = jsonParser.parse(logStr);
+            obj = parser.parse(logStr);
         } catch (ParseException | IOException | InterruptedException | NullPointerException e) {
             throw new RuntimeException("error");
         }
@@ -77,16 +80,16 @@ public class CodefIndIndividualService {
     /**
      * 보유계좌
      * TODO 1. 이거 objectMapper로 리팩토링하면 오류남.
+     *
      * @param dto
      * @return
      * @throws ParseException
      * @throws InterruptedException
      */
     public JSONObject accountList(AccountDTO dto) throws ParseException, InterruptedException, IOException {
-        JSONParser jsonParser = new JSONParser();
         Object obj = null;
 
-        obj = jsonParser.parse(apiLogic.accountList(dto));
+        obj = parser.parse(apiLogic.accountList(dto));
         JSONObject jsonObject = (JSONObject) obj;
 
         JSONObject innerJson = (JSONObject) jsonObject.get("result");
@@ -115,7 +118,6 @@ public class CodefIndIndividualService {
     }
 
 
-
     /**
      * 빠른 조회
      *
@@ -125,7 +127,8 @@ public class CodefIndIndividualService {
      * @throws ParseException
      * @throws InterruptedException
      */
-    public String fastAccountList(FastAccountDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    public String fastAccountList(FastAccountDTO dto)
+            throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         String result = apiLogic.fastAccountList(dto);
         return result;
     }
@@ -140,7 +143,7 @@ public class CodefIndIndividualService {
      * @throws ParseException
      * @throws InterruptedException
      */
-    public String occasionalAccount(OccasionalDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    public String occasionalAccount(OccasionalDTO dto) throws IOException, ParseException, InterruptedException {
         String result = apiLogic.occasionalAccount(dto);
         JSONParser parser = new JSONParser();
         Object obj = null;
@@ -171,8 +174,43 @@ public class CodefIndIndividualService {
      * @throws ParseException
      * @throws InterruptedException
      */
-    public String savingTransaction(SavingTransactionDTO dto) throws IOException, ParseException, InterruptedException {
+    public JSONObject savingTransaction(SavingTransactionDTO dto)
+            throws IOException, ParseException, InterruptedException {
+
         String result = apiLogic.savingTransaction(dto);
-        return result;
+        JsonNode jsonNode = objectMapper.readTree(result);
+
+        JsonNode resultNode = jsonNode.get("result");
+        JsonNode codeNode = resultNode.get("code");
+        JsonNode dataNode = jsonNode.get("data");
+
+        JSONObject responseJson = new JSONObject();
+
+        if (!"CF-00000".equals(codeNode.asText())) {
+            responseJson.put("data", "error");
+        } else {
+            responseJson.put("resAccountStatus", dataNode.get("resAccountStatus").asText());
+            responseJson.put("resAccountDisplay", dataNode.get("resAccountDisplay").asText());
+            responseJson.put("resAccountName", dataNode.get("resAccountName").asText());
+            responseJson.put("resAccountBalance", dataNode.get("resAccountBalance").asText());
+            responseJson.put("resType", dataNode.get("resType").asText());
+            responseJson.put("resRate", dataNode.get("resRate").asText());
+            responseJson.put("resLastTranDate", dataNode.get("resLastTranDate").asText());
+            responseJson.put("commStartDate", dataNode.get("commStartDate").asText());
+            responseJson.put("commEndDate", dataNode.get("commEndDate").asText());
+
+            JSONArray dataArray = new JSONArray();
+
+            JsonNode trHistoryList = dataNode.get("resTrHistoryList");
+            if (trHistoryList != null && trHistoryList.isArray()) {
+                for (JsonNode item : trHistoryList) {
+                    dataArray.add(item);
+                }
+            }
+
+            responseJson.put("resTrHistoryList", dataArray);
+        }
+        return responseJson;
+
     }
 }

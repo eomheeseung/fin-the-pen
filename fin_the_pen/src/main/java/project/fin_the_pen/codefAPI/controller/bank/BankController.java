@@ -34,7 +34,7 @@ public class BankController {
     @GetMapping("codef/registerStatus")
     public String registerStatus(@RequestBody AccountDTO dto) throws IOException, ParseException, InterruptedException {
         try {
-            String result = apiService.registerStatus(dto);
+            apiService.registerStatus(dto);
             return "true";
         } catch (RuntimeException e) {
             // 등록여부가 실패하면 EX 받아서 front에 "false"를 던짐.
@@ -68,13 +68,14 @@ public class BankController {
     }
 
     /**
-     * 빠른 조회
+     * 빠른 조회 (사용자가 은행기관에서 빠른조회 서비스를 등록해야만 작동함.)
      *
      * @param dto
      * @return
      */
     @GetMapping("codef/fastAccount")
-    public String fastAccount(@RequestBody FastAccountDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
+    public String fastAccount(@RequestBody FastAccountDTO dto)
+            throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         String result = apiService.fastAccountList(dto);
         return result;
     }
@@ -116,8 +117,8 @@ public class BankController {
      * 적금 거래내역
      */
     @GetMapping("/codef/saving-transaction")
-    public String savingTransaction(@RequestBody SavingTransactionDTO dto) throws IOException, ParseException, InterruptedException {
-        String result = apiService.savingTransaction(dto);
-        return result;
+    public JSONObject savingTransaction(@RequestBody SavingTransactionDTO dto) throws IOException, ParseException, InterruptedException {
+        JSONObject jsonObject = apiService.savingTransaction(dto);
+        return jsonObject;
     }
 }

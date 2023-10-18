@@ -1,5 +1,6 @@
 package project.fin_the_pen.codefAPI.service.bank;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,44 +21,54 @@ import java.io.IOException;
 public class EtcAPIService {
     private final EtcAPILogic apiLogic;
     private final ObjectMapper objectMapper;
+    private JSONParser parser = new JSONParser();
 
     /**
      * 계좌 인증 (1원이체)
-     * TODO 2. 이거 리팩토링 json으로 리턴하게
+     * <p>
+     * 좀 더 세밀하게 jsonNode라는 것을 사용함.
      */
-    public org.json.simple.JSONObject authentication(AuthenticationDTO dto) throws ParseException, InterruptedException, IOException {
-        org.json.simple.JSONObject responseJson = null;
+    public JSONObject authentication(AuthenticationDTO dto) throws ParseException, InterruptedException, IOException {
         String jsonResult = apiLogic.authentication(dto);
-        JSONParser jsonParser = new JSONParser();
-        org.json.simple.JSONObject targetJson = (org.json.simple.JSONObject) jsonParser.parse(jsonResult);
-        JSONObject innerJson = (org.json.simple.JSONObject) targetJson.get("data");
 
-        if ("CF-00000".equals(targetJson.get("result"))) {
-            responseJson = new org.json.simple.JSONObject();
-            responseJson.put("data", innerJson.get("authCode"));
-            return responseJson;
+        JsonNode targetJson = objectMapper.readTree(jsonResult);
+        String responseCode = targetJson.get("result").get("code").asText();
+        JsonNode authCodeJson = targetJson.get("data");
+
+        JSONObject responseJson = new JSONObject();
+
+        if ("CF-00000".equals(responseCode)) {
+            responseJson.put("data", authCodeJson.get("authCode").asText());
         } else {
-            responseJson = new org.json.simple.JSONObject();
             responseJson.put("data", "error");
-            return responseJson;
         }
+
+        return responseJson;
     }
 
     /**
      * 예금주명
      */
-    public String holder(HolderDTO dto) throws IOException, ParseException, InterruptedException {
+    public JSONObject holder(HolderDTO dto) throws IOException, ParseException, InterruptedException {
         String result = apiLogic.holder(dto);
 
-        if (result.equals("")) {
-            return "예금주명이 등록되지 않았습니다.";
+        JsonNode targetJson = objectMapper.readTree(result);
+        String responseCode = targetJson.get("result").get("code").asText();
+        JsonNode dataJson = targetJson.get("data");
+
+        JSONObject responseJson = new JSONObject();
+
+        if ("CF-00000".equals(responseCode)) {
+            responseJson.put("data", dataJson.get("name").asText());
         } else {
-            return result;
+            responseJson.put("data", "예금주명이 등록되지 않았습니다.");
         }
+        return responseJson;
     }
 
     /**
-     * 예금주명 인증 (계좌 실명 인증)
+     * 예금주명 인증 (계좌 실명 인증) X
+     * 기능이 동작하지 않음.
      *
      * @param dto
      * @return

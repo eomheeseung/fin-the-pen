@@ -67,7 +67,7 @@ public class Schedule {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "type")
+    @Column(name = "price_type")
     private PriceType priceType;
 
     @Column(name = "expected_spending")

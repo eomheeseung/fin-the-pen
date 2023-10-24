@@ -95,6 +95,14 @@ public class ScheduleRepository {
         return getJsonArrayBySchedule(byMonthSchedule, jsonArray);
     }
 
+    public JSONArray findMonthSectionSchedule(String startDate, String endDate, String userId) {
+        List<Schedule> byMonthSchedule = repository.findScheduleByDateContains(startDate, endDate, userId);
+
+        JSONArray jsonArray = new JSONArray();
+
+        return getJsonArrayBySchedule(byMonthSchedule, jsonArray);
+    }
+
     /**
      * 일정 하나만 조회인데 필요할지 안 필요할지....
      *
@@ -130,6 +138,7 @@ public class ScheduleRepository {
         if (findSchedule == null) {
             return false;
         } else {
+            // 정기 일정인 경우
             if (!findSchedule.getRegularType().equals(RegularType.None)) {
                 RegularType regularType = null;
                 PriceType priceType = null;
@@ -164,6 +173,7 @@ public class ScheduleRepository {
 
                 regularScheduleRepository.save(regularSchedule);
             } else {
+                // 정기 일정이 아닌경우
                 try {
                     findSchedule.setEventName(scheduleRequestDTO.getEventName());
                     findSchedule.setAlarm(scheduleRequestDTO.isAlarm());

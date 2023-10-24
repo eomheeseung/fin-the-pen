@@ -74,6 +74,15 @@ public class ScheduleController {
         return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id")).toString();
     }
 
+    @PostMapping("/getMonthSchedules/section")
+    public String findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+        log.info(map.get("date"));
+        return scheduleService.findMonthSectionSchedule(map.get("startDate"),
+                map.get("endDate"),
+                map.get("user_id")).toString();
+//        return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id")).toString();
+    }
+
     /**
      * uuid 하나로만 일정 조회
      *

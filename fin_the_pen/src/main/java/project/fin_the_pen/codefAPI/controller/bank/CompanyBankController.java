@@ -2,6 +2,7 @@ package project.fin_the_pen.codefAPI.controller.bank;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,26 +23,29 @@ public class CompanyBankController {
      */
     @GetMapping("/codef/company/accountVerification")
     public String accountVerification(@RequestBody AccountVerificationDTO dto) {
-        String result = companyService.accountVerification(dto);
-        return result;
+        JSONObject responseJson = companyService.accountVerification(dto);
+
+        if (responseJson.get("data").equals("false")) {
+            return "false";
+        }else{
+            return "true";
+        }
     }
 
     /**
      * 대출 거래내역
      */
     @GetMapping("/codef/company/loan-transaction-list")
-    public String loanTransaction(@RequestBody LoanTransactionDTO dto) throws IOException, ParseException, InterruptedException {
-        String result = companyService.loanTransaction(dto);
-        return result;
+    public JSONObject loanTransaction(@RequestBody LoanTransactionDTO dto) throws IOException, ParseException, InterruptedException {
+        return companyService.loanTransaction(dto);
     }
 
     /**
      * 보유 계좌
      */
     @GetMapping("/codef/company/account-list")
-    public String companyAccount(String organization) throws IOException, ParseException, InterruptedException {
-        String result = companyService.accountList(organization);
-        return result;
+    public JSONObject companyAccount(String organization) throws IOException, ParseException, InterruptedException {
+        return companyService.accountList(organization);
     }
 
     /**

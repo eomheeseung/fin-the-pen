@@ -4,8 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum PriceType {
+    // 수입
     Plus("plus", 0L),
 
+    // 지출
     Minus("minus", 1L);
 
     private final String type;

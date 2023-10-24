@@ -47,12 +47,6 @@ public class RegularSchedule {
         this.priceType = priceType;
     }
 
-
-    /*
-    TODO
-     1. schedule와 어떻게 매핑을 할 것인지 상속구조로 할 것인지..
-     schedule에 enum이 있는데 해당 enum 타입을 통해서 구별하게 할 것인지..
-     */
     @Column(name = "schedule_id")
     private String scheduleId;
 

@@ -75,6 +75,10 @@ public class ScheduleService {
         return scheduleRepository.findMonthSchedule(date, userId);
     }
 
+    public JSONArray findMonthSectionSchedule(String startDate, String endDate, String userId) {
+        return scheduleRepository.findMonthSectionSchedule(startDate, endDate, userId);
+    }
+
     public boolean deleteSchedule(String uuid) {
         try {
             scheduleRepository.deleteSchedule(uuid);

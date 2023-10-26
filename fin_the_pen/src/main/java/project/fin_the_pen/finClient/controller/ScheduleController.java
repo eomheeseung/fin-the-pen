@@ -2,7 +2,7 @@ package project.fin_the_pen.finClient.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,6 +36,8 @@ public class ScheduleController {
         return true;
     }
 
+    // 유저 한명의 모든 일정 조회
+    // TODO, json형태로 reposne하면 empty가 뜸...
     @PostMapping("/getAllSchedules")
     public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("user_id"));
@@ -102,7 +104,7 @@ public class ScheduleController {
 
     @PostMapping("/findCategory")
     public String findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
-        JSONArray jsonArray = scheduleService
+        org.json.simple.JSONArray jsonArray = scheduleService
                 .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
         return jsonArray.toString();
     }

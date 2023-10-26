@@ -2,7 +2,7 @@ package project.fin_the_pen.finClient.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
@@ -56,7 +56,7 @@ public class ScheduleService {
         callback.callbackMethod(scheduleRequestDTO);
     }
 
-    public JSONArray findAllSchedule(String id) {
+    public org.json.simple.JSONArray findAllSchedule(String id) {
         return scheduleRepository.findAllSchedule(id);
     }
 
@@ -67,15 +67,15 @@ public class ScheduleService {
         return true;
     }
 
-    public JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+    public org.json.simple.JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         return scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
     }
 
-    public JSONArray findMonthSchedule(String date, String userId) {
+    public org.json.simple.JSONArray findMonthSchedule(String date, String userId) {
         return scheduleRepository.findMonthSchedule(date, userId);
     }
 
-    public JSONArray findMonthSectionSchedule(String startDate, String endDate, String userId) {
+    public org.json.simple.JSONArray findMonthSectionSchedule(String startDate, String endDate, String userId) {
         return scheduleRepository.findMonthSectionSchedule(startDate, endDate, userId);
     }
 

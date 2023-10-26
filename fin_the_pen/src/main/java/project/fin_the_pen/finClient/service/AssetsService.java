@@ -1,52 +1,72 @@
 package project.fin_the_pen.finClient.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.finClient.data.schedule.Schedule;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AssetsService {
     private final ScheduleService scheduleService;
-    private final ObjectMapper objectMapper;
 
-    private JSONArray assetsForSchedule(String date, String userId)
-            throws JsonProcessingException {
-        JSONArray monthSchedule = scheduleService.findMonthSchedule(date, userId);
+    private JSONArray assetsForSchedule(String date, String userId) {
+        return scheduleService.findMonthSchedule(date, userId);
+    }
 
-        return monthSchedule;
+    // TODO 나중에 정기일정도 고려해서 계산해야 함.
+    private JSONObject assetsCalc(JSONArray jsonArray, JSONObject responseJson) {
+        JSONObject totalJson = new JSONObject();
+
+        AtomicInteger atomicIncome = new AtomicInteger(0);
+        AtomicInteger atomicDeposit = new AtomicInteger(0);
+
+        Iterator<Object> iterator = jsonArray.iterator();
+
+        while (iterator.hasNext()) {
+            org.json.JSONObject jsonObject = (org.json.JSONObject) iterator.next();
+
+            if (jsonObject.get("type").equals("+")) {
+                atomicIncome.addAndGet((int) jsonObject.get("expected_spending"));
+            } else if (jsonObject.get("type").equals("-")) {
+                atomicDeposit.addAndGet((int) jsonObject.get("expected_spending"));
+            }
+        }
+
+        int remainSchedule = jsonArray.size();
+
+        log.info("income :{}, deposit:{} ", atomicIncome.get(), atomicDeposit.get());
+        totalJson.put("income", atomicIncome.get());
+        totalJson.put("deposit", atomicDeposit.get());
+
+
+        responseJson.put("remainSchedule", remainSchedule);
+        responseJson.put("value", totalJson);
+
+        return responseJson;
     }
 
 
-    // TODO
+    // 각 month별로 일정의 개수와 지출/수입을 알려줌
     public JSONObject assetsPrintSchedule(String date, String userId) {
         JSONObject responseJson = null;
-        int income;
 
         try {
             JSONArray jsonArray = assetsForSchedule(date, userId);
-            List<Schedule> scheduleList = new ArrayList<>();
+            return assetsCalc(jsonArray, new JSONObject());
 
-
-            int remainSchedule = scheduleList.size();2
+        } catch (Exception e) {
             responseJson = new JSONObject();
-            responseJson.put("remainSchedule", remainSchedule);
-
-
-        } catch (
-                JsonProcessingException e) {
-            responseJson = new JSONObject();
-            responseJson.put("data", "error");
+            responseJson.put("data", "error"); // 예외 메시지 출력
         }
+
+        log.info(responseJson.toString());
         return responseJson;
     }
+
 }

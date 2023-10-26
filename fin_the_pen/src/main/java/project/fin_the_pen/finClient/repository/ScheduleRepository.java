@@ -2,8 +2,8 @@ package project.fin_the_pen.finClient.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.JSONArray;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.finClient.data.schedule.RegularSchedule;
 import project.fin_the_pen.finClient.data.schedule.Schedule;
@@ -45,14 +45,16 @@ public class ScheduleRepository {
     }
 
     /**
-     * TODO 포함된 이름으로 검색 테스트 필요함.
+     * TODO 1
      */
-    public JSONArray findByContainsName(String name) {
+    public org.json.simple.JSONArray findByContainsName(String name) {
         List<Schedule> byContainsNameList = repository.findByContainsName(name);
-        JSONArray jsonArray = new JSONArray(new ArrayList<ScheduleResponseDTO>());
+        org.json.simple.JSONArray jsonArray = new org.json.simple.JSONArray();
+        jsonArray.add(new ArrayList<ScheduleResponseDTO>());
 
         if (byContainsNameList.isEmpty()) {
-            return new JSONArray((JSONArray) null);
+            jsonArray.add(null);
+            return jsonArray;
         }
 
         log.info(String.valueOf(byContainsNameList.size()));
@@ -66,14 +68,15 @@ public class ScheduleRepository {
      * @param id
      * @return
      */
-    public JSONArray findAllSchedule(String id) {
+    public org.json.simple.JSONArray findAllSchedule(String id) {
         List<Schedule> scheduleList = repository.findScheduleByUserId(id);
 
-        log.info(String.valueOf(scheduleList.size()));
-        JSONArray jsonArray = new JSONArray(new ArrayList<ScheduleResponseDTO>());
+        org.json.simple.JSONArray jsonArray = new org.json.simple.JSONArray();
+        jsonArray.add(new ArrayList<ScheduleResponseDTO>());
 
         if (scheduleList.isEmpty()) {
-            return new JSONArray((JSONArray) null);
+            jsonArray.add(null);
+            return jsonArray;
         }
 
         log.info(String.valueOf(scheduleList.size()));
@@ -87,18 +90,18 @@ public class ScheduleRepository {
      * @param date
      * @return
      */
-    public JSONArray findMonthSchedule(String date, String userId) {
+    public org.json.simple.JSONArray findMonthSchedule(String date, String userId) {
         List<Schedule> byMonthSchedule = repository.findByMonthSchedule(date, userId);
 
-        JSONArray jsonArray = new JSONArray();
+        org.json.simple.JSONArray jsonArray = new org.json.simple.JSONArray();
 
         return getJsonArrayBySchedule(byMonthSchedule, jsonArray);
     }
 
-    public JSONArray findMonthSectionSchedule(String startDate, String endDate, String userId) {
+    public org.json.simple.JSONArray findMonthSectionSchedule(String startDate, String endDate, String userId) {
         List<Schedule> byMonthSchedule = repository.findScheduleByDateContains(startDate, endDate, userId);
 
-        JSONArray jsonArray = new JSONArray();
+        org.json.simple.JSONArray jsonArray = new org.json.simple.JSONArray();
 
         return getJsonArrayBySchedule(byMonthSchedule, jsonArray);
     }
@@ -219,7 +222,7 @@ public class ScheduleRepository {
         callBack.callbackMethod(dto);
     }
 
-    public JSONArray findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+    public org.json.simple.JSONArray findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         /*List<Schedule> resultList =
                 entityManager.createQuery("select s from Schedule s where s.userId= :userId and s.category = :categoryName", Schedule.class)
                         .setParameter("userId", currentSession)
@@ -244,7 +247,7 @@ public class ScheduleRepository {
         return repository.findById(uuid).get();
     }
 
-    private JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, JSONArray jsonArray) {
+    private org.json.simple.JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, org.json.simple.JSONArray jsonArray) {
         scheduleList.stream()
                 .forEach(schedule -> {
                     JSONObject jsonObject = new JSONObject()
@@ -254,7 +257,6 @@ public class ScheduleRepository {
                             .put("date", schedule.getDate())
                             .put("start_time", schedule.getStartTime())
                             .put("end_time", schedule.getEndTime())
-                            .put("type", schedule.getPriceType())
                             .put("repeating_cycle", schedule.getRepeatingCycle())
                             .put("repeat_deadline", schedule.getRepeatDeadline())
                             .put("repeat_endDate", schedule.getRepeatEndDate())
@@ -263,7 +265,17 @@ public class ScheduleRepository {
                             .put("importance", schedule.getImportance())
                             .put("expected_spending", schedule.getExpectedSpending());
 
-                    jsonArray.put(jsonObject);
+                    // enum으로 저장하거나 사용하면 find할때돼 enum타입을 사용해야 함.
+                    // "Minus".equals()와 같이 사용하면 찾을 수 없음
+                    if (PriceType.Minus.equals(schedule.getPriceType())) {
+                        jsonObject.put("type", "-");
+                    } else if (PriceType.Plus.equals(schedule.getPriceType())) {
+                        jsonObject.put("type", "+");
+                    }
+
+                    log.info(jsonObject.get("type").toString());
+
+                    jsonArray.add(jsonObject);
                 });
 
         return jsonArray;

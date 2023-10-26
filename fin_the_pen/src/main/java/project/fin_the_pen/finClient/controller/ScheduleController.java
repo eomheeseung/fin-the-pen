@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
+
     @PostMapping("/createSchedule")
     public boolean registerSchedule(@RequestBody ScheduleRequestDTO scheduleRequestDTO, HttpSession session) {
         scheduleRequestDTO.setUserId(session.getAttribute("session").toString());
@@ -53,7 +54,6 @@ public class ScheduleController {
 //    @ResponseBody
     public Boolean modifySchedule(@RequestBody ScheduleRequestDTO scheduleRequestDTO) {
         log.info(String.valueOf(scheduleRequestDTO.getId()));
-
         if (!scheduleService.modifySchedule(scheduleRequestDTO)) {
             return false;
         }
@@ -73,12 +73,14 @@ public class ScheduleController {
     @PostMapping("/getMonthSchedules")
     public String findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
+
         return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id")).toString();
     }
 
     @PostMapping("/getMonthSchedules/section")
     public String findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
+
         return scheduleService.findMonthSectionSchedule(map.get("startDate"),
                 map.get("endDate"),
                 map.get("user_id")).toString();
@@ -104,7 +106,7 @@ public class ScheduleController {
 
     @PostMapping("/findCategory")
     public String findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
-        org.json.simple.JSONArray jsonArray = scheduleService
+        JSONArray jsonArray = scheduleService
                 .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
         return jsonArray.toString();
     }

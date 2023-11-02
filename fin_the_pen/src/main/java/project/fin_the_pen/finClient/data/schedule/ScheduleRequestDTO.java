@@ -55,4 +55,7 @@ public class ScheduleRequestDTO {
 
     @JsonProperty(value = "importance")
     private String importance;
+
+    @JsonProperty(value = "delete")
+    private boolean isDelete = false;
 }

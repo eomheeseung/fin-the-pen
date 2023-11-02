@@ -8,11 +8,8 @@ import project.fin_the_pen.finClient.data.schedule.type.RegularType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
-/**
- * master table 개념
- * why) key를 string으로 했지..?
- */
 @Entity
 @Data
 public class Schedule {
@@ -41,7 +38,7 @@ public class Schedule {
 
 
     @Id
-    @Column(name = "id")
+    @Column(name = "session_id")
     private String id;
 
 
@@ -91,4 +88,10 @@ public class Schedule {
     // ScheduleType로 하나 만들어야 함.
     @Column(name = "regular_type")
     private RegularType regularType;
+
+    @Column(name = "delete_flag")
+    private boolean deleteFlag = false;
+
+    @OneToOne(mappedBy = "schedule")
+    private ScheduleManage scheduleManage;
 }

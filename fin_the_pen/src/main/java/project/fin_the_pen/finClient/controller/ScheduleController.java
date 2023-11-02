@@ -42,7 +42,6 @@ public class ScheduleController {
     @PostMapping("/getAllSchedules")
     public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("user_id"));
-        log.info("json return");
         JSONArray array = scheduleService.findAllSchedule(map.get("user_id"));
         log.info(array.toString());
 

@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.codefAPI.dto.bank.etc.AuthenticationDTO;
 import project.fin_the_pen.codefAPI.dto.bank.etc.HolderAuthDTO;
 import project.fin_the_pen.codefAPI.dto.bank.etc.HolderDTO;
@@ -18,12 +15,13 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 @RestController
+@RequestMapping("/codef/bank/etc")
 public class EtcBankController {
     private final EtcAPIService etcAPIService;
     /**
      * 계좌인증 (1원 이체)
      */
-    @PostMapping("/codef/account-authentication")
+    @PostMapping("/account-authentication")
     public JSONObject accountAuthentication(@RequestBody AuthenticationDTO dto) throws IOException, ParseException, InterruptedException {
         JSONObject jsonObject = etcAPIService.authentication(dto);
         return jsonObject;
@@ -32,7 +30,7 @@ public class EtcBankController {
     /**
      * 예금주명
      */
-    @PostMapping("/codef/holder")
+    @PostMapping("/holder")
     public JSONObject holder(@RequestBody HolderDTO dto) throws IOException, ParseException, InterruptedException {
         JSONObject jsonObject = etcAPIService.holder(dto);
         return jsonObject;
@@ -41,7 +39,7 @@ public class EtcBankController {
     /**
      * 예금주명 인증 (계좌 실명 인증)
      */
-    @GetMapping("/codef/holder-authentication")
+    @GetMapping("/holder-authentication")
     public String holderAuthentication(@RequestBody HolderAuthDTO dto) throws IOException, ParseException, InterruptedException {
         String result = etcAPIService.holderAuth(dto);
         return result;

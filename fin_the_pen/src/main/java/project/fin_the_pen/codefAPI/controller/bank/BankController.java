@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.codefAPI.dto.bank.individual.*;
 import project.fin_the_pen.codefAPI.service.bank.CodefIndIndividualService;
 
@@ -22,6 +19,7 @@ import java.security.spec.InvalidKeySpecException;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/codef/bank")
 public class BankController {
     private final CodefIndIndividualService apiService;
 
@@ -31,7 +29,7 @@ public class BankController {
      * @param dto
      * @return
      */
-    @GetMapping("codef/registerStatus")
+    @GetMapping("/registerStatus")
     public String registerStatus(@RequestBody AccountDTO dto) throws IOException, ParseException, InterruptedException {
         try {
             apiService.registerStatus(dto);
@@ -51,7 +49,7 @@ public class BankController {
      * @throws ParseException
      * @throws InterruptedException return json
      */
-    @GetMapping("codef/accountList")
+    @GetMapping("/accountList")
     public JSONObject accountList(@RequestBody AccountDTO dto)
             throws ParseException, InterruptedException {
 
@@ -73,7 +71,7 @@ public class BankController {
      * @param dto
      * @return
      */
-    @GetMapping("codef/fastAccount")
+    @GetMapping("/fastAccount")
     public String fastAccount(@RequestBody FastAccountDTO dto)
             throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         String result = apiService.fastAccountList(dto);
@@ -83,7 +81,7 @@ public class BankController {
     /**
      * 수시입출 거래내역
      */
-    /*@GetMapping("codef/occasionalAccount")
+    /*@GetMapping("/occasionalAccount")
     public String occasionalAccount(@RequestBody OccasionalDTO dto) throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         dto.setOrganization("0004");
         String result = apiService.occasionalAccount(dto);
@@ -95,7 +93,7 @@ public class BankController {
      * 수시입출 거래내역
      * test
      */
-    @PostMapping("/codef/occasionalAccount")
+    @PostMapping("/occasionalAccount")
     public String occasionalAccount(@RequestBody OccasionalDTO dto)
             throws IOException, ParseException, InterruptedException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         String result = apiService.occasionalAccount(dto);
@@ -107,7 +105,7 @@ public class BankController {
     /**
      * 수시입출 과거 거래내역
      */
-    @PostMapping("/codef/occasionalPast")
+    @PostMapping("/occasionalPast")
     public String occasionalPast(@RequestBody OccasionalPastDTO dto) throws IOException, ParseException, InterruptedException {
         String result = apiService.occasionalPast(dto);
         return result;
@@ -116,7 +114,7 @@ public class BankController {
     /**
      * 적금 거래내역
      */
-    @GetMapping("/codef/saving-transaction")
+    @GetMapping("/saving-transaction")
     public JSONObject savingTransaction(@RequestBody SavingTransactionDTO dto) throws IOException, ParseException, InterruptedException {
         JSONObject jsonObject = apiService.savingTransaction(dto);
         return jsonObject;

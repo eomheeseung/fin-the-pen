@@ -13,6 +13,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -104,6 +106,31 @@ public class LoginController {
         session.invalidate();
         return "redirect:/";
     }
+
+
+    // TODO 1
+    @PostMapping("/app/password")
+    public boolean appPasswordSignUp(@RequestBody ConcurrentHashMap<String, String> map) {
+        boolean isPassword = loginService.saveAppPassword(map.get("password"));
+
+        if (isPassword) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @PostMapping("/app/password/login")
+    public boolean appPasswordLogin(@RequestBody ConcurrentHashMap<String, String> map) {
+        boolean isPassword = loginService.appPasswordLogin(map.get("password"));
+
+        if (isPassword) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     private void grantSession(HttpServletRequest request) {
         HttpSession session = request.getSession();

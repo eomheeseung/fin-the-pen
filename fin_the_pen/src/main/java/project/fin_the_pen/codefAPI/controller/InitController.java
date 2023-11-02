@@ -3,10 +3,7 @@ package project.fin_the_pen.codefAPI.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.codefAPI.connectedId.ConnectedService;
 import project.fin_the_pen.codefAPI.dto.bank.individual.*;
 import project.fin_the_pen.codefAPI.service.CodefPublishTokenService;
@@ -21,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/codef")
 public class InitController {
     private final CodefPublishTokenService tokenService;
     private final CodefIndIndividualService apiService;
@@ -30,7 +28,7 @@ public class InitController {
      * accessTokenPublish
      * 일주일에 1번 발급 받으면 되고, DB에 넣어놓을 것임.
      */
-    @GetMapping("codef/accessTokenPublish")
+    @GetMapping("/accessTokenPublish")
     public void codefAccessToken() {
         String clientId = "4e08356c-1940-4c69-9ec9-1d55f12c3cf2";
         String clientSecret = "9ea5d443-4699-41bf-bbe6-27db50e2dee8";
@@ -43,7 +41,7 @@ public class InitController {
      *
      * @return
      */
-    @GetMapping("codef/findToken")
+    @GetMapping("/findToken")
     public List<Token> codefFindToken() {
         return apiService.findToken();
     }
@@ -53,7 +51,7 @@ public class InitController {
      *
      * @param list
      */
-//    @GetMapping("codef/accountCreate")
+//    @GetMapping("/accountCreate")
     public void codefAccountCreate(@RequestBody AccountList list) {
         connectedService.accountCreate(list);
     }
@@ -61,7 +59,7 @@ public class InitController {
     /**
      * connectedId 발급 front 연동
      */
-    @PostMapping("/codef/accountCreate")
+    @PostMapping("/accountCreate")
     public boolean codeAccountCreate(@RequestBody AccountList list) {
         log.info(list.getAccountList().get(0).getId());
 
@@ -86,7 +84,7 @@ public class InitController {
     /**
      * 계정 추가
      */
-    @GetMapping("/codef/account/add")
+    @GetMapping("/account/add")
     public void codefAccountAdd(@RequestBody AccountAddList list)
             throws IOException, ParseException, InterruptedException {
         connectedService.accountAdd(list);
@@ -95,7 +93,7 @@ public class InitController {
     /**
      * 계정 삭제 - 성공
      */
-    @GetMapping("/codef/account/delete")
+    @GetMapping("/account/delete")
     public void codefAccountDelete(@RequestBody AccountDeleteDTO dto) throws IOException, ParseException, InterruptedException {
         connectedService.accountDelete(dto);
     }
@@ -103,7 +101,7 @@ public class InitController {
     /**
      * 계정 수정
      */
-    @GetMapping("/codef/account/update")
+    @GetMapping("/account/update")
     public void codefAccountUpdate(@RequestBody AccountUpdateDTO dto) throws IOException, ParseException, InterruptedException {
         connectedService.accountUpdate(dto);
     }
@@ -111,7 +109,7 @@ public class InitController {
     /**
      * 계정 목록
      */
-    @GetMapping("/codef/account/list")
+    @GetMapping("/account/list")
     public void codefAccountList(@RequestBody ConcurrentHashMap<String, String> map) {
         connectedService.accountOutputList(map);
     }
@@ -119,7 +117,7 @@ public class InitController {
     /**
      * 계정 추가 (레퍼런스)
      */
-    @PostMapping("/codef/account/reference-add")
+    @PostMapping("/account/reference-add")
     public void codefAccountReferenceAdd(@RequestBody AccountReferenceAddList list)
             throws IOException, ParseException, InterruptedException {
         connectedService.accountReferenceAdd(list);

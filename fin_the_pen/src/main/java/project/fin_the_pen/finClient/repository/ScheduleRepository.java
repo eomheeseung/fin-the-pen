@@ -200,7 +200,6 @@ public class ScheduleRepository {
 
     public boolean deleteSchedule(String uuid) {
         Schedule singleSchedule = getSingleSchedule(uuid);
-
         try {
             repository.delete(singleSchedule);
 

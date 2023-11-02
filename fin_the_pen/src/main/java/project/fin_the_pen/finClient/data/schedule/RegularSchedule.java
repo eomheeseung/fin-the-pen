@@ -8,13 +8,6 @@ import project.fin_the_pen.finClient.data.schedule.type.RegularType;
 
 import javax.persistence.*;
 
-/**
- * 특수한 테이블 개별 schedule와 forgin
- * 1년 정기라고 가정하고,
- * 4,5,6월을 수정한다면, 4,5,6월에 대한 수정사항이 동일해도 3개의 row로 관리하자.
- * <p>
- * 입금 / 출금, 값이 2이상의 것에 대해 enum으로 관리하자.
- */
 // 정기 일정을 수정하면 개별일정이 되는데 개별일정에 대한 entity
 @Entity
 @Data

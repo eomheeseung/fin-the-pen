@@ -40,4 +40,22 @@ public class LoginService {
         UserResponseDTO currentUser = loginRepository.findByUser(id, password);
         return currentUser;
     }
+
+    public boolean saveAppPassword(String password) {
+        try {
+            loginRepository.saveAppPassword(password);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    public boolean appPasswordLogin(String password) {
+        try {
+            loginRepository.appPasswordLogin(password);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
 }

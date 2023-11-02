@@ -3,6 +3,7 @@ package project.fin_the_pen.finClient.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.finClient.data.user.User;
+import project.fin_the_pen.finClient.data.user.UserAppPassword;
 import project.fin_the_pen.finClient.data.user.UserRequestDTO;
 import project.fin_the_pen.finClient.data.user.UserResponseDTO;
 
@@ -34,6 +35,7 @@ public class LoginRepository {
 
     /**
      * 회원가입 (중복 검사까지)
+     *
      * @param userRequestDTO
      * @return
      */
@@ -66,6 +68,32 @@ public class LoginRepository {
                     .getSingleResult();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public boolean saveAppPassword(String password) {
+        UserAppPassword userAppEntity = UserAppPassword.builder().password(password).build();
+
+        try {
+            entityManager.persist(userAppEntity);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("save error");
+        }
+    }
+
+    public boolean appPasswordLogin(String password) {
+
+        Object findPwd = entityManager.createQuery("select up from UserAppPassword up where up.password =:password")
+                .setParameter("password", password)
+                .getSingleResult();
+
+        try {
+            if (findPwd == null) {
+                throw new NullPointerException();
+            } else return true;
+        } catch (NullPointerException e) {
+            throw new RuntimeException("save error");
         }
     }
 

@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.finClient.data.schedule.Schedule;
-import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
-import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
+import project.fin_the_pen.finClient.data.schedule.*;
 import project.fin_the_pen.finClient.data.schedule.category.CategoryRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.type.PriceType;
-import project.fin_the_pen.finClient.data.schedule.type.RegularType;
+import project.fin_the_pen.finClient.data.schedule.type.RepeatType;
 import project.fin_the_pen.finClient.repository.ScheduleRepository;
 import project.fin_the_pen.finClient.util.*;
 
@@ -25,28 +23,48 @@ public class ScheduleService {
     ScheduleStrategy sectionStrategy = new SectionStrategy();
     ScheduleStrategy categoryStrategy = new CategoryStrategy();
 
-    public Boolean registerSchedule(ScheduleRequestDTO scheduleRequestDTO) {
-        // 일정이 정기적인 일정인지 아닌지
+    /* public Boolean registerSchedule(ScheduleAllDTO allDTO) {
+
+         try {
+             if (scheduleRequestDTO.getRepeat().equals("없음")) {
+                 if (scheduleRequestDTO.getPriceType().equals("+")) {
+                     isType(scheduleRequestDTO, (dto) ->
+                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.None));
+                 } else {
+                     isType(scheduleRequestDTO, (dto) ->
+                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.None));
+                 }
+             } else {
+                 // +가 정기 입금, -가 출금
+                 if (scheduleRequestDTO.getPriceType().equals("+")) {
+                     isType(scheduleRequestDTO, (dto) ->
+                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.Deposit));
+                 } else {
+                     isType(scheduleRequestDTO, (dto) ->
+                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.Withdrawal));
+                 }
+             }
+
+         } catch (Exception e) {
+             return null;
+         }
+         return true;
+     }*/
+    public Boolean registerSchedule(ScheduleAllDTO allDTO) {
+
+        ScheduleDTO scheduleDTO = allDTO.getScheduleDTO();
+        AssetRequestDTO assetDto = allDTO.getAssetDto();
+
         try {
-            if (scheduleRequestDTO.getRepeatingCycle().equals("없음")) {
-                if (scheduleRequestDTO.getPriceType().equals("+")) {
-                    isType(scheduleRequestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.None));
+            if (scheduleDTO.getRepeat().equals(RepeatType.None)) {
+                if (assetDto.getPriceType().equals(PriceType.Plus)) {
+                    isType(allDTO, (dto) ->
+                            scheduleRepository.registerSchedule(allDTO, PriceType.Plus, RepeatType.None));
                 } else {
-                    isType(scheduleRequestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.None));
-                }
-            } else {
-                // +가 정기 입금, -가 출금
-                if (scheduleRequestDTO.getPriceType().equals("+")) {
-                    isType(scheduleRequestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.Deposit));
-                } else {
-                    isType(scheduleRequestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.Withdrawal));
+                    isType(allDTO, (dto) ->
+                            scheduleRepository.registerSchedule(allDTO, PriceType.Minus, RepeatType.None));
                 }
             }
-
         } catch (Exception e) {
             return null;
         }
@@ -60,12 +78,12 @@ public class ScheduleService {
         return allStrategy.execute(scheduleList);
     }
 
-    public boolean modifySchedule(ScheduleRequestDTO scheduleRequestDTO) {
+    /*public boolean modifySchedule(ScheduleDTO scheduleRequestDTO) {
         if (!scheduleRepository.modifySchedule(scheduleRequestDTO)) {
             return false;
         }
         return true;
-    }
+    }*/
 
     /*public JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         List<Schedule> result = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
@@ -109,9 +127,9 @@ public class ScheduleService {
         return true;
     }
 
-    public ScheduleResponseDTO findOne(String uuid) {
-        return scheduleRepository.findOneSchedule(uuid);
-    }
+//    public ScheduleResponseDTO findOne(String uuid) {
+//        return scheduleRepository.findOneSchedule(uuid);
+//    }
 
     public JSONArray findByContainsName(String name) {
         List<Schedule> byContainsNameList = scheduleRepository.findByContainsName(name);
@@ -123,11 +141,11 @@ public class ScheduleService {
     /**
      * callback
      *
-     * @param scheduleRequestDTO
+     * @param
      * @param callback
      */
-    private void isType(ScheduleRequestDTO scheduleRequestDTO, ScheduleTypeFunc callback) {
-        callback.callbackMethod(scheduleRequestDTO);
+    private void isType(ScheduleAllDTO allDTO, ScheduleTypeFunc callback) {
+        callback.callbackMethod(allDTO);
     }
 
     /**

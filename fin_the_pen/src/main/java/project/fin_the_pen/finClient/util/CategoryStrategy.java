@@ -21,18 +21,19 @@ public class CategoryStrategy implements ScheduleStrategy {
                 .forEach(schedule -> {
                     JSONObject jsonObject = new JSONObject()
                             .put("id", schedule.getId())
-                            .put("alarm", schedule.isAlarm())
                             .put("event_name", schedule.getEventName())
-                            .put("date", schedule.getDate())
+                            .put("start_date", schedule.getStartDate())
+                            .put("end_date", schedule.getEndDate())
                             .put("start_time", schedule.getStartTime())
                             .put("end_time", schedule.getEndTime())
-                            .put("repeating_cycle", schedule.getRepeatingCycle())
-                            .put("repeat_deadline", schedule.getRepeatDeadline())
-                            .put("repeat_endDate", schedule.getRepeatEndDate())
-                            .put("category", schedule.getCategory())
-                            .put("exclusion", schedule.isExclusion())
+                            .put("allDay",schedule.isAllDay())
+                            .put("repeat", schedule.getRepeat())
+                            .put("period", schedule.getPeriod())
+                            .put("priceType", schedule.getPriceType())
+                            .put("exclusion", schedule.isExclude())
                             .put("importance", schedule.getImportance())
-                            .put("expected_spending", schedule.getExpectedSpending());
+                            .put("amount", schedule.getAmount())
+                            .put("is_fix",schedule.isFixAmount());
 
                     // enum으로 저장하거나 사용하면 find할때돼 enum타입을 사용해야 함.
                     // "Minus".equals()와 같이 사용하면 찾을 수 없음

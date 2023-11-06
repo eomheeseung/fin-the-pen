@@ -3,37 +3,35 @@ package project.fin_the_pen.finClient.data.schedule;
 import lombok.Builder;
 import lombok.Data;
 import project.fin_the_pen.finClient.data.schedule.type.PriceType;
-import project.fin_the_pen.finClient.data.schedule.type.RegularType;
+import project.fin_the_pen.finClient.data.schedule.type.RepeatType;
+import project.fin_the_pen.finClient.listener.ScheduleListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 @Data
+@EntityListeners(value = ScheduleListener.class)
 public class Schedule {
     public Schedule() {
     }
-
     @Builder
-    public Schedule(String id, String userId, String eventName, boolean alarm, String date, String startTime, String endTime, String category, PriceType priceType, int expectedSpending, String repeatingCycle, String repeatDeadline, String repeatEndDate, boolean exclusion, String importance, RegularType regularType) {
+    public Schedule(String id, String userId, String eventName, String category, String startDate, String endDate, String startTime, String endTime, boolean allDay, RepeatType repeat, String period, PriceType priceType, boolean isExclude, String importance, String amount, boolean isFixAmount) {
         this.id = id;
         this.userId = userId;
         this.eventName = eventName;
-        this.alarm = alarm;
-        this.date = date;
+        this.category = category;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.category = category;
+        this.allDay = allDay;
+        this.repeat = repeat;
+        this.period = period;
         this.priceType = priceType;
-        this.expectedSpending = expectedSpending;
-        this.repeatingCycle = repeatingCycle;
-        this.repeatDeadline = repeatDeadline;
-        this.repeatEndDate = repeatEndDate;
-        this.exclusion = exclusion;
+        this.isExclude = isExclude;
         this.importance = importance;
-        this.regularType = regularType;
+        this.amount = amount;
+        this.isFixAmount = isFixAmount;
     }
 
 
@@ -41,57 +39,72 @@ public class Schedule {
     @Column(name = "session_id")
     private String id;
 
-
     // 일단 schedule와 같은 column을 가져간다고 하자.
     @Column(name = "user_id")
     private String userId;
 
+    // 제목
     @Column(name = "event_name")
     private String eventName;
 
-    @Column(name = "alarm")
-    private boolean alarm;
-
-    @Column(name = "date")
-    private String date;
-
-    @Column(name = "start_time")
-    private String startTime;
-
-    @Column(name = "end_time")
-    private String endTime;
-
+    // 카테고리
     @Column(name = "category")
     private String category;
 
+    // 시작 일자
+    @Column(name = "start_date")
+    private String startDate;
+
+    // 종료 일자
+    @Column(name = "end_date")
+    private String endDate;
+
+    // 시작 시간
+    @Column(name = "start_time")
+    private String startTime;
+
+    // 종료 시간
+    @Column(name = "end_time")
+    private String endTime;
+
+    // 하루 종일
+    @Column(name = "is_all_day")
+    private boolean allDay;
+
+    // 반복
+    @Column(name = "repeat")
+    private RepeatType repeat;
+
+    // 반복 기간
+    @Column(name = "period")
+    private String period;
+
+    // 자산 ================================================
+
+    // 입금, 지출
     @Column(name = "price_type")
     private PriceType priceType;
 
-    @Column(name = "expected_spending")
-    private int expectedSpending;
-
-    @Column(name = "repeating_cycle")
-    private String repeatingCycle;
-
-    @Column(name = "repeat_deadline")
-    private String repeatDeadline;
-
-    @Column(name = "repeat_endDate")
-    private String repeatEndDate;
-
+    // 예산에서 제외할 것인지
     @Column(name = "exclusion")
-    private boolean exclusion;
+    private boolean isExclude;
 
+    // 중요도
     @Column(name = "importance")
     private String importance;
 
+    // 자산 설정
+    @Column(name = "set_amount")
+    private String amount;
+
+    // 금액 고정
+    @Column(name = "fix_amount")
+    private boolean isFixAmount;
+
     // ScheduleType로 하나 만들어야 함.
-    @Column(name = "regular_type")
-    private RegularType regularType;
+//    @Column(name = "regular_type")
+//    private RegularType regularType;
 
-    @Column(name = "delete_flag")
-    private boolean deleteFlag = false;
-
-    @OneToOne(mappedBy = "schedule")
+    @OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
     private ScheduleManage scheduleManage;
 }

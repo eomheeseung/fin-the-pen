@@ -3,13 +3,10 @@ package project.fin_the_pen.finClient.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import project.fin_the_pen.finClient.data.schedule.RegularSchedule;
-import project.fin_the_pen.finClient.data.schedule.Schedule;
-import project.fin_the_pen.finClient.data.schedule.ScheduleRequestDTO;
-import project.fin_the_pen.finClient.data.schedule.ScheduleResponseDTO;
+import project.fin_the_pen.finClient.data.schedule.*;
 import project.fin_the_pen.finClient.data.schedule.category.CategoryRequestDTO;
 import project.fin_the_pen.finClient.data.schedule.type.PriceType;
-import project.fin_the_pen.finClient.data.schedule.type.RegularType;
+import project.fin_the_pen.finClient.data.schedule.type.RepeatType;
 import project.fin_the_pen.finClient.util.ScheduleTypeFunc;
 
 import java.util.List;
@@ -18,21 +15,39 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ScheduleRepository {
-    private final CRUDScheduleRepository repository;
+    private final CRUDScheduleRepository scheduleRepository;
     private final CRUDRegularScheduleRepository regularScheduleRepository;
+    private final ManageRepository manageRepository;
 
-    public Boolean registerSchedule(ScheduleRequestDTO dto, PriceType priceType, RegularType regularType) {
+    public Boolean registerSchedule(ScheduleAllDTO dto, PriceType priceType, RepeatType repeatType) {
         try {
-            Schedule schedule = Schedule.builder().id(dto.getId()).userId(dto.getUserId())
-                    .eventName(dto.getEventName()).alarm(dto.isAlarm()).date(dto.getDate())
-                    .startTime(dto.getStartTime()).endTime(dto.getEndTime()).category(dto.getCategory())
-                    .priceType(priceType).regularType(regularType).expectedSpending(dto.getExpectedSpending())
-                    .repeatingCycle(dto.getRepeatingCycle())
-                    .repeatDeadline(dto.getRepeatDeadLine()).repeatEndDate(dto.getRepeatEndDate())
-                    .exclusion(dto.isExclusion()).importance(dto.getImportance())
+            ScheduleDTO scheduleDTO = dto.getScheduleDTO();
+            AssetRequestDTO assetDto = dto.getAssetDto();
+
+            Schedule schedule = Schedule.builder()
+                    .id(dto.getScheduleDTO().getId())
+                    .userId(scheduleDTO.getUserId())
+                    .eventName(scheduleDTO.getEventName())
+                    .category(scheduleDTO.getCategory())
+                    .startDate(scheduleDTO.getStartDate())
+                    .endDate(scheduleDTO.getEndDate())
+                    .startTime(scheduleDTO.getStartTime())
+                    .endTime(scheduleDTO.getEndTime())
+                    .allDay(scheduleDTO.isAllDay())
+                    .repeat(repeatType)
+                    .period(scheduleDTO.getPeriod())
+                    .priceType(priceType)
+                    .isExclude(assetDto.isExclude())
+                    .importance(assetDto.getImportance())
+                    .amount(assetDto.getAmount())
+                    .isFixAmount(assetDto.isFixAmount())
                     .build();
 
-            repository.save(schedule);
+
+            log.info(scheduleDTO.getStartTime());
+            log.info(assetDto.getAmount());
+            scheduleRepository.save(schedule);
+            manageSave(schedule);
             log.info(schedule.getUserId());
 
         } catch (Exception e) {
@@ -41,11 +56,13 @@ public class ScheduleRepository {
         return true;
     }
 
+
+
     /**
      *
      */
     public List<Schedule> findByContainsName(String name) {
-        return repository.findByContainsName(name);
+        return scheduleRepository.findByContainsName(name);
     }
 
     /**
@@ -55,7 +72,7 @@ public class ScheduleRepository {
      * @return
      */
     public List<Schedule> findAllSchedule(String id) {
-        return repository.findScheduleByUserId(id);
+        return scheduleRepository.findScheduleByUserId(id);
     }
 
     /**
@@ -65,12 +82,12 @@ public class ScheduleRepository {
      * @return
      */
     public List<Schedule> findMonthSchedule(String date, String userId) {
-        return repository.findByMonthSchedule(date, userId);
+        return scheduleRepository.findByMonthSchedule(date, userId);
 
     }
 
     public List<Schedule> findMonthSectionSchedule(String startDate, String endDate, String userId) {
-        return repository.findScheduleByDateContains(startDate, endDate, userId);
+        return scheduleRepository.findScheduleByDateContains(startDate, endDate, userId);
     }
 
     /**
@@ -79,7 +96,7 @@ public class ScheduleRepository {
      * @param uuid
      * @return
      */
-    public ScheduleResponseDTO findOneSchedule(String uuid) {
+    /*public ScheduleResponseDTO findOneSchedule(String uuid) {
         Schedule findSchedule = getSingleSchedule(uuid);
 
         ScheduleResponseDTO scheduleResponseDTO = ScheduleResponseDTO.builder()
@@ -100,9 +117,9 @@ public class ScheduleRepository {
                 .build();
 
         return scheduleResponseDTO;
-    }
+    }*/
 
-    public boolean modifySchedule(ScheduleRequestDTO scheduleRequestDTO) {
+    /*public boolean modifySchedule(ScheduleDTO scheduleRequestDTO) {
         Schedule findSchedule = getSingleSchedule(scheduleRequestDTO.getId());
 
         if (findSchedule == null) {
@@ -176,7 +193,7 @@ public class ScheduleRepository {
 
         }
         return true;
-    }
+    }*/
 
     /**
      * callback method
@@ -185,7 +202,7 @@ public class ScheduleRepository {
      * @param dto
      * @param callBack
      */
-    private void isType(ScheduleRequestDTO dto, ScheduleTypeFunc callBack) {
+    private void isType(ScheduleAllDTO dto, ScheduleTypeFunc callBack) {
         callBack.callbackMethod(dto);
     }
 
@@ -195,13 +212,13 @@ public class ScheduleRepository {
                         .setParameter("userId", currentSession)
                         .setParameter("categoryName", categoryRequestDTO.getCategoryName())
                         .getResultList();*/
-        return repository.findScheduleByCategory(currentSession, categoryRequestDTO.getCategoryName());
+        return scheduleRepository.findScheduleByCategory(currentSession, categoryRequestDTO.getCategoryName());
     }
 
     public boolean deleteSchedule(String uuid) {
         Schedule singleSchedule = getSingleSchedule(uuid);
         try {
-            repository.delete(singleSchedule);
+            scheduleRepository.delete(singleSchedule);
 
         } catch (Exception e) {
             return false;
@@ -210,6 +227,13 @@ public class ScheduleRepository {
     }
 
     private Schedule getSingleSchedule(String uuid) {
-        return repository.findById(uuid).get();
+        return scheduleRepository.findById(uuid).get();
+    }
+
+    private static void manageSave(Schedule schedule) {
+        ScheduleManage manage = new ScheduleManage();
+        manage.setDeleteFlag(false);
+        manage.setSchedule(schedule);
+        schedule.setScheduleManage(manage);
     }
 }

@@ -4,20 +4,23 @@ import lombok.extern.slf4j.Slf4j;
 import project.fin_the_pen.finClient.data.schedule.Schedule;
 import project.fin_the_pen.finClient.data.schedule.ScheduleManage;
 
-import javax.persistence.EntityListeners;
-import javax.persistence.PrePersist;
-import javax.transaction.Transactional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @Slf4j
-@EntityListeners(value = ScheduleListener.class)
+//@Component
 // TODO
 public class ScheduleListener {
+    @PersistenceContext
+    EntityManager entityManager;
 
-    @PrePersist
-    @Transactional
+//    @PrePersist
+//    @Transactional
     public void scheduleListen(Schedule entity) {
         if (entity.getScheduleManage() == null) {
             ScheduleManage manage = new ScheduleManage();
+//            entityManager.persist(manage);
+
             manage.setDeleteFlag(false);
             entity.setScheduleManage(manage);
             log.info("test");

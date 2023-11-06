@@ -17,6 +17,9 @@ public class ScheduleManage {
     @Column(name = "delete_flag")
     private boolean deleteFlag;
 
+    @Column(name = "modify_flag")
+    private boolean modifyFlag;
+
     @OneToOne
     @JoinColumn(name = "session_id")
     private Schedule schedule;

@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.ScheduleManage;
-import project.fin_the_pen.finClient.schedule.dto.category.CategoryRequestDTO;
+import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RepeatType;
-import project.fin_the_pen.finClient.schedule.dto.ScheduleDTO;
+import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 
 import java.util.List;

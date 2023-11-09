@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
-
     @PostMapping("/createSchedule")
     public boolean registerSchedule(@RequestBody ScheduleAllDTO scheduleAllDTO, HttpSession session) {
         scheduleAllDTO.getScheduleDTO().setUserId(session.getAttribute("session").toString());

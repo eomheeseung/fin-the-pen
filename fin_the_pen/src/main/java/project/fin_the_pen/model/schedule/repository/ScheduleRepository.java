@@ -23,6 +23,7 @@ public class ScheduleRepository {
     private final CRUDRegularScheduleRepository regularScheduleRepository;
     private final ManageRepository manageRepository;
 
+    // TODO 1
     public Boolean registerSchedule(ScheduleAllDTO dto, PriceType priceType, RepeatType repeatType) {
         try {
             ScheduleDTO scheduleDTO = dto.getScheduleDTO();
@@ -81,7 +82,7 @@ public class ScheduleRepository {
 
     /**
      * 월별로 일정 조회
-     *
+     * TODO 2
      * @param date
      * @return
      */

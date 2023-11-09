@@ -4,9 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum PeriodType {
+    // 기한 설정 x
     None("none", 0L),
+
+    // 매일
     All("all", 1L),
-    numberOf("number of cycle", 2L),
+
+    // 일자
+    numberOf("numberOf", 2L),
+
+    // 종료 기한
     end("end date", 3L);
 
     private String type;

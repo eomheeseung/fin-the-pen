@@ -2,11 +2,10 @@ package project.fin_the_pen.model.user.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import project.fin_the_pen.model.user.entity.User;
-import project.fin_the_pen.model.user.entity.UserAppPassword;
 import project.fin_the_pen.finClient.login.dto.UserRequestDTO;
 import project.fin_the_pen.finClient.login.dto.UserResponseDTO;
-import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
+import project.fin_the_pen.model.user.entity.User;
+import project.fin_the_pen.model.user.entity.UserAppPassword;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -62,7 +61,7 @@ public class LoginRepository {
 
     public UserResponseDTO findByUser(String id, String password) {
         try {
-            return entityManager.createQuery("select new project.fin_the_pen.finClient.data.user.UserResponseDTO(u.id,u.userId,u.name,u.baby, u.registerDate,u.userRole, u.phoneNumber) " +
+            return entityManager.createQuery("select new project.fin_the_pen.finClient.login.dto.UserResponseDTO(u.id,u.userId,u.name,u.baby, u.registerDate,u.userRole, u.phoneNumber) " +
                             "from User u where u.userId =: findId and u.password =: findPw", UserResponseDTO.class)
                     .setParameter("findId", id)
                     .setParameter("findPw", password)

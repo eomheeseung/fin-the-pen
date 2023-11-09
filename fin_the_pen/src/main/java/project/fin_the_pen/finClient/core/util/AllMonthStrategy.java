@@ -12,6 +12,6 @@ public class AllMonthStrategy implements ScheduleStrategy {
     }
 
     private JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, JSONArray jsonArray) {
-        return CategoryStrategy.getJsonArray(scheduleList, jsonArray);
+        return CommonFunc.getJsonArray(scheduleList, jsonArray);
     }
 }

@@ -53,6 +53,7 @@ public class ScheduleService {
          }
          return true;
      }*/
+    // TODO 1. service/ repeat, period 에 따라서
     public Boolean registerSchedule(ScheduleAllDTO allDTO) {
 
         ScheduleDTO scheduleDTO = allDTO.getScheduleDTO();
@@ -67,11 +68,39 @@ public class ScheduleService {
                     isType(allDTO, (dto) ->
                             scheduleRepository.registerSchedule(allDTO, PriceType.Minus, RepeatType.None));
                 }
+            } else if (scheduleDTO.getRepeat().equals(RepeatType.AllDay)) {
+                if (assetDto.getPriceType().equals(PriceType.Plus)) {
+                    isType(allDTO, (dto) ->
+                            scheduleRepository.registerSchedule(allDTO, PriceType.Plus, RepeatType.AllDay));
+                } else {
+                    isType(allDTO, (dto) ->
+                            scheduleRepository.registerSchedule(allDTO, PriceType.Minus, RepeatType.AllDay));
+                }
+            } else if (scheduleDTO.getRepeat().equals(RepeatType.Week)) {
+                if (assetDto.getPriceType().equals(PriceType.Plus)) {
+                    isType(allDTO, (dto) ->
+                            scheduleRepository.registerSchedule(allDTO, PriceType.Plus, RepeatType.Week));
+                } else {
+                    isType(allDTO, (dto) ->
+                            scheduleRepository.registerSchedule(allDTO, PriceType.Minus, RepeatType.Week));
+                }
+            } else if (scheduleDTO.getRepeat().equals(RepeatType.Month)) {
+                if (assetDto.getPriceType().equals(PriceType.Plus)) {
+                    isType(allDTO, (dto) ->
+                            scheduleRepository.registerSchedule(allDTO, PriceType.Plus, RepeatType.Month));
+                } else {
+                    isType(allDTO, (dto) ->
+                            scheduleRepository.registerSchedule(allDTO, PriceType.Minus, RepeatType.Month));
+                }
             }
         } catch (Exception e) {
             return null;
         }
         return true;
+    }
+
+    private void isRepeat(RepeatType repeatType) {
+
     }
 
 

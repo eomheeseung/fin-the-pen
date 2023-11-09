@@ -6,8 +6,6 @@ import project.fin_the_pen.model.schedule.entity.Schedule;
 
 import java.util.List;
 
-import static project.fin_the_pen.finClient.core.util.CategoryStrategy.getJsonArray;
-
 @Slf4j
 public class ContainStrategy implements ScheduleStrategy {
     @Override
@@ -24,6 +22,6 @@ public class ContainStrategy implements ScheduleStrategy {
     }
 
     private JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, JSONArray jsonArray) {
-        return getJsonArray(scheduleList, jsonArray);
+        return CommonFunc.getJsonArray(scheduleList, jsonArray);
     }
 }

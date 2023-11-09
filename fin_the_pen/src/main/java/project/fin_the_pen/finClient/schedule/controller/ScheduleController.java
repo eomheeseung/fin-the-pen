@@ -6,7 +6,7 @@ import org.json.simple.JSONArray;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import project.fin_the_pen.finClient.schedule.dto.ScheduleAllDTO;
+import project.fin_the_pen.finClient.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.finClient.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.finClient.schedule.service.ScheduleService;
 
@@ -20,21 +20,22 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping("/createSchedule")
-    public boolean registerSchedule(@RequestBody ScheduleAllDTO scheduleAllDTO, HttpSession session) {
-        scheduleAllDTO.getScheduleDTO().setUserId(session.getAttribute("session").toString());
+    public boolean registerSchedule(@RequestBody ScheduleDTO dto, HttpSession session) {
+        dto.setUserId(session.getAttribute("session").toString());
         log.info(session.getAttribute("session").toString());
 
         try {
-            scheduleService.registerSchedule(scheduleAllDTO);
+            scheduleService.registerSchedule(dto);
         } catch (Exception e) {
             return false;
         }
 
-        log.info("일정 - " + scheduleAllDTO.getScheduleDTO().getUserId() + "의 일정 이름: " + scheduleAllDTO.getScheduleDTO().getEventName());
+        log.info("일정 - " + dto.getUserId() + "의 일정 이름: " + dto.getEventName());
         return true;
     }
 
     // 유저 한명의 모든 일정 조회
+    // TODO 1!!!!
     @PostMapping("/getAllSchedules")
     public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info("찾는 id {}", map.get("user_id"));

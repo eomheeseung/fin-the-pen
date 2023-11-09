@@ -8,8 +8,6 @@ import project.fin_the_pen.model.schedule.entity.ScheduleManage;
 import project.fin_the_pen.finClient.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RepeatType;
-import project.fin_the_pen.finClient.schedule.dto.AssetRequestDTO;
-import project.fin_the_pen.finClient.schedule.dto.ScheduleAllDTO;
 import project.fin_the_pen.finClient.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 
@@ -24,33 +22,31 @@ public class ScheduleRepository {
     private final ManageRepository manageRepository;
 
     // TODO 1
-    public Boolean registerSchedule(ScheduleAllDTO dto, PriceType priceType, RepeatType repeatType) {
+    public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType, RepeatType repeatType) {
         try {
-            ScheduleDTO scheduleDTO = dto.getScheduleDTO();
-            AssetRequestDTO assetDto = dto.getAssetDto();
 
             Schedule schedule = Schedule.builder()
-                    .id(dto.getScheduleDTO().getId())
-                    .userId(scheduleDTO.getUserId())
-                    .eventName(scheduleDTO.getEventName())
-                    .category(scheduleDTO.getCategory())
-                    .startDate(scheduleDTO.getStartDate())
-                    .endDate(scheduleDTO.getEndDate())
-                    .startTime(scheduleDTO.getStartTime())
-                    .endTime(scheduleDTO.getEndTime())
-                    .allDay(scheduleDTO.isAllDay())
+                    .id(dto.getId())
+                    .userId(dto.getUserId())
+                    .eventName(dto.getEventName())
+                    .category(dto.getCategory())
+                    .startDate(dto.getStartDate())
+                    .endDate(dto.getEndDate())
+                    .startTime(dto.getStartTime())
+                    .endTime(dto.getEndTime())
+                    .allDay(dto.isAllDay())
                     .repeat(repeatType)
-                    .period(scheduleDTO.getPeriod())
+                    .period(dto.getPeriod())
                     .priceType(priceType)
-                    .isExclude(assetDto.isExclude())
-                    .importance(assetDto.getImportance())
-                    .amount(assetDto.getAmount())
-                    .isFixAmount(assetDto.isFixAmount())
+                    .isExclude(dto.isExclude())
+                    .importance(dto.getImportance())
+                    .amount(dto.getAmount())
+                    .isFixAmount(dto.isFixAmount())
                     .build();
 
 
-            log.info(scheduleDTO.getStartTime());
-            log.info(assetDto.getAmount());
+            log.info(dto.getStartTime());
+            log.info(dto.getAmount());
             scheduleRepository.save(schedule);
             manageSave(schedule);
             log.info(schedule.getUserId());
@@ -207,7 +203,7 @@ public class ScheduleRepository {
      * @param dto
      * @param callBack
      */
-    private void isType(ScheduleAllDTO dto, ScheduleTypeFunc callBack) {
+    private void isType(ScheduleDTO dto, ScheduleTypeFunc callBack) {
         callBack.callbackMethod(dto);
     }
 

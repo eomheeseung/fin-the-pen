@@ -28,7 +28,7 @@ public class LoginController {
         return true;
     }*/
 
-    @PostMapping("join")
+    @PostMapping("/join")
     public UserRequestDTO join(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());
         loginService.joinUser(userRequestDTO);
@@ -55,7 +55,7 @@ public class LoginController {
     }
 
 
-    @GetMapping("findUser")
+    @GetMapping("/findUser")
     public User findUser() {
         Optional<User> optionalUser = loginService.TempFindUser();
         return optionalUser.get();
@@ -101,7 +101,7 @@ public class LoginController {
         return currentUser;
     }
 
-    @GetMapping("logout")
+    @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";

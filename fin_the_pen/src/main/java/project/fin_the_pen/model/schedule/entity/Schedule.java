@@ -4,13 +4,11 @@ import lombok.Builder;
 import lombok.Data;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RepeatType;
-import project.fin_the_pen.model.schedule.listener.ScheduleListener;
 
 import javax.persistence.*;
 
 @Entity
 @Data
-@EntityListeners(value = ScheduleListener.class)
 public class Schedule {
     public Schedule() {
     }

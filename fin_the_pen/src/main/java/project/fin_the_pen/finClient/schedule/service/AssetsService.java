@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AssetsService {
     private final ScheduleService scheduleService;
 
-    private JSONArray assetsForSchedule(String date, String userId) {
+    private JSONObject assetsForSchedule(String date, String userId) {
         return scheduleService.findMonthSchedule(date, userId);
     }
 
@@ -58,7 +58,7 @@ public class AssetsService {
         JSONObject responseJson = null;
 
         try {
-            JSONArray jsonArray = assetsForSchedule(date, userId);
+            JSONArray jsonArray = (JSONArray) assetsForSchedule(date, userId).get("data");
             return assetsCalc(jsonArray, new JSONObject());
 
         } catch (Exception e) {

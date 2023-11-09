@@ -3,6 +3,7 @@ package project.fin_the_pen.finClient.schedule.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,6 @@ public class ScheduleController {
     }
 
     // 유저 한명의 모든 일정 조회
-    // TODO 1!!!!
     @PostMapping("/getAllSchedules")
     public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info("찾는 id {}", map.get("user_id"));
@@ -66,11 +66,17 @@ public class ScheduleController {
         }
     }
 
-    // 여기를 수정해야 함
-    // TODO
+    // 여기를 수정해야 함 
+    /*
+    * TODO 로그인하고나서 여기를 수정해야 함
+    *  string으로 반환하면 되는데 jsonArray는 안됨
+    * 
+    * 
+    * 
+    * 
+    * */ 
     @PostMapping("/getMonthSchedules")
-    public JSONArray findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        log.info(map.get("date"));
+    public JSONObject findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
     }
 

@@ -3,6 +3,7 @@ package project.fin_the_pen.finClient.schedule.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundScheduleException;
 import project.fin_the_pen.finClient.core.util.*;
@@ -129,22 +130,29 @@ public class ScheduleService {
         return getJsonArrayBySchedule(byMonthSchedule, new JSONArray());
     }
 */
-    public JSONArray findMonthSchedule(String date, String userId) {
+    public JSONObject findMonthSchedule(String date, String userId) {
         List<Schedule> byMonthSchedule = scheduleRepository.findMonthSchedule(date, userId);
 
         byMonthSchedule.stream().forEach(schedule -> {
             log.info(schedule.getEventName());
         });
+        // 이 위까지는 다 잘 됨
 
         JSONArray responseJsonArray = null;
+        JSONObject responseJson = null;
+
 
         try {
             responseJsonArray = new MonthStrategy().execute(byMonthSchedule);
-            return responseJsonArray;
+            log.info("response Json Array 사이즈 :{}", responseJsonArray.size());
+            responseJson = new JSONObject();
+            responseJson.put("data", responseJsonArray);
+
+            return responseJson;
         } catch (NotFoundScheduleException e) {
-            responseJsonArray = new JSONArray();
-            responseJsonArray.add("error");
-            return responseJsonArray;
+            responseJson = new JSONObject();
+            responseJson.put("data", "error");
+            return responseJson;
         }
     }
 

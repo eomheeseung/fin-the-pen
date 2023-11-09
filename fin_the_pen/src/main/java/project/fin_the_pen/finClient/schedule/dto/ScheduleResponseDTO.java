@@ -18,11 +18,6 @@ public class ScheduleResponseDTO {
     private String repeatDeadline;
     private String repeatEndDate;
     private String category;
-
-    /*
-    TODO
-     1. response 할 때 어떻게 보여줄지..
-     */
     private PriceType type;
 
     private int expectedSpending;

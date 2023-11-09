@@ -59,13 +59,8 @@ public class CommonFunc {
                         jsonObject.put("price_type", "-");
                     }
 
-                    // enum으로 저장하거나 사용하면 find할때돼 enum타입을 사용해야 함.
-                    // "Minus".equals()와 같이 사용하면 찾을 수 없음
-//                    if (PriceType.Minus.equals(schedule.getPriceType())) {
-//                        jsonObject.put("type", "-");
-//                    } else if (PriceType.Plus.equals(schedule.getPriceType())) {
-//                        jsonObject.put("type", "+");
-//                    }
+                    log.info("이벤트 이름: {}", jsonObject.get("event_name"));
+
                     jsonArray.add(jsonObject);
                 });
 

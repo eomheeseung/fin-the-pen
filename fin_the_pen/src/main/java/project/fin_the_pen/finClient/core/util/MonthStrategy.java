@@ -2,10 +2,9 @@ package project.fin_the_pen.finClient.core.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
+import project.fin_the_pen.finClient.core.error.customException.NotFoundScheduleException;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.finClient.schedule.dto.ScheduleResponseDTO;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -14,14 +13,13 @@ public class MonthStrategy implements ScheduleStrategy {
     public JSONArray execute(List<Schedule> scheduleList) {
         JSONArray jsonArray = new JSONArray();
 
-        jsonArray.add(new ArrayList<ScheduleResponseDTO>());
+        // TODO!!!!!
+        jsonArray.add(scheduleList);
 
         if (scheduleList.isEmpty()) {
-            jsonArray.add(null);
-            return jsonArray;
+            throw new NotFoundScheduleException("error");
         }
 
-        log.info(String.valueOf(scheduleList.size()));
         return getJsonArrayBySchedule(scheduleList, new JSONArray());
     }
 

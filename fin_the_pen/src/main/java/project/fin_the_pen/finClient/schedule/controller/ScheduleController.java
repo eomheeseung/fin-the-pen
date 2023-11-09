@@ -66,11 +66,12 @@ public class ScheduleController {
         }
     }
 
+    // 여기를 수정해야 함
+    // TODO
     @PostMapping("/getMonthSchedules")
-    public String findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+    public JSONArray findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
-
-        return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id")).toString();
+        return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
     }
 
     @PostMapping("/getMonthSchedules/section")
@@ -86,7 +87,7 @@ public class ScheduleController {
     /**
      * uuid 하나로만 일정 조회
      *
-     * @param map
+     * @param
      * @return
      */
 //    @PostMapping("/findOne")

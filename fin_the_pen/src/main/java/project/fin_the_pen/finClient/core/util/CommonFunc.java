@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.json.simple.JSONArray;
 import project.fin_the_pen.model.schedule.entity.Schedule;
+import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.util.List;
 
@@ -45,11 +46,18 @@ public class CommonFunc {
                             .put("all_day", schedule.isAllDay())
                             .put("repeat", schedule.getRepeat())
                             .put("period", schedule.getPeriod())
-                            .put("price_type", schedule.getPriceType())
+//                            .put("price_type", schedule.getPriceType())
                             .put("amount", schedule.getAmount())
                             .put("importance", schedule.getImportance())
                             .put("is_fix", schedule.isFixAmount())
                             .put("exclusion", schedule.isExclude());
+
+
+                    if (schedule.getPriceType().equals(PriceType.Plus)) {
+                        jsonObject.put("price_type", "+");
+                    } else if (schedule.getPriceType().equals(PriceType.Minus)) {
+                        jsonObject.put("price_type", "-");
+                    }
 
                     // enum으로 저장하거나 사용하면 find할때돼 enum타입을 사용해야 함.
                     // "Minus".equals()와 같이 사용하면 찾을 수 없음

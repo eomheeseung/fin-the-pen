@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
+import project.fin_the_pen.finClient.core.error.customException.NotFoundScheduleException;
 import project.fin_the_pen.finClient.core.util.*;
 import project.fin_the_pen.finClient.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
@@ -130,7 +131,21 @@ public class ScheduleService {
 */
     public JSONArray findMonthSchedule(String date, String userId) {
         List<Schedule> byMonthSchedule = scheduleRepository.findMonthSchedule(date, userId);
-        return new MonthStrategy().execute(byMonthSchedule);
+
+        byMonthSchedule.stream().forEach(schedule -> {
+            log.info(schedule.getEventName());
+        });
+
+        JSONArray responseJsonArray = null;
+
+        try {
+            responseJsonArray = new MonthStrategy().execute(byMonthSchedule);
+            return responseJsonArray;
+        } catch (NotFoundScheduleException e) {
+            responseJsonArray = new JSONArray();
+            responseJsonArray.add("error");
+            return responseJsonArray;
+        }
     }
 
 

@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.Rollback;
-import project.fin_the_pen.finClient.schedule.controller.ScheduleController;
-import project.fin_the_pen.finClient.login.dto.UserResponseDTO;
+import project.fin_the_pen.finClient.api.schedule.controller.ScheduleController;
+import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.login.LoginTest;
 
 import javax.annotation.PostConstruct;

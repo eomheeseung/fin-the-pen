@@ -42,6 +42,10 @@ dependencies {
 //	codefAPI dependency
 	implementation 'io.codef.api:easycodef-java:1.0.5'
 	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+
 }
 
 tasks.named('test') {

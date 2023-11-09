@@ -3,9 +3,9 @@ package project.fin_the_pen;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import project.fin_the_pen.finClient.schedule.service.AssetsService;
-import project.fin_the_pen.finClient.login.service.LoginService;
-import project.fin_the_pen.finClient.schedule.service.ScheduleService;
+import project.fin_the_pen.model.schedule.service.AssetsService;
+import project.fin_the_pen.model.user.service.LoginService;
+import project.fin_the_pen.model.schedule.service.ScheduleService;
 
 import javax.transaction.Transactional;
 

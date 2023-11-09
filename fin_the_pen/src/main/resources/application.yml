@@ -8,7 +8,7 @@
 #h2 DB
 spring:
   datasource:
-    username: sa
+    username: user
     password:
     url: jdbc:h2:tcp://localhost/~/fin_the_pen
     driver-class-name: org.h2.Driver
@@ -36,3 +36,19 @@ spring:
 #    username: root
 #    password: fomuller@1350
 #    url: jdbc:mysql://localhost:3306/fin_the_pen?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+
+# Swagger springdoc-ui Configuration
+springdoc:
+  packages-to-scan: project.fin_the_pen
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: doc.html            # Swagger UI 경로 => localhost:8000/doc.html
+    tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+    operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+  api-docs:
+    path: /api-docs/json
+    groups:
+      enabled: true
+  cache:
+    disabled: true

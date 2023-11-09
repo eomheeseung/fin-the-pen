@@ -2,8 +2,8 @@ package project.fin_the_pen.model.user.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import project.fin_the_pen.finClient.login.dto.UserRequestDTO;
-import project.fin_the_pen.finClient.login.dto.UserResponseDTO;
+import project.fin_the_pen.model.user.dto.UserRequestDTO;
+import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.entity.User;
 import project.fin_the_pen.model.user.entity.UserAppPassword;
 

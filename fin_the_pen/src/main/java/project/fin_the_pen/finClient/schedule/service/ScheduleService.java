@@ -130,7 +130,7 @@ public class ScheduleService {
         return getJsonArrayBySchedule(byMonthSchedule, new JSONArray());
     }
 */
-    public JSONObject findMonthSchedule(String date, String userId) {
+    public JSONArray findMonthSchedule(String date, String userId) {
         List<Schedule> byMonthSchedule = scheduleRepository.findMonthSchedule(date, userId);
 
         byMonthSchedule.stream().forEach(schedule -> {
@@ -145,14 +145,12 @@ public class ScheduleService {
         try {
             responseJsonArray = new MonthStrategy().execute(byMonthSchedule);
             log.info("response Json Array 사이즈 :{}", responseJsonArray.size());
+            // 여기도 잘 됨.
             responseJson = new JSONObject();
-            responseJson.put("data", responseJsonArray);
-
-            return responseJson;
+            return responseJsonArray;
         } catch (NotFoundScheduleException e) {
-            responseJson = new JSONObject();
-            responseJson.put("data", "error");
-            return responseJson;
+            responseJsonArray.add("error");
+            return responseJsonArray;
         }
     }
 

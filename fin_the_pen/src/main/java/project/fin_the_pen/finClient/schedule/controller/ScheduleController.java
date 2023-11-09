@@ -68,17 +68,28 @@ public class ScheduleController {
 
     // 여기를 수정해야 함 
     /*
-    * TODO 로그인하고나서 여기를 수정해야 함
-    *  string으로 반환하면 되는데 jsonArray는 안됨
-    * 
-    * 
-    * 
-    * 
-    * */ 
+     * TODO 로그인하고나서 여기를 수정해야 함
+     *  string으로 반환하면 되는데 jsonArray는 안됨
+     *
+     *
+     * */
     @PostMapping("/getMonthSchedules")
     public JSONObject findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
+        JSONObject jsonObject = new JSONObject();
+        JSONArray array = scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
+        jsonObject.put("data", array);
+        log.info("data {}", jsonObject);
+
+        return jsonObject;
     }
+
+    /*@PostMapping("/test")
+    public JSONObject testFunc(@RequestBody ConcurrentHashMap<String, String> map) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("0", map.get("name"));
+        jsonObject.put("1", map.get("age"));
+        return jsonObject;
+    }*/
 
     @PostMapping("/getMonthSchedules/section")
     public String findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {

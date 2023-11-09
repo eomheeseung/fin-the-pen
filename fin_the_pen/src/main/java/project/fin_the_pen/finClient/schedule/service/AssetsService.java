@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.finClient.schedule.service.ScheduleService;
 
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AssetsService {
     private final ScheduleService scheduleService;
 
-    private JSONObject assetsForSchedule(String date, String userId) {
+    private JSONArray assetsForSchedule(String date, String userId) {
         return scheduleService.findMonthSchedule(date, userId);
     }
 
@@ -58,7 +57,7 @@ public class AssetsService {
         JSONObject responseJson = null;
 
         try {
-            JSONArray jsonArray = (JSONArray) assetsForSchedule(date, userId).get("data");
+            JSONArray jsonArray = assetsForSchedule(date, userId);
             return assetsCalc(jsonArray, new JSONObject());
 
         } catch (Exception e) {

@@ -61,7 +61,7 @@ public class LoginRepository {
 
     public UserResponseDTO findByUser(String id, String password) {
         try {
-            return entityManager.createQuery("select new project.fin_the_pen.finClient.login.dto.UserResponseDTO(u.id,u.userId,u.name,u.baby, u.registerDate,u.userRole, u.phoneNumber) " +
+            return entityManager.createQuery("select new project.fin_the_pen.model.user.dto.UserResponseDTO(u.id,u.userId,u.name,u.baby, u.registerDate,u.userRole, u.phoneNumber) " +
                             "from User u where u.userId =: findId and u.password =: findPw", UserResponseDTO.class)
                     .setParameter("findId", id)
                     .setParameter("findPw", password)

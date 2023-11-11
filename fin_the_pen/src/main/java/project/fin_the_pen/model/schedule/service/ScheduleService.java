@@ -3,18 +3,20 @@ package project.fin_the_pen.model.schedule.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
-import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
-import project.fin_the_pen.finClient.core.error.customException.NotFoundScheduleException;
 import project.fin_the_pen.finClient.core.util.*;
+import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
+import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
+import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
+import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RepeatType;
-import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -130,28 +132,62 @@ public class ScheduleService {
         return getJsonArrayBySchedule(byMonthSchedule, new JSONArray());
     }
 */
-    public JSONArray findMonthSchedule(String date, String userId) {
-        List<Schedule> byMonthSchedule = scheduleRepository.findMonthSchedule(date, userId);
+    public Map<String, Object> findMonthSchedule(String date, String userId) {
+        List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
 
-        byMonthSchedule.stream().forEach(schedule -> {
-            log.info(schedule.getEventName());
-        });
-        // 이 위까지는 다 잘 됨
-
-        JSONArray responseJsonArray = null;
-        JSONObject responseJson = null;
+        List<ScheduleResponseDTO> responseDTOList = new ArrayList<>();
+        Map<String, Object> responseMap = new HashMap<>();
 
 
-        try {
-            responseJsonArray = new MonthStrategy().execute(byMonthSchedule);
-            log.info("response Json Array 사이즈 :{}", responseJsonArray.size());
-            // 여기도 잘 됨.
-            responseJson = new JSONObject();
-            return responseJsonArray;
-        } catch (NotFoundScheduleException e) {
-            responseJsonArray.add("error");
-            return responseJsonArray;
+        if (responseArray.isEmpty()) {
+            responseMap.put("data", "error");
+        } else {
+            for (Schedule schedule : responseArray) {
+                ScheduleResponseDTO scheduleResponseDTO = ScheduleResponseDTO.builder()
+                        .userId(schedule.getUserId())
+                        .eventName(schedule.getEventName())
+                        .category(schedule.getCategory())
+                        .startDate(schedule.getStartDate())
+                        .endDate(schedule.getEndDate())
+                        .startTime(schedule.getStartTime())
+                        .endTime(schedule.getEndTime())
+                        .allDay(schedule.isAllDay())
+                        .repeat(schedule.getRepeat())
+                        .period(schedule.getPeriod())
+                        .priceType(schedule.getPriceType())
+                        .isExclude(schedule.isExclude())
+                        .importance(schedule.getImportance())
+                        .amount(schedule.getAmount())
+                        .isFixAmount(schedule.isFixAmount())
+                        .build();
+
+                responseDTOList.add(scheduleResponseDTO);
+            }
+            responseMap.put("data", responseDTOList);
         }
+
+
+        return responseMap;
+
+//        byMonthSchedule.stream().forEach(schedule -> {
+//            log.info(schedule.getEventName());
+//        });
+//        // 이 위까지는 다 잘 됨
+//
+//        JSONArray responseJsonArray = null;
+//        JSONObject responseJson = null;
+//
+//
+//        try {
+//            responseJsonArray = new MonthStrategy().execute(byMonthSchedule);
+//            log.info("response Json Array 사이즈 :{}", responseJsonArray.size());
+//            // 여기도 잘 됨.
+//            responseJson = new JSONObject();
+//            return responseJsonArray;
+//        } catch (NotFoundScheduleException e) {
+//            responseJsonArray.add("error");
+//            return responseJsonArray;
+//        }
     }
 
 

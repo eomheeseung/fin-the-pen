@@ -16,7 +16,9 @@ public class AssetsService {
     private final ScheduleService scheduleService;
 
     private JSONArray assetsForSchedule(String date, String userId) {
-        return scheduleService.findMonthSchedule(date, userId);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.add(scheduleService.findMonthSchedule(date, userId));
+        return jsonArray;
     }
 
     // TODO 나중에 정기일정도 고려해서 계산해야 함.

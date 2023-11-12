@@ -13,10 +13,10 @@ import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RepeatType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +57,6 @@ public class ScheduleService {
      }*/
     // TODO 1. service/ repeat, period 에 따라서
     public Boolean registerSchedule(ScheduleDTO requestDTO) {
-
         try {
             if (requestDTO.getRepeat().equals(RepeatType.None)) {
                 if (requestDTO.getPriceType().equals(PriceType.Plus)) {
@@ -134,67 +133,40 @@ public class ScheduleService {
 */
     public Map<String, Object> findMonthSchedule(String date, String userId) {
         List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
-
-        List<ScheduleResponseDTO> responseDTOList = new ArrayList<>();
         Map<String, Object> responseMap = new HashMap<>();
 
-
         if (responseArray.isEmpty()) {
-            responseMap.put("data", "error");
+            responseMap.put("error", "error");
         } else {
-            for (Schedule schedule : responseArray) {
-                ScheduleResponseDTO scheduleResponseDTO = ScheduleResponseDTO.builder()
-                        .userId(schedule.getUserId())
-                        .eventName(schedule.getEventName())
-                        .category(schedule.getCategory())
-                        .startDate(schedule.getStartDate())
-                        .endDate(schedule.getEndDate())
-                        .startTime(schedule.getStartTime())
-                        .endTime(schedule.getEndTime())
-                        .allDay(schedule.isAllDay())
-                        .repeat(schedule.getRepeat())
-                        .period(schedule.getPeriod())
-                        .priceType(schedule.getPriceType())
-                        .isExclude(schedule.isExclude())
-                        .importance(schedule.getImportance())
-                        .amount(schedule.getAmount())
-                        .isFixAmount(schedule.isFixAmount())
-                        .build();
+            List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
+                    .map(this::createScheduleResponseDTO)
+                    .collect(Collectors.toList());
 
-                responseDTOList.add(scheduleResponseDTO);
-            }
             responseMap.put("data", responseDTOList);
         }
 
-
         return responseMap;
-
-//        byMonthSchedule.stream().forEach(schedule -> {
-//            log.info(schedule.getEventName());
-//        });
-//        // 이 위까지는 다 잘 됨
-//
-//        JSONArray responseJsonArray = null;
-//        JSONObject responseJson = null;
-//
-//
-//        try {
-//            responseJsonArray = new MonthStrategy().execute(byMonthSchedule);
-//            log.info("response Json Array 사이즈 :{}", responseJsonArray.size());
-//            // 여기도 잘 됨.
-//            responseJson = new JSONObject();
-//            return responseJsonArray;
-//        } catch (NotFoundScheduleException e) {
-//            responseJsonArray.add("error");
-//            return responseJsonArray;
-//        }
     }
 
-
-   /* public JSONArray findMonthSectionSchedule(String startDate, String endDate, String userId) {
-        List<Schedule> byMonthSchedule = scheduleRepository.findMonthSectionSchedule(startDate, endDate, userId);
-        return getJsonArrayBySchedule(byMonthSchedule, new JSONArray());
-    }*/
+    private ScheduleResponseDTO createScheduleResponseDTO(Schedule schedule) {
+        return ScheduleResponseDTO.builder()
+                .userId(schedule.getUserId())
+                .eventName(schedule.getEventName())
+                .category(schedule.getCategory())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .startTime(schedule.getStartTime())
+                .endTime(schedule.getEndTime())
+                .allDay(schedule.isAllDay())
+                .repeat(schedule.getRepeat())
+                .period(schedule.getPeriod())
+                .priceType(schedule.getPriceType())
+                .isExclude(schedule.isExclude())
+                .importance(schedule.getImportance())
+                .amount(schedule.getAmount())
+                .isFixAmount(schedule.isFixAmount())
+                .build();
+    }
 
     public JSONArray findMonthSectionSchedule(String startDate, String endDate, String userId) {
         List<Schedule> byMonthSchedule = scheduleRepository.findMonthSectionSchedule(startDate, endDate, userId);

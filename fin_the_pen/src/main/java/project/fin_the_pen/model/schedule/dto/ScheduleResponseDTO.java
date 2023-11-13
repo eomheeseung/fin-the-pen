@@ -19,7 +19,6 @@ public class ScheduleResponseDTO {
     private String repeatEndDate;
     private String category;
     private PriceType type;
-
     private int expectedSpending;
     private boolean exclusion;
     private String importance;

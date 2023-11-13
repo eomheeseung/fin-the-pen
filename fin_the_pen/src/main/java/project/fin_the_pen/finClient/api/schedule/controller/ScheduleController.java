@@ -1,5 +1,7 @@
 package project.fin_the_pen.finClient.api.schedule.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -73,12 +75,22 @@ public class ScheduleController {
      *
      *
      * */
-    @PostMapping("/getMonthSchedules")
+    /*@PostMapping("/getMonthSchedules")
     public JSONObject findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         JSONObject jsonObject = new JSONObject();
         JSONArray array = scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
         jsonObject.put("data", array);
         log.info("data {}", jsonObject);
+
+        return jsonObject;
+    }*/
+
+    @PostMapping("/getMonthSchedules")
+    public JSONObject findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray array = scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
+        jsonObject.put("data", array);
+        log.info("data => {}", jsonObject);
 
         return jsonObject;
     }

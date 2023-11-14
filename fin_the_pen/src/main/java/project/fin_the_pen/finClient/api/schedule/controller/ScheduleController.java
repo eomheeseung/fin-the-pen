@@ -37,12 +37,9 @@ public class ScheduleController {
 
     // 유저 한명의 모든 일정 조회
     @PostMapping("/getAllSchedules")
-    public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+    public Map<String, Object> findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info("찾는 id {}", map.get("user_id"));
-        JSONArray array = scheduleService.findAllSchedule(map.get("user_id"));
-        log.info(array.toString());
-
-        return array.toString();
+        return scheduleService.findAllSchedule(map.get("user_id"));
     }
 
     //일정 편집

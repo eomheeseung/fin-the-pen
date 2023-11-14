@@ -102,10 +102,22 @@ public class ScheduleService {
     }
 
 
-    public JSONArray findAllSchedule(String id) {
-        List<Schedule> scheduleList = scheduleRepository.findAllSchedule(id);
-        ScheduleStrategy allStrategy = new AllMonthStrategy();
-        return allStrategy.execute(scheduleList);
+    // 수정 완료
+    public Map<String, Object> findAllSchedule(String userId) {
+        List<Schedule> responseArray = scheduleRepository.findAllSchedule(userId);
+        Map<String, Object> responseMap = new HashMap<>();
+
+        if (responseArray.isEmpty()) {
+            responseMap.put("error", "error");
+        } else {
+            List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
+                    .map(this::createScheduleResponseDTO)
+                    .collect(Collectors.toList());
+
+            responseMap.put("data", responseDTOList);
+        }
+
+        return responseMap;
     }
 
     /*public boolean modifySchedule(ScheduleDTO scheduleRequestDTO) {

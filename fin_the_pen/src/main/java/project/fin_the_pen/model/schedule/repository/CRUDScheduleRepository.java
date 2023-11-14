@@ -26,7 +26,7 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, String> 
     List<Schedule> findScheduleByDateContains(@Param("startDate") String startDate, @Param("endDate") String endDate,
                                               @Param("userId") String userId);*/
 
-    @Query("select s from Schedule s where s.userId = :userId and (s.startDate like %:startDate% or s.endDate like %:endDate%)")
+    @Query("SELECT s FROM Schedule s WHERE s.userId=:userId and s.startDate BETWEEN :startDate AND :endDate")
     List<Schedule> findScheduleByDateContains(@Param("startDate") String startDate, @Param("endDate") String endDate,
                                               @Param("userId") String userId);
 

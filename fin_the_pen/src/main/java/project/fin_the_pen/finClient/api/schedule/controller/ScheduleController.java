@@ -37,12 +37,9 @@ public class ScheduleController {
 
     // 유저 한명의 모든 일정 조회
     @PostMapping("/getAllSchedules")
-    public String findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+    public Map<String, Object> findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info("찾는 id {}", map.get("user_id"));
-        JSONArray array = scheduleService.findAllSchedule(map.get("user_id"));
-        log.info(array.toString());
-
-        return array.toString();
+        return scheduleService.findAllSchedule(map.get("user_id"));
     }
 
     //일정 편집
@@ -85,13 +82,14 @@ public class ScheduleController {
     }*/
 
     @PostMapping("/getMonthSchedules/section")
-    public String findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+    public Map<String, Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
 
-        return scheduleService.findMonthSectionSchedule(map.get("startDate"),
+        Map<String, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"),
                 map.get("endDate"),
-                map.get("user_id")).toString();
-//        return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id")).toString();
+                map.get("user_id"));
+
+        return responseMap;
     }
 
     /**
@@ -118,8 +116,9 @@ public class ScheduleController {
     }
 
     @PostMapping("/find/contains/name")
-    public String findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
-        log.info(scheduleService.findByContainsName(map.get("name")).toString());
-        return scheduleService.findByContainsName(map.get("name")).toString();
+    public Map<String, Object> findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
+        Map<String, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
+        log.info(responseMap.toString());
+        return responseMap;
     }
 }

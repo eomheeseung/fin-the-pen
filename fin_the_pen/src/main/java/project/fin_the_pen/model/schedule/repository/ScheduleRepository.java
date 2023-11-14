@@ -21,7 +21,6 @@ public class ScheduleRepository {
     private final CRUDRegularScheduleRepository regularScheduleRepository;
     private final ManageRepository manageRepository;
 
-    // TODO 1
     public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType, RepeatType repeatType) {
         try {
 
@@ -78,7 +77,6 @@ public class ScheduleRepository {
 
     /**
      * 월별로 일정 조회
-     * TODO !!!!!!!!!!!!!!!!!
      * @param date
      * @return
      */

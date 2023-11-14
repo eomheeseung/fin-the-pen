@@ -8,8 +8,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 @Slf4j
-//@Component
-// TODO
 public class ScheduleListener {
     @PersistenceContext
     EntityManager entityManager;

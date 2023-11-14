@@ -13,7 +13,6 @@ public class MonthStrategy implements ScheduleStrategy {
     public JSONArray execute(List<Schedule> scheduleList) {
         JSONArray jsonArray = new JSONArray();
 
-        // TODO!!!!!
         jsonArray.add(scheduleList);
 
         if (scheduleList.isEmpty()) {

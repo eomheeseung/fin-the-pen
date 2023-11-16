@@ -2,7 +2,6 @@ package project.fin_the_pen.model.schedule.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONArray;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.util.*;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
@@ -132,9 +131,19 @@ public class ScheduleService {
         return getJsonArrayBySchedule(result, new JSONArray());
     }*/
 
-    public JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
-        List<Schedule> result = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
-        return new CategoryStrategy().execute(result);
+    public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+        List<Schedule> responseArray = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
+        Map<String, Object> responseMap = new HashMap<>();
+
+        if (responseArray.isEmpty()) {
+            responseMap.put("data", "error");
+        }else {
+            responseMap.put("data", responseArray.stream()
+                    .map(this::createScheduleResponseDTO)
+                    .collect(Collectors.toList()));
+
+        }
+        return responseMap;
     }
 
 

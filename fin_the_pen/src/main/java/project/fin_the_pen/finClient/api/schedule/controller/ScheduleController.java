@@ -2,7 +2,6 @@ package project.fin_the_pen.finClient.api.schedule.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONArray;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -88,20 +87,12 @@ public class ScheduleController {
         Map<String, Object> responseMap = scheduleService.findMonthSchedule(map.get("data"), map.get("user_id"));
 
         if (responseMap.get("data").equals("error")) {
-            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
             return responseEntity;
         }
         responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
         return responseEntity;
     }
-
-    /*@PostMapping("/test")
-    public JSONObject testFunc(@RequestBody ConcurrentHashMap<String, String> map) {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("0", map.get("name"));
-        jsonObject.put("1", map.get("age"));
-        return jsonObject;
-    }*/
 
     @PostMapping("/getMonthSchedules/section")
     public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
@@ -113,7 +104,7 @@ public class ScheduleController {
                 map.get("user_id"));
 
         if (responseMap.get("data").equals("error")) {
-            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
             return responseEntity;
         }
         responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
@@ -137,10 +128,18 @@ public class ScheduleController {
 //        return find;
 //    }
     @PostMapping("/findCategory")
-    public String findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
-        JSONArray jsonArray = scheduleService
+    public ResponseEntity<Object> findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
+        Map<String, Object> responseMap = scheduleService
                 .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
-        return jsonArray.toString();
+
+        ResponseEntity<Object> responseEntity = null;
+
+        if (responseMap.get("data").equals("error")) {
+            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return responseEntity;
+        }
+        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
+        return responseEntity;
     }
 
     @PostMapping("/find/contains/name")
@@ -149,7 +148,7 @@ public class ScheduleController {
         Map<String, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
 
         if (responseMap.get("data").equals("error")) {
-            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
             return responseEntity;
         }
 

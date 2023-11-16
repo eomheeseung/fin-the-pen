@@ -3,6 +3,8 @@ package project.fin_the_pen.finClient.api.schedule.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,9 +39,19 @@ public class ScheduleController {
 
     // 유저 한명의 모든 일정 조회
     @PostMapping("/getAllSchedules")
-    public Map<String, Object> findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+    public ResponseEntity<Object> findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info("찾는 id {}", map.get("user_id"));
-        return scheduleService.findAllSchedule(map.get("user_id"));
+        Map<String, Object> responseMap = scheduleService.findAllSchedule(map.get("user_id"));
+        ResponseEntity<Object> responseEntity = null;
+
+        if (responseMap.get("data").equals("error")) {
+            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return responseEntity;
+        }
+
+        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
+
+        return responseEntity;
     }
 
     //일정 편집
@@ -71,8 +83,16 @@ public class ScheduleController {
      *
      * */
     @PostMapping("/getMonthSchedules")
-    public Map<String, Object> findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        return scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
+    public ResponseEntity<Object> findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+        ResponseEntity<Object> responseEntity = null;
+        Map<String, Object> responseMap = scheduleService.findMonthSchedule(map.get("data"), map.get("user_id"));
+
+        if (responseMap.get("data").equals("error")) {
+            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return responseEntity;
+        }
+        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
+        return responseEntity;
     }
 
     /*@PostMapping("/test")
@@ -84,14 +104,20 @@ public class ScheduleController {
     }*/
 
     @PostMapping("/getMonthSchedules/section")
-    public Map<String, Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+    public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
+        ResponseEntity<Object> responseEntity;
 
         Map<String, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"),
                 map.get("endDate"),
                 map.get("user_id"));
 
-        return responseMap;
+        if (responseMap.get("data").equals("error")) {
+            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return responseEntity;
+        }
+        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
+        return responseEntity;
     }
 
     /**
@@ -118,9 +144,17 @@ public class ScheduleController {
     }
 
     @PostMapping("/find/contains/name")
-    public Map<String, Object> findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
+    public ResponseEntity<Object> findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
+        ResponseEntity<Object> responseEntity;
         Map<String, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
+
+        if (responseMap.get("data").equals("error")) {
+            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return responseEntity;
+        }
+
+        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
         log.info(responseMap.toString());
-        return responseMap;
+        return responseEntity;
     }
 }

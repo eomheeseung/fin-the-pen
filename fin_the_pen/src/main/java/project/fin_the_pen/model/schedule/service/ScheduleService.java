@@ -108,7 +108,7 @@ public class ScheduleService {
         Map<String, Object> responseMap = new HashMap<>();
 
         if (responseArray.isEmpty()) {
-            responseMap.put("error", "error");
+            responseMap.put("data", "error");
         } else {
             List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
                     .map(this::createScheduleResponseDTO)
@@ -185,9 +185,9 @@ public class ScheduleService {
 
         HashMap<String, Object> responseMap = new HashMap<>();
 
-        if(byMonthSchedule.isEmpty())
+        if (byMonthSchedule.isEmpty())
             responseMap.put("data", "error");
-        else{
+        else {
             responseMap.put("data", byMonthSchedule.stream().map(this::createScheduleResponseDTO).collect(Collectors.toList()));
         }
         return responseMap;

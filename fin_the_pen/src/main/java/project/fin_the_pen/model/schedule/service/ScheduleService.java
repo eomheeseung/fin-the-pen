@@ -157,7 +157,7 @@ public class ScheduleService {
         Map<String, Object> responseMap = new HashMap<>();
 
         if (responseArray.isEmpty()) {
-            responseMap.put("error", "error");
+            responseMap.put("data", "error");
         } else {
             List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
                     .map(this::createScheduleResponseDTO)

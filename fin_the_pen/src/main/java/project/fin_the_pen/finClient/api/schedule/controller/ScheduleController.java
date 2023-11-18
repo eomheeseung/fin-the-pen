@@ -84,7 +84,7 @@ public class ScheduleController {
     @PostMapping("/getMonthSchedules")
     public ResponseEntity<Object> findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         ResponseEntity<Object> responseEntity = null;
-        Map<String, Object> responseMap = scheduleService.findMonthSchedule(map.get("data"), map.get("user_id"));
+        Map<String, Object> responseMap = scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
 
         if (responseMap.get("data").equals("error")) {
             responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);

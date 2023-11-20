@@ -1,5 +1,7 @@
 package project.fin_the_pen.model.schedule.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,38 +24,16 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
-
+    private final ObjectMapper objectMapper;
     ScheduleStrategy monthStrategy = new MonthStrategy();
     ScheduleStrategy sectionStrategy = new SectionStrategy();
     ScheduleStrategy categoryStrategy = new CategoryStrategy();
 
-    /* public Boolean registerSchedule(ScheduleAllDTO dto) {
+    private List convertSnake(List<ScheduleResponseDTO> list) {
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        return objectMapper.convertValue(list, List.class);
+    }
 
-         try {
-             if (scheduleRequestDTO.getRepeat().equals("없음")) {
-                 if (scheduleRequestDTO.getPriceType().equals("+")) {
-                     isType(scheduleRequestDTO, (dto) ->
-                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.None));
-                 } else {
-                     isType(scheduleRequestDTO, (dto) ->
-                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.None));
-                 }
-             } else {
-                 // +가 정기 입금, -가 출금
-                 if (scheduleRequestDTO.getPriceType().equals("+")) {
-                     isType(scheduleRequestDTO, (dto) ->
-                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Plus, RegularType.Deposit));
-                 } else {
-                     isType(scheduleRequestDTO, (dto) ->
-                             scheduleRepository.registerSchedule(scheduleRequestDTO, PriceType.Minus, RegularType.Withdrawal));
-                 }
-             }
-
-         } catch (Exception e) {
-             return null;
-         }
-         return true;
-     }*/
     // TODO 1. service/ repeat, period 에 따라서
     public Boolean registerSchedule(ScheduleDTO requestDTO) {
         try {
@@ -112,12 +92,12 @@ public class ScheduleService {
             List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
                     .map(this::createScheduleResponseDTO)
                     .collect(Collectors.toList());
-
-            responseMap.put("data", responseDTOList);
+            responseMap.put("data", convertSnake(responseDTOList));
         }
 
         return responseMap;
     }
+
 
     /*public boolean modifySchedule(ScheduleDTO scheduleRequestDTO) {
         if (!scheduleRepository.modifySchedule(scheduleRequestDTO)) {
@@ -137,11 +117,11 @@ public class ScheduleService {
 
         if (responseArray.isEmpty()) {
             responseMap.put("data", "error");
-        }else {
-            responseMap.put("data", responseArray.stream()
+        } else {
+            List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
                     .map(this::createScheduleResponseDTO)
-                    .collect(Collectors.toList()));
-
+                    .collect(Collectors.toList());
+            responseMap.put("data", convertSnake(responseDTOList));
         }
         return responseMap;
     }
@@ -163,7 +143,7 @@ public class ScheduleService {
                     .map(this::createScheduleResponseDTO)
                     .collect(Collectors.toList());
 
-            responseMap.put("data", responseDTOList);
+            responseMap.put("data", convertSnake(responseDTOList));
         }
 
         return responseMap;
@@ -190,14 +170,18 @@ public class ScheduleService {
     }
 
     public Map<String, Object> findMonthSectionSchedule(String startDate, String endDate, String userId) {
-        List<Schedule> byMonthSchedule = scheduleRepository.findMonthSectionSchedule(startDate, endDate, userId);
+        List<Schedule> responseArray = scheduleRepository.findMonthSectionSchedule(startDate, endDate, userId);
 
         HashMap<String, Object> responseMap = new HashMap<>();
 
-        if (byMonthSchedule.isEmpty())
+        if (responseArray.isEmpty())
             responseMap.put("data", "error");
         else {
-            responseMap.put("data", byMonthSchedule.stream().map(this::createScheduleResponseDTO).collect(Collectors.toList()));
+            List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
+                    .map(this::createScheduleResponseDTO)
+                    .collect(Collectors.toList());
+
+            responseMap.put("data", convertSnake(responseDTOList));
         }
         return responseMap;
     }
@@ -217,16 +201,18 @@ public class ScheduleService {
 //    }
 
     public Map<String, Object> findByContainsName(String name) {
-        List<Schedule> byContainsNameList = scheduleRepository.findByContainsName(name);
+        List<Schedule> responseArray = scheduleRepository.findByContainsName(name);
 
         HashMap<String, Object> responseMap = new HashMap<>();
 
-        if (byContainsNameList.isEmpty()) {
+        if (responseArray.isEmpty()) {
             responseMap.put("data", "error");
         } else {
-            responseMap.put("data", byContainsNameList.stream()
+            List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
                     .map(this::createScheduleResponseDTO)
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
+
+            responseMap.put("data", convertSnake(responseDTOList));
         }
         return responseMap;
     }

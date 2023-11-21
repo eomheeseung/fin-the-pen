@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class ScheduleController {
     private final ScheduleService scheduleService;
+    private final ConvertResponse convertResponse;
 
     @PostMapping("/createSchedule")
     public boolean registerSchedule(@RequestBody ScheduleDTO dto, HttpSession session) {
@@ -42,19 +44,47 @@ public class ScheduleController {
     public ResponseEntity<Object> findSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info("찾는 id {}", map.get("user_id"));
         Map<String, Object> responseMap = scheduleService.findAllSchedule(map.get("user_id"));
-        ResponseEntity<Object> responseEntity = null;
-
-        if (responseMap.get("data").equals("error")) {
-            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            return responseEntity;
-        }
-
-        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
-
-        return responseEntity;
+        return convertResponse.getResponseEntity(responseMap);
     }
 
-    //일정 편집
+    @PostMapping("/getMonthSchedules")
+    public ResponseEntity<Object> findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+        Map<String, Object> responseMap = scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
+        return convertResponse.getResponseEntity(responseMap);
+    }
+
+    @PostMapping("/getMonthSchedules/section")
+    public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
+        log.info(map.get("date"));
+        Map<String, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"),
+                map.get("endDate"),
+                map.get("user_id"));
+
+        return convertResponse.getResponseEntity(responseMap);
+    }
+
+    @PostMapping("/findCategory")
+    public ResponseEntity<Object> findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
+        Map<String, Object> responseMap = scheduleService
+                .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
+
+        return convertResponse.getResponseEntity(responseMap);
+    }
+
+    @PostMapping("/find/contains/name")
+    public ResponseEntity<Object> findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
+        Map<String, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
+
+        return convertResponse.getResponseEntity(responseMap);
+    }
+
+
+    /**
+     * 일정 수정
+     *
+     * @param dto
+     * @return
+     */
     @PostMapping("/modifySchedule")
     public ResponseEntity<Object> modifySchedule(@RequestBody ScheduleDTO dto) {
         log.info(String.valueOf(dto.getId()));
@@ -91,35 +121,7 @@ public class ScheduleController {
      *
      *
      * */
-    @PostMapping("/getMonthSchedules")
-    public ResponseEntity<Object> findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        ResponseEntity<Object> responseEntity = null;
-        Map<String, Object> responseMap = scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
 
-        if (responseMap.get("data").equals("error")) {
-            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
-            return responseEntity;
-        }
-        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
-        return responseEntity;
-    }
-
-    @PostMapping("/getMonthSchedules/section")
-    public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        log.info(map.get("date"));
-        ResponseEntity<Object> responseEntity;
-
-        Map<String, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"),
-                map.get("endDate"),
-                map.get("user_id"));
-
-        if (responseMap.get("data").equals("error")) {
-            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
-            return responseEntity;
-        }
-        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
-        return responseEntity;
-    }
 
     /**
      * uuid 하나로만 일정 조회
@@ -137,33 +139,5 @@ public class ScheduleController {
 //
 //        return find;
 //    }
-    @PostMapping("/findCategory")
-    public ResponseEntity<Object> findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
-        Map<String, Object> responseMap = scheduleService
-                .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
 
-        ResponseEntity<Object> responseEntity = null;
-
-        if (responseMap.get("data").equals("error")) {
-            responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            return responseEntity;
-        }
-        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
-        return responseEntity;
-    }
-
-    @PostMapping("/find/contains/name")
-    public ResponseEntity<Object> findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
-        ResponseEntity<Object> responseEntity;
-        Map<String, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
-
-        if (responseMap.get("data").equals("error")) {
-            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
-            return responseEntity;
-        }
-
-        responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
-        log.info(responseMap.toString());
-        return responseEntity;
-    }
 }

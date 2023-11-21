@@ -102,8 +102,6 @@ public class ScheduleService {
      * @return
      */
     public boolean modifySchedule(ScheduleDTO requestDTO) {
-
-
         try {
             boolean flag = false;
 
@@ -149,11 +147,6 @@ public class ScheduleService {
         }
     }
 
-    /*public JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
-        List<Schedule> result = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
-        return getJsonArrayBySchedule(result, new JSONArray());
-    }*/
-
     public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         List<Schedule> responseArray = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
         Map<String, Object> responseMap = new HashMap<>();
@@ -194,6 +187,7 @@ public class ScheduleService {
 
     private ScheduleResponseDTO createScheduleResponseDTO(Schedule schedule) {
         return ScheduleResponseDTO.builder()
+                .id(schedule.getId())
                 .userId(schedule.getUserId())
                 .eventName(schedule.getEventName())
                 .category(schedule.getCategory())

@@ -17,7 +17,7 @@ public class ScheduleResponseDTO {
     private boolean allDay;
     private RepeatType repeat;
     private String period;
-    private PriceType priceType;
+    private String priceType;
     private boolean isExclude;
     private String importance;
     private String amount;
@@ -35,7 +35,7 @@ public class ScheduleResponseDTO {
         this.allDay = allDay;
         this.repeat = repeat;
         this.period = period;
-        this.priceType = priceType;
+        this.priceType = priceType.getType();
         this.isExclude = isExclude;
         this.importance = importance;
         this.amount = amount;

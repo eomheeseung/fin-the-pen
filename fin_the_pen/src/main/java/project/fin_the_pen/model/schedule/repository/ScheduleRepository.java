@@ -12,6 +12,7 @@ import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RepeatType;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Slf4j
@@ -21,6 +22,7 @@ public class ScheduleRepository {
     private final CRUDRegularScheduleRepository regularScheduleRepository;
     private final ManageRepository manageRepository;
 
+    // TODO 1
     public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType, RepeatType repeatType) {
         try {
 
@@ -57,7 +59,6 @@ public class ScheduleRepository {
     }
 
 
-
     /**
      *
      */
@@ -77,6 +78,8 @@ public class ScheduleRepository {
 
     /**
      * 월별로 일정 조회
+     * TODO !!!!!!!!!!!!!!!!!
+     *
      * @param date
      * @return
      */
@@ -118,81 +121,38 @@ public class ScheduleRepository {
         return scheduleResponseDTO;
     }*/
 
-    /*public boolean modifySchedule(ScheduleDTO scheduleRequestDTO) {
-        Schedule findSchedule = getSingleSchedule(scheduleRequestDTO.getId());
+    /**
+     * 일정 수정, 일단 간단한 일정만
+     */
+    public Boolean modifySchedule(ScheduleDTO dto, PriceType priceType, RepeatType repeatType) {
 
-        if (findSchedule == null) {
+        try {
+            Optional<Schedule> optionalSchedule = Optional.of(getSingleSchedule(dto.getId())
+                    .orElseThrow(() -> new RuntimeException("error")));
+
+            Schedule findSchedule = optionalSchedule.get();
+            findSchedule.setEventName(dto.getEventName());
+            findSchedule.setCategory(dto.getCategory());
+            findSchedule.setStartDate(dto.getStartDate());
+            findSchedule.setEndDate(dto.getEndDate());
+            findSchedule.setStartTime(dto.getStartTime());
+            findSchedule.setEndTime(dto.getEndTime());
+            findSchedule.setAllDay(dto.isAllDay());
+            findSchedule.setRepeat(repeatType);
+            findSchedule.setPeriod(dto.getPeriod());
+            findSchedule.setPriceType(priceType);
+            findSchedule.setExclude(dto.isExclude());
+            findSchedule.setImportance(dto.getImportance());
+            findSchedule.setAmount(dto.getAmount());
+            findSchedule.setFixAmount(dto.isFixAmount());
+
+            scheduleRepository.save(findSchedule);
+            return true;
+
+        } catch (RuntimeException e) {
             return false;
-        } else {
-            // 정기 일정인 경우
-            if (!findSchedule.getRegularType().equals(RegularType.None)) {
-                RegularType regularType = null;
-                PriceType priceType = null;
-
-                if (!scheduleRequestDTO.getRepeatingCycle().equals("없음")) {
-                    if (scheduleRequestDTO.getPriceType().equals("+")) {
-                        priceType = PriceType.Plus;
-                        regularType = RegularType.Deposit;
-                    } else {
-                        priceType = PriceType.Minus;
-                        regularType = RegularType.Withdrawal;
-                    }
-                }
-
-
-                RegularSchedule regularSchedule = RegularSchedule.builder().userId(findSchedule.getUserId())
-                        .scheduleId(findSchedule.getId())
-                        .eventName(scheduleRequestDTO.getEventName())
-                        .alarm(scheduleRequestDTO.isAlarm())
-                        .date(scheduleRequestDTO.getDate())
-                        .startTime(scheduleRequestDTO.getStartTime())
-                        .endTime(scheduleRequestDTO.getEndTime())
-                        .repeatingCycle(scheduleRequestDTO.getRepeatingCycle())
-                        .repeatDeadline(scheduleRequestDTO.getRepeatDeadLine())
-                        .repeatEndDate(scheduleRequestDTO.getRepeatEndDate())
-                        .category(scheduleRequestDTO.getCategory())
-                        .expectedSpending(scheduleRequestDTO.getExpectedSpending())
-                        .importance(scheduleRequestDTO.getImportance())
-                        .exclusion(scheduleRequestDTO.isExclusion())
-                        .regularType(regularType)
-                        .priceType(priceType).build();
-
-                regularScheduleRepository.save(regularSchedule);
-            } else {
-                // 정기 일정이 아닌경우
-                try {
-                    findSchedule.setEventName(scheduleRequestDTO.getEventName());
-                    findSchedule.setAlarm(scheduleRequestDTO.isAlarm());
-                    findSchedule.setDate(scheduleRequestDTO.getDate());
-                    findSchedule.setStartTime(scheduleRequestDTO.getStartTime());
-                    findSchedule.setEndTime(scheduleRequestDTO.getEndTime());
-                    findSchedule.setRepeatingCycle(scheduleRequestDTO.getRepeatingCycle());
-                    findSchedule.setRepeatDeadline(scheduleRequestDTO.getRepeatDeadLine());
-                    findSchedule.setRepeatEndDate(scheduleRequestDTO.getRepeatEndDate());
-                    findSchedule.setCategory(scheduleRequestDTO.getCategory());
-
-                    isType(scheduleRequestDTO, dto -> {
-                        if (dto.getPriceType().equals("+")) {
-                            findSchedule.setPriceType(PriceType.Plus);
-                        } else {
-                            findSchedule.setPriceType(PriceType.Minus);
-                        }
-                    });
-
-
-                    findSchedule.setExpectedSpending(scheduleRequestDTO.getExpectedSpending());
-                    findSchedule.setImportance(scheduleRequestDTO.getImportance());
-                    findSchedule.setExclusion(scheduleRequestDTO.isExclusion());
-//                entityManager.merge(findSchedule);
-                    repository.save(findSchedule);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
         }
-        return true;
-    }*/
+    }
 
     /**
      * callback method
@@ -206,15 +166,10 @@ public class ScheduleRepository {
     }
 
     public List<Schedule> findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
-        /*List<Schedule> resultList =
-                entityManager.createQuery("select s from Schedule s where s.userId= :userId and s.category = :categoryName", Schedule.class)
-                        .setParameter("userId", currentSession)
-                        .setParameter("categoryName", categoryRequestDTO.getCategoryName())
-                        .getResultList();*/
         return scheduleRepository.findScheduleByCategory(currentSession, categoryRequestDTO.getCategoryName());
     }
 
-    public boolean deleteSchedule(String uuid) {
+    /*public boolean deleteSchedule(String uuid) {
         Schedule singleSchedule = getSingleSchedule(uuid);
         try {
             scheduleRepository.delete(singleSchedule);
@@ -223,10 +178,10 @@ public class ScheduleRepository {
             return false;
         }
         return true;
-    }
+    }*/
 
-    private Schedule getSingleSchedule(String uuid) {
-        return scheduleRepository.findById(uuid).get();
+    private Optional<Schedule> getSingleSchedule(String uuid) {
+        return scheduleRepository.findById(uuid);
     }
 
     private static void manageSave(Schedule schedule) {

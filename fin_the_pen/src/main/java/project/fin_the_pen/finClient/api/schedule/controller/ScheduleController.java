@@ -12,6 +12,7 @@ import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,17 +55,26 @@ public class ScheduleController {
     }
 
     //일정 편집
-//    @PostMapping("/modifySchedule")
-//    @ResponseBody
-//    public Boolean modifySchedule(@RequestBody ScheduleDTO scheduleRequestDTO) {
-//        log.info(String.valueOf(scheduleRequestDTO.getId()));
-//        if (!scheduleService.modifySchedule(scheduleRequestDTO)) {
-//            return false;
-//        }
-//        return true;
-//    }
+    @PostMapping("/modifySchedule")
+    public ResponseEntity<Object> modifySchedule(@RequestBody ScheduleDTO dto) {
+        log.info(String.valueOf(dto.getId()));
+        ResponseEntity<Object> responseEntity = null;
 
-    @PostMapping("/deleteSchedule")
+        boolean flag = scheduleService.modifySchedule(dto);
+        Map<String, Boolean> responseMap = new HashMap<>();
+
+        if (flag) {
+            responseMap.put("data", true);
+            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
+        } else {
+            responseMap.put("data", false);
+            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
+        }
+
+        return responseEntity;
+    }
+
+    /*@PostMapping("/deleteSchedule")
     public boolean deleteSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("id"));
         if (scheduleService.deleteSchedule(map.get("id"))) {
@@ -72,7 +82,7 @@ public class ScheduleController {
         } else {
             return false;
         }
-    }
+    }*/
 
     // 여기를 수정해야 함 
     /*

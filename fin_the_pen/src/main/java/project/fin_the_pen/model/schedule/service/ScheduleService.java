@@ -98,13 +98,59 @@ public class ScheduleService {
         return responseMap;
     }
 
+    /**
+     * 일정 수정 기본.
+     *
+     * @param requestDTO
+     * @return
+     */
+    public boolean modifySchedule(ScheduleDTO requestDTO) {
 
-    /*public boolean modifySchedule(ScheduleDTO scheduleRequestDTO) {
-        if (!scheduleRepository.modifySchedule(scheduleRequestDTO)) {
+
+        try {
+            boolean flag = false;
+
+            if (requestDTO.getRepeat().equals(RepeatType.None)) {
+                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                    flag = modifyIsType(requestDTO, (dto) ->
+                            scheduleRepository.modifySchedule(dto, PriceType.Plus, RepeatType.None));
+                } else {
+                    flag = modifyIsType(requestDTO, (dto) ->
+                            scheduleRepository.modifySchedule(dto, PriceType.Minus, RepeatType.None));
+                }
+            } else if (requestDTO.getRepeat().equals(RepeatType.AllDay)) {
+                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                    flag = modifyIsType(requestDTO, (dto) ->
+                            scheduleRepository.modifySchedule(dto, PriceType.Plus, RepeatType.AllDay));
+                } else {
+                    flag = modifyIsType(requestDTO, (dto) ->
+                            scheduleRepository.modifySchedule(dto, PriceType.Minus, RepeatType.AllDay));
+                }
+            } else if (requestDTO.getRepeat().equals(RepeatType.Week)) {
+                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                    flag = modifyIsType(requestDTO, (dto) ->
+                            scheduleRepository.modifySchedule(dto, PriceType.Plus, RepeatType.Week));
+                } else {
+                    flag = modifyIsType(requestDTO, (dto) ->
+                            scheduleRepository.modifySchedule(dto, PriceType.Minus, RepeatType.Week));
+                }
+            } else if (requestDTO.getRepeat().equals(RepeatType.Month)) {
+                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                    flag = modifyIsType(requestDTO, (dto) ->
+                            scheduleRepository.modifySchedule(dto, PriceType.Plus, RepeatType.Month));
+                } else {
+                    flag = modifyIsType(requestDTO, (dto) ->
+                            scheduleRepository.modifySchedule(dto, PriceType.Minus, RepeatType.Month));
+                }
+            }
+            if (!flag) {
+                throw new RuntimeException();
+            }
+            return flag;
+        } catch (RuntimeException e) {
             return false;
         }
-        return true;
-    }*/
+    }
 
     /*public JSONArray findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         List<Schedule> result = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
@@ -187,14 +233,14 @@ public class ScheduleService {
     }
 
 
-    public boolean deleteSchedule(String uuid) {
+    /*public boolean deleteSchedule(String uuid) {
         try {
             scheduleRepository.deleteSchedule(uuid);
         } catch (Exception e) {
             return false;
         }
         return true;
-    }
+    }*/
 
 //    public ScheduleResponseDTO findOne(String uuid) {
 //        return scheduleRepository.findOneSchedule(uuid);
@@ -225,6 +271,10 @@ public class ScheduleService {
      */
     private void isType(ScheduleDTO dto, ScheduleTypeFunc callback) {
         callback.callbackMethod(dto);
+    }
+
+    private boolean modifyIsType(ScheduleDTO dto, ScheduleModifyFunc callback) {
+        return callback.modifyCallBack(dto);
     }
 
     /**

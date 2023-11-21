@@ -25,9 +25,6 @@ import java.util.stream.Collectors;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ObjectMapper objectMapper;
-    ScheduleStrategy monthStrategy = new MonthStrategy();
-    ScheduleStrategy sectionStrategy = new SectionStrategy();
-    ScheduleStrategy categoryStrategy = new CategoryStrategy();
 
     private List convertSnake(List<ScheduleResponseDTO> list) {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);

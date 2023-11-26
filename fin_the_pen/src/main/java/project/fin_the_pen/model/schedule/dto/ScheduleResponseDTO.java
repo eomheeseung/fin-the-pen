@@ -2,8 +2,9 @@ package project.fin_the_pen.model.schedule.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
+import project.fin_the_pen.model.schedule.entity.embedded.RepeatType;
 import project.fin_the_pen.model.schedule.type.PriceType;
-import project.fin_the_pen.model.schedule.type.RepeatType;
 
 @Data
 public class ScheduleResponseDTO {
@@ -17,7 +18,7 @@ public class ScheduleResponseDTO {
     private String endTime;
     private boolean allDay;
     private RepeatType repeat;
-    private String period;
+    private PeriodType period;
     private String priceType;
     private boolean isExclude;
     private String importance;
@@ -25,7 +26,7 @@ public class ScheduleResponseDTO {
     private boolean isFixAmount;
 
     @Builder
-    public ScheduleResponseDTO(String id, String userId, String eventName, String category, String startDate, String endDate, String startTime, String endTime, boolean allDay, RepeatType repeat, String period, PriceType priceType, boolean isExclude, String importance, String amount, boolean isFixAmount) {
+    public ScheduleResponseDTO(String id, String userId, String eventName, String category, String startDate, String endDate, String startTime, String endTime, boolean allDay, RepeatType repeat, PeriodType period, PriceType priceType, boolean isExclude, String importance, String amount, boolean isFixAmount) {
         this.id = id;
         this.userId = userId;
         this.eventName = eventName;

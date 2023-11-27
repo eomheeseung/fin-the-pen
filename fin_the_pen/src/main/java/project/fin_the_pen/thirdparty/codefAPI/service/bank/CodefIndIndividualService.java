@@ -79,7 +79,7 @@ public class CodefIndIndividualService {
 
     /**
      * 보유계좌
-     * TODO 1. 이거 objectMapper로 리팩토링하면 오류남.
+     * TODO 이거 objectMapper로 리팩토링하면 오류남.
      *
      * @param dto
      * @return

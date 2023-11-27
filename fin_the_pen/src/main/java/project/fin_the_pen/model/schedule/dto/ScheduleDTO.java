@@ -3,7 +3,6 @@ package project.fin_the_pen.model.schedule.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import project.fin_the_pen.model.schedule.type.PriceType;
-import project.fin_the_pen.model.schedule.type.RepeatType;
 
 @Data
 public class ScheduleDTO {
@@ -44,7 +43,7 @@ public class ScheduleDTO {
 
     // 반복
     @JsonProperty(value = "repeat")
-    private RepeatType repeat;
+    private String repeat;
 
     // 반복 기간
     @JsonProperty(value = "period")

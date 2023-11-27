@@ -116,8 +116,6 @@ public class ScheduleController {
 
     // 여기를 수정해야 함 
     /*
-     * TODO 로그인하고나서 여기를 수정해야 함
-     *  string으로 반환하면 되는데 jsonArray는 안됨
      *
      *
      * */

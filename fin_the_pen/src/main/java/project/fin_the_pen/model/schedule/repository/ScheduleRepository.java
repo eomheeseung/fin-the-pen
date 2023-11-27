@@ -2,14 +2,16 @@ package project.fin_the_pen.model.schedule.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.ScheduleManage;
+import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
+import project.fin_the_pen.model.schedule.entity.embedded.RepeatType;
 import project.fin_the_pen.model.schedule.type.PriceType;
-import project.fin_the_pen.model.schedule.type.RepeatType;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +25,9 @@ public class ScheduleRepository {
     private final ManageRepository manageRepository;
 
     // TODO 1
-    public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType, RepeatType repeatType) {
+    public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType) {
         try {
+            Certain result = getCertain(dto);
 
             Schedule schedule = Schedule.builder()
                     .id(dto.getId())
@@ -36,8 +39,8 @@ public class ScheduleRepository {
                     .startTime(dto.getStartTime())
                     .endTime(dto.getEndTime())
                     .allDay(dto.isAllDay())
-                    .repeat(repeatType)
-                    .period(dto.getPeriod())
+                    .repeat(result.repeatType)
+                    .period(result.periodType)
                     .priceType(priceType)
                     .isExclude(dto.isExclude())
                     .importance(dto.getImportance())
@@ -122,13 +125,19 @@ public class ScheduleRepository {
     }*/
 
     /**
-     * 일정 수정, 일단 간단한 일정만
+     *
+     * 일정 수정
+     * TODO
+     *  만약, "매주 반복 + 2024.01.01"로 생성했는데
+     *  수정에서 "매월 반복 + 2024.02.01"로 수정되면, 매주 반복을 없애고 매월 반복으로 바꿔야 함...
      */
-    public Boolean modifySchedule(ScheduleDTO dto, PriceType priceType, RepeatType repeatType) {
+    public Boolean modifySchedule(ScheduleDTO dto, PriceType priceType) {
 
         try {
             Optional<Schedule> optionalSchedule = Optional.of(getSingleSchedule(dto.getId())
                     .orElseThrow(() -> new RuntimeException("error")));
+
+            Certain result = getCertain(dto);
 
             Schedule findSchedule = optionalSchedule.get();
             findSchedule.setEventName(dto.getEventName());
@@ -138,8 +147,8 @@ public class ScheduleRepository {
             findSchedule.setStartTime(dto.getStartTime());
             findSchedule.setEndTime(dto.getEndTime());
             findSchedule.setAllDay(dto.isAllDay());
-            findSchedule.setRepeat(repeatType);
-            findSchedule.setPeriod(dto.getPeriod());
+            findSchedule.setRepeat(result.repeatType);
+            findSchedule.setPeriod(result.periodType);
             findSchedule.setPriceType(priceType);
             findSchedule.setExclude(dto.isExclude());
             findSchedule.setImportance(dto.getImportance());
@@ -153,6 +162,8 @@ public class ScheduleRepository {
             return false;
         }
     }
+
+
 
     /**
      * callback method
@@ -189,5 +200,53 @@ public class ScheduleRepository {
         manage.setDeleteFlag(false);
         manage.setSchedule(schedule);
         schedule.setScheduleManage(manage);
+    }
+
+    @NotNull
+    private static Certain getCertain(ScheduleDTO dto) {
+        RepeatType repeatType = new RepeatType();
+        String repeatTypeValue = dto.getRepeat();
+
+        switch (repeatTypeValue) {
+            case "day":
+                repeatType.setDay("day");
+                break;
+            case "everyWeek":
+                repeatType.setDay("everyWeek");
+                break;
+            case "Monthly":
+                repeatType.setDay("monthly");
+                break;
+            case "everyYear":
+                repeatType.setDay("everyYear");
+                break;
+        }
+
+        PeriodType periodType = new PeriodType();
+
+        String periodTypeValue = dto.getPeriod();
+
+        switch (periodTypeValue) {
+            case "keepRepeat":
+                periodType.setKeepRepeat("keepRepeat");
+                break;
+            case "certain":
+                repeatType.setDay("certain");
+                break;
+            case "endDate":
+                repeatType.setDay("endDate");
+                break;
+        }
+        return new Certain(repeatType, periodType);
+    }
+
+    private static class Certain {
+        public final RepeatType repeatType;
+        public final PeriodType periodType;
+
+        public Certain(RepeatType repeatType, PeriodType periodType) {
+            this.repeatType = repeatType;
+            this.periodType = periodType;
+        }
     }
 }

@@ -12,7 +12,6 @@ import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
-import project.fin_the_pen.model.schedule.type.RepeatType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,47 +33,19 @@ public class ScheduleService {
     // TODO 1. service/ repeat, period 에 따라서
     public Boolean registerSchedule(ScheduleDTO requestDTO) {
         try {
-            if (requestDTO.getRepeat().equals(RepeatType.None)) {
-                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                    isType(requestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(dto, PriceType.Plus, RepeatType.None));
-                } else {
-                    isType(requestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(dto, PriceType.Minus, RepeatType.None));
-                }
-            } else if (requestDTO.getRepeat().equals(RepeatType.AllDay)) {
-                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                    isType(requestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(dto, PriceType.Plus, RepeatType.AllDay));
-                } else {
-                    isType(requestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(dto, PriceType.Minus, RepeatType.AllDay));
-                }
-            } else if (requestDTO.getRepeat().equals(RepeatType.Week)) {
-                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                    isType(requestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(dto, PriceType.Plus, RepeatType.Week));
-                } else {
-                    isType(requestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(dto, PriceType.Minus, RepeatType.Week));
-                }
-            } else if (requestDTO.getRepeat().equals(RepeatType.Month)) {
-                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                    isType(requestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(dto, PriceType.Plus, RepeatType.Month));
-                } else {
-                    isType(requestDTO, (dto) ->
-                            scheduleRepository.registerSchedule(dto, PriceType.Minus, RepeatType.Month));
-                }
+            if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                isType(requestDTO, (dto) ->
+                        scheduleRepository.registerSchedule(dto, PriceType.Plus));
+            } else {
+                isType(requestDTO, (dto) ->
+                        scheduleRepository.registerSchedule(dto, PriceType.Minus));
             }
+
+
         } catch (Exception e) {
             return null;
         }
         return true;
-    }
-
-    private void isRepeat(RepeatType repeatType) {
-
     }
 
 
@@ -105,46 +76,22 @@ public class ScheduleService {
         try {
             boolean flag = false;
 
-            if (requestDTO.getRepeat().equals(RepeatType.None)) {
-                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                    flag = modifyIsType(requestDTO, (dto) ->
-                            scheduleRepository.modifySchedule(dto, PriceType.Plus, RepeatType.None));
-                } else {
-                    flag = modifyIsType(requestDTO, (dto) ->
-                            scheduleRepository.modifySchedule(dto, PriceType.Minus, RepeatType.None));
-                }
-            } else if (requestDTO.getRepeat().equals(RepeatType.AllDay)) {
-                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                    flag = modifyIsType(requestDTO, (dto) ->
-                            scheduleRepository.modifySchedule(dto, PriceType.Plus, RepeatType.AllDay));
-                } else {
-                    flag = modifyIsType(requestDTO, (dto) ->
-                            scheduleRepository.modifySchedule(dto, PriceType.Minus, RepeatType.AllDay));
-                }
-            } else if (requestDTO.getRepeat().equals(RepeatType.Week)) {
-                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                    flag = modifyIsType(requestDTO, (dto) ->
-                            scheduleRepository.modifySchedule(dto, PriceType.Plus, RepeatType.Week));
-                } else {
-                    flag = modifyIsType(requestDTO, (dto) ->
-                            scheduleRepository.modifySchedule(dto, PriceType.Minus, RepeatType.Week));
-                }
-            } else if (requestDTO.getRepeat().equals(RepeatType.Month)) {
-                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                    flag = modifyIsType(requestDTO, (dto) ->
-                            scheduleRepository.modifySchedule(dto, PriceType.Plus, RepeatType.Month));
-                } else {
-                    flag = modifyIsType(requestDTO, (dto) ->
-                            scheduleRepository.modifySchedule(dto, PriceType.Minus, RepeatType.Month));
-                }
+            if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                flag = modifyIsType(requestDTO, (dto) ->
+                        scheduleRepository.modifySchedule(dto, PriceType.Plus));
+            } else {
+                flag = modifyIsType(requestDTO, (dto) ->
+                        scheduleRepository.modifySchedule(dto, PriceType.Minus));
             }
             if (!flag) {
                 throw new RuntimeException();
             }
             return flag;
-        } catch (RuntimeException e) {
+        } catch (
+                RuntimeException e) {
             return false;
         }
+
     }
 
     public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {

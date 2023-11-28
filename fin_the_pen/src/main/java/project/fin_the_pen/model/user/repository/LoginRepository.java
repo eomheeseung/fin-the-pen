@@ -1,11 +1,12 @@
 package project.fin_the_pen.model.user.repository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
+import project.fin_the_pen.config.token.TokenProvider;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
-import project.fin_the_pen.model.user.dto.UserResponseDTO;
-import project.fin_the_pen.model.user.entity.User;
 import project.fin_the_pen.model.user.entity.UserAppPassword;
+import project.fin_the_pen.model.user.entity.Users;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,16 +22,18 @@ public class LoginRepository {
     EntityManager entityManager;
 
     private final CRUDLoginRepository crudLoginRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     public void init() {
-        User user = new User();
-        user.setUserId("admin@naver.com");
-        user.setName("관리자");
-        user.setPassword("1234");
-        user.setPhoneNumber("010-1111-1111");
-        user.setRegisterDate(java.util.Calendar.getInstance().getTime());
+        Users users = new Users();
+        users.setUserId("admin@naver.com");
+        users.setName("관리자");
+        users.setPassword("1234");
+        users.setPhoneNumber("010-1111-1111");
+        users.setRegisterDate(java.util.Calendar.getInstance().getTime());
 
-        crudLoginRepository.save(user);
+        crudLoginRepository.save(users);
     }
 
     /**
@@ -43,29 +46,45 @@ public class LoginRepository {
         if (!duplicateLogin(userRequestDTO)) {
             return false;
         }
+        Optional<Users> result = crudLoginRepository.findByUserIdAndPassword(userRequestDTO.getUserId(), userRequestDTO.getPassword());
 
-        User user = new User();
-        user.setUserId(userRequestDTO.getUser_id());
-        user.setName(userRequestDTO.getName());
-        user.setPassword(userRequestDTO.getPassword());
-        user.setPhoneNumber(userRequestDTO.getPhone_number());
-        user.setRegisterDate(userRequestDTO.getRegisterDate());
+        Users users = result.get();
+        result.filter(it -> passwordEncoder.matches(userRequestDTO.getPassword(), it.getPassword()))
+                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
+        String token = tokenProvider.createToken(String.format("%s%s", users.getUserId(), users.getUserRole()));
 
-        crudLoginRepository.save(user);
+        // TODO 11111!!
+        /*Users users = new Users();
+        users.setUserId(userRequestDTO.getUserId());
+        users.setName(userRequestDTO.getName());
+        users.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
+        users.setPhoneNumber(userRequestDTO.getPhoneNumber());
+        users.setRegisterDate(userRequestDTO.getRegisterDate());*/
+
+        crudLoginRepository.save(users);
         return true;
     }
 
-    public List<User> findAll() {
+    public boolean modifyUser(Users modifyUser) {
+        try {
+            crudLoginRepository.save(modifyUser);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public List<Users> findAll() {
         return crudLoginRepository.findAll();
     }
 
-    public UserResponseDTO findByUser(String id, String password) {
+    public Users findByUser(String id, String password) {
         try {
-            return entityManager.createQuery("select new project.fin_the_pen.model.user.dto.UserResponseDTO(u.id,u.userId,u.name,u.baby, u.registerDate,u.userRole, u.phoneNumber) " +
-                            "from User u where u.userId =: findId and u.password =: findPw", UserResponseDTO.class)
+            Optional<Users> result = Optional.of(entityManager.createQuery("select Users from Users u where u.userId =: findId and u.password =: findPw", Users.class)
                     .setParameter("findId", id)
                     .setParameter("findPw", password)
-                    .getSingleResult();
+                    .getSingleResult());
+            return result.get();
         } catch (Exception e) {
             return null;
         }
@@ -98,9 +117,9 @@ public class LoginRepository {
     }
 
     private boolean duplicateLogin(UserRequestDTO userRequestDTO) {
-        Optional<User> duplicatedUser = findAll().stream()
-                .filter(user -> user.getUserId().equals(userRequestDTO.getUser_id()) &&
-                        user.getPassword().equals(userRequestDTO.getPassword())).findAny();
+        Optional<Users> duplicatedUser = findAll().stream()
+                .filter(users -> users.getUserId().equals(userRequestDTO.getUserId()) &&
+                        users.getPassword().equals(userRequestDTO.getPassword())).findAny();
 
         // db에 동일한 id, pw가 중복이 안되면
         if (duplicatedUser.isEmpty()) {

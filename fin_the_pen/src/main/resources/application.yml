@@ -21,6 +21,11 @@ spring:
         format_sql: true
     show-sql: true
 
+  security:
+    user:
+      password: 1
+
+
 # mysql DB
 #spring:
 #  jpa:

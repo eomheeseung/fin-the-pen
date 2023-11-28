@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.service.LoginService;
-import project.fin_the_pen.model.user.entity.User;
+import project.fin_the_pen.model.user.entity.Users;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -50,8 +50,8 @@ public class LoginController {
 
 
     @GetMapping("/findUser")
-    public User findUser() {
-        Optional<User> optionalUser = loginService.TempFindUser();
+    public Users findUser() {
+        Optional<Users> optionalUser = loginService.TempFindUser();
         return optionalUser.get();
     }
 
@@ -86,7 +86,7 @@ public class LoginController {
     @PostMapping("/fin-the-pen-web/sign-in")
     public UserResponseDTO apiLogin(@RequestBody UserRequestDTO userRequestDTO, HttpServletRequest request) throws IOException {
         try {
-            currentUser = loginService.findByUser(userRequestDTO.getUser_id(), userRequestDTO.getPassword());
+            currentUser = loginService.convertUserFunc(userRequestDTO.getUserId(), userRequestDTO.getPassword());
             grantSession(request);
         } catch (NullPointerException e) {
             log.info("로그인 - 존재하지 않는 사용자 입니다.");
@@ -94,6 +94,12 @@ public class LoginController {
         }
         return currentUser;
     }
+
+    @PostMapping("/fin-the-pen-web/modify")
+    public boolean modify(@RequestBody UserRequestDTO userRequestDTO) throws IOException {
+        return loginService.update(userRequestDTO);
+    }
+
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
@@ -128,7 +134,7 @@ public class LoginController {
 
     private void grantSession(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        session.setAttribute("session", currentUser.getUser_id());
+        session.setAttribute("session", currentUser.getUserId());
         log.info((String) session.getAttribute("session"));
     }
 }

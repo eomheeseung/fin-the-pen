@@ -1,4 +1,4 @@
-package project.fin_the_pen.config.token;
+package project.fin_the_pen.config.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,6 +37,15 @@ public class TokenProvider {
                 .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))    // JWT 토큰 발급 시간
                 .setExpiration(Date.from(Instant.now().plus(expirationHours, ChronoUnit.HOURS)))    // JWT 토큰 만료 시간
                 .compact(); // JWT 토큰 생성
+    }
+
+    public String validateTokenAndGetSubject(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey.getBytes())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 }
 

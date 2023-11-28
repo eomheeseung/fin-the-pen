@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface CRUDLoginRepository extends JpaRepository<Users, Long> {
-    public Optional<Users> findByUserIdAndPassword(String id, String password);
+    public Optional<Users> findByUserId(String id);
 }

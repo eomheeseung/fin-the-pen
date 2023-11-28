@@ -3,80 +3,80 @@ package project.fin_the_pen.model.user.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import project.fin_the_pen.config.security.TokenProvider;
+import project.fin_the_pen.model.user.dto.SignInRequest;
+import project.fin_the_pen.model.user.dto.SignInResponse;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.entity.Users;
+import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
 import project.fin_the_pen.model.user.repository.LoginRepository;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
 
 @Service
 @RequiredArgsConstructor
 public class LoginService {
     private final LoginRepository loginRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder encoder;
     private final ObjectMapper objectMapper;
+    private final CRUDLoginRepository crudLoginRepository;
+    private final TokenProvider tokenProvider;
+    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     @PostConstruct
     public void convertStrategy() {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
-    public void init() {
-        loginRepository.init();
+    // 등록: 그냥 여기서 처리하자.
+    // TODO 406 에러 해결해야 함..
+    @Transactional
+    public UserResponseDTO signUp(UserRequestDTO userRequestDTO) {
+        Users users = crudLoginRepository.save(Users.from(userRequestDTO, encoder));
+
+        try {
+            crudLoginRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("이미 사용중인 아이디입니다.");
+        }
+
+        return UserResponseDTO.builder().userId(users.getUserId())
+                .baby(users.getBaby())
+                .phoneNumber(users.getPhoneNumber())
+                .registerDate(users.getRegisterDate())
+                .name(users.getName())
+                .build();
     }
 
-    public boolean joinUser(UserRequestDTO userRequestDTO) {
-        if (loginRepository.joinRegister(userRequestDTO)) {
-            return true;
-        } else return false;
+    @Transactional(readOnly = true)
+    public SignInResponse signIn(SignInRequest request) {
+        Users users = crudLoginRepository.findByUserId(request.getLoginId())
+                // 암호화된 비밀번호와 비교하도록 수정, 인코딩되서 이렇게 비교해야 함.
+                .filter(it -> encoder.matches(request.getPassword(), it.getPassword()))
+                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
+        String token = tokenProvider.createToken(String.format("%s:%s", users.getUserId(), users.getUserRole()));
+        return new SignInResponse(users.getName(), users.getUserRole(), token);
     }
 
 
-    public Optional<Users> TempFindUser() {
+    /*public Optional<Users> TempFindUser() {
         List<Users> all = loginRepository.findAll();
         return all.stream().filter(users -> users.getName().equals("테스터")).findFirst();
-    }
+    }*/
 
     /*public UserResponseDTO findByUser(String id, String password) {
         UserResponseDTO currentUser = loginRepository.findByUser(id, password);
         return currentUser;
     }*/
 
-    public UserResponseDTO convertUserFunc(String id, String password) {
-        Users currentUser = findByUser(id, password);
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setUserId(currentUser.getUserId());
-        userResponseDTO.setUserRole(currentUser.getUserRole());
-        userResponseDTO.setBaby(currentUser.getBaby());
-        userResponseDTO.setName(currentUser.getName());
-        userResponseDTO.setRegisterDate(currentUser.getRegisterDate());
-
-        UserResponseDTO convertUser = objectMapper.convertValue(userResponseDTO, UserResponseDTO.class);
-        return convertUser;
-    }
-
     public Users findByUser(String id, String password) {
         return loginRepository.findByUser(id, password);
-    }
-
-    public boolean update(UserRequestDTO dto) {
-        Users modifyUser = findByUser(dto.getUserId(), dto.getPassword());
-
-        modifyUser.setPassword(dto.getPassword() == null || dto.getPassword().isBlank()
-                ? modifyUser.getPassword() : passwordEncoder.encode(dto.getPassword()));
-        modifyUser.setName(dto.getName());
-        modifyUser.setPhoneNumber(dto.getPhoneNumber());
-
-        try {
-            return loginRepository.modifyUser(modifyUser);
-        } catch (Exception e) {
-            return false;
-        }
     }
 
 

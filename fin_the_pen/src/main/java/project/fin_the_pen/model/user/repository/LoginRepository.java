@@ -3,7 +3,7 @@ package project.fin_the_pen.model.user.repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
-import project.fin_the_pen.config.token.TokenProvider;
+import project.fin_the_pen.config.security.TokenProvider;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.entity.UserAppPassword;
 import project.fin_the_pen.model.user.entity.Users;
@@ -25,7 +25,7 @@ public class LoginRepository {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
-    public void init() {
+    /*public void init() {
         Users users = new Users();
         users.setUserId("admin@naver.com");
         users.setName("관리자");
@@ -34,36 +34,31 @@ public class LoginRepository {
         users.setRegisterDate(java.util.Calendar.getInstance().getTime());
 
         crudLoginRepository.save(users);
-    }
+    }*/
 
-    /**
-     * 회원가입 (중복 검사까지)
-     *
-     * @param userRequestDTO
-     * @return
-     */
-    public boolean joinRegister(UserRequestDTO userRequestDTO) {
+
+    /*public boolean joinRegister(UserRequestDTO userRequestDTO) {
         if (!duplicateLogin(userRequestDTO)) {
             return false;
         }
-        Optional<Users> result = crudLoginRepository.findByUserIdAndPassword(userRequestDTO.getUserId(), userRequestDTO.getPassword());
+        Optional<Users> result = crudLoginRepository
+                .findByUserIdAndPassword(userRequestDTO.getUserId(), userRequestDTO.getPassword());
 
         Users users = result.get();
         result.filter(it -> passwordEncoder.matches(userRequestDTO.getPassword(), it.getPassword()))
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
         String token = tokenProvider.createToken(String.format("%s%s", users.getUserId(), users.getUserRole()));
 
-        // TODO 11111!!
-        /*Users users = new Users();
+        *//*Users users = new Users();
         users.setUserId(userRequestDTO.getUserId());
         users.setName(userRequestDTO.getName());
         users.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
         users.setPhoneNumber(userRequestDTO.getPhoneNumber());
-        users.setRegisterDate(userRequestDTO.getRegisterDate());*/
+        users.setRegisterDate(userRequestDTO.getRegisterDate());*//*
 
         crudLoginRepository.save(users);
         return true;
-    }
+    }*/
 
     public boolean modifyUser(Users modifyUser) {
         try {

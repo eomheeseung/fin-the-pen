@@ -1,31 +1,37 @@
 package project.fin_the_pen.finClient.api.login.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import project.fin_the_pen.finClient.core.util.ApiResponse;
+import project.fin_the_pen.model.user.dto.SignInRequest;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.service.LoginService;
-import project.fin_the_pen.model.user.entity.Users;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Optional;
+import java.time.LocalDate;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "API 테스트")
 public class LoginController {
     private final LoginService loginService;
     private UserResponseDTO currentUser;
 
     @PostMapping("/join")
     public UserRequestDTO join(@RequestBody UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());
-        loginService.joinUser(userRequestDTO);
+        userRequestDTO.setRegisterDate(LocalDate.now());
+        loginService.signUp(userRequestDTO);
         log.info("user: " + userRequestDTO.getName() + " 등록");
         return userRequestDTO;
     }
@@ -36,24 +42,28 @@ public class LoginController {
      * @return
      */
     @PostMapping("/fin-the-pen-web/sign-up")
-    public boolean signIn(@RequestBody UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRegisterDate(Calendar.getInstance().getTime());
+    @Operation(summary = "회원 가입")
+    public ApiResponse signUp(@RequestBody UserRequestDTO userRequestDTO) {
+        return ApiResponse.success(loginService.signUp(userRequestDTO));
+    }
 
-        // 이 경우 아이디 비밀번호가 중복되므로 회원가입창으로 리다이렉트
-        if (!loginService.joinUser(userRequestDTO)) {
-            log.info("회원가입 - 중복된 아이디, 패드워드 존재");
-            return false;
-        }
-        log.info("회원가입 - user: " + userRequestDTO.getName() + " 등록, 로그인 성공");
-        return true;
+    /**
+     * 로그인
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/fin-the-pen-web/sign-in")
+    @Operation(summary = "로그인")
+    public ApiResponse signIn(@RequestBody SignInRequest request) {
+        return ApiResponse.success(loginService.signIn(request));
     }
 
 
-    @GetMapping("/findUser")
+    /*@GetMapping("/findUser")
     public Users findUser() {
         Optional<Users> optionalUser = loginService.TempFindUser();
         return optionalUser.get();
-    }
+    }*/
 
     /*@GetMapping("login")
     @ResponseBody
@@ -63,13 +73,7 @@ public class LoginController {
         return currentUser;
     }*/
 
-    /**
-     * 로그인
-     * @param userRequestDTO
-     * @param request
-     * @return
-     * @throws IOException
-     */
+
 //    @PostMapping("/fin-the-pen-web/sign-in")
     /*@ResponseBody
     public UserResponseDTO apiLogin(@RequestBody UserRequestDTO userRequestDTO, HttpServletRequest request) throws IOException {
@@ -83,22 +87,12 @@ public class LoginController {
         return currentUser;
     }*/
 
-    @PostMapping("/fin-the-pen-web/sign-in")
-    public UserResponseDTO apiLogin(@RequestBody UserRequestDTO userRequestDTO, HttpServletRequest request) throws IOException {
-        try {
-            currentUser = loginService.convertUserFunc(userRequestDTO.getUserId(), userRequestDTO.getPassword());
-            grantSession(request);
-        } catch (NullPointerException e) {
-            log.info("로그인 - 존재하지 않는 사용자 입니다.");
-            return null;
-        }
-        return currentUser;
-    }
 
-    @PostMapping("/fin-the-pen-web/modify")
+
+    /*@PostMapping("/fin-the-pen-web/modify")
     public boolean modify(@RequestBody UserRequestDTO userRequestDTO) throws IOException {
         return loginService.update(userRequestDTO);
-    }
+    }*/
 
 
     @GetMapping("/logout")

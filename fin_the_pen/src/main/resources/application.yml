@@ -25,6 +25,22 @@ spring:
     user:
       password: 1
 
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: doc.html            # Swagger UI 경로 => localhost:8000/doc.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+  api-docs:
+    path: /api-docs/json
+    groups:
+      enabled: true
+  cache:
+    disabled: true
+
+  packages-to-scan: project.fin_the_pen.finClient.api.login.controller
+
 
 # mysql DB
 #spring:
@@ -42,18 +58,23 @@ spring:
 #    password: fomuller@1350
 #    url: jdbc:mysql://localhost:3306/fin_the_pen?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
 
+
+
+
+
+
 # Swagger springdoc-ui Configuration
-springdoc:
-  packages-to-scan: project.fin_the_pen
-  default-consumes-media-type: application/json;charset=UTF-8
-  default-produces-media-type: application/json;charset=UTF-8
-  swagger-ui:
-    path: doc.html            # Swagger UI 경로 => localhost:8000/doc.html
-    tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
-    operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
-  api-docs:
-    path: /api-docs/json
-    groups:
-      enabled: true
-  cache:
-    disabled: true
+#springdoc:
+#  packages-to-scan: project.fin_the_pen
+#  default-consumes-media-type: application/json;charset=UTF-8
+#  default-produces-media-type: application/json;charset=UTF-8
+#  swagger-ui:
+#    path: doc.html            # Swagger UI 경로 => localhost:8000/doc.html
+#    tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+#    operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+#  api-docs:
+#    path: /api-docs/json
+#    groups:
+#      enabled: true
+#  cache:
+#    disabled: true

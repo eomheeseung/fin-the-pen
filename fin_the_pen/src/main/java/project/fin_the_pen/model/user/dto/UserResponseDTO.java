@@ -1,16 +1,20 @@
 package project.fin_the_pen.model.user.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import project.fin_the_pen.model.user.type.UsersType;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class UserResponseDTO {
-    private Long id;
     private String userId;
     private String name;
-    private Date baby;
-    private Date registerDate;
-    private String userRole;
+    private LocalDate baby;
+    private LocalDate registerDate;
+    private UsersType userRole;
     private String phoneNumber;
 }

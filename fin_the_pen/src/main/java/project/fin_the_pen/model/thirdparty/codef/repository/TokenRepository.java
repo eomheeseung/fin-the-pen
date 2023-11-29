@@ -1,7 +1,7 @@
 package project.fin_the_pen.model.thirdparty.codef.repository;
 
 import org.springframework.stereotype.Repository;
-import project.fin_the_pen.model.token.entity.Token;
+import project.fin_the_pen.thirdparty.codefAPI.token.entity.Token;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,8 +16,7 @@ public class TokenRepository {
 
     public void init(String accessToken) {
         Token token = new Token();
-        token.setAccessToken(accessToken);
-
+        token.setToken(accessToken);
         entityManager.persist(token);
     }
 

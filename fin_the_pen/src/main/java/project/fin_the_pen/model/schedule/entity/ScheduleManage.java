@@ -1,12 +1,6 @@
 package project.fin_the_pen.model.schedule.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import project.fin_the_pen.model.schedule.entity.Schedule;
-
-import javax.persistence.*;
-
-@Entity
+/*@Entity
 @Setter
 @Getter
 public class ScheduleManage {
@@ -24,4 +18,4 @@ public class ScheduleManage {
     @OneToOne
     @JoinColumn(name = "session_id")
     private Schedule schedule;
-}
+}*/

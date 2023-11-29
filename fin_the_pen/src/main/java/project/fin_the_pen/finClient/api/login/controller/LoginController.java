@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "API 테스트")
+@Tag(name = "API 테스트 / 로그인")
 public class LoginController {
     private final LoginService loginService;
     private UserResponseDTO currentUser;

@@ -8,7 +8,6 @@ import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.ScheduleManage;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.embedded.RepeatType;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -22,15 +21,15 @@ import java.util.Optional;
 public class ScheduleRepository {
     private final CRUDScheduleRepository scheduleRepository;
     private final CRUDRegularScheduleRepository regularScheduleRepository;
-    private final ManageRepository manageRepository;
+//    private final ManageRepository manageRepository;
 
     // TODO 1
-    public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType) {
+    public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType, String token) {
         try {
             Certain result = getCertain(dto);
 
             Schedule schedule = Schedule.builder()
-                    .id(dto.getId())
+                    .token(token)
                     .userId(dto.getUserId())
                     .eventName(dto.getEventName())
                     .category(dto.getCategory())
@@ -52,9 +51,8 @@ public class ScheduleRepository {
             log.info(dto.getStartTime());
             log.info(dto.getAmount());
             scheduleRepository.save(schedule);
-            manageSave(schedule);
+//            manageSave(schedule);
             log.info(schedule.getUserId());
-
         } catch (Exception e) {
             return null;
         }
@@ -134,7 +132,7 @@ public class ScheduleRepository {
     public Boolean modifySchedule(ScheduleDTO dto, PriceType priceType) {
 
         try {
-            Optional<Schedule> optionalSchedule = Optional.of(getSingleSchedule(dto.getId())
+            Optional<Schedule> optionalSchedule = Optional.of(getSingleSchedule(dto.getUserId())
                     .orElseThrow(() -> new RuntimeException("error")));
 
             Certain result = getCertain(dto);
@@ -195,12 +193,12 @@ public class ScheduleRepository {
         return scheduleRepository.findById(uuid);
     }
 
-    private static void manageSave(Schedule schedule) {
+    /*private static void manageSave(Schedule schedule) {
         ScheduleManage manage = new ScheduleManage();
         manage.setDeleteFlag(false);
         manage.setSchedule(schedule);
         schedule.setScheduleManage(manage);
-    }
+    }*/
 
     @NotNull
     private static Certain getCertain(ScheduleDTO dto) {
@@ -212,13 +210,13 @@ public class ScheduleRepository {
                 repeatType.setDay("day");
                 break;
             case "everyWeek":
-                repeatType.setDay("everyWeek");
+                repeatType.setEveryYear("everyWeek");
                 break;
             case "Monthly":
-                repeatType.setDay("monthly");
+                repeatType.setMonthly("Monthly");
                 break;
             case "everyYear":
-                repeatType.setDay("everyYear");
+                repeatType.setEveryYear("everyYear");
                 break;
         }
 
@@ -231,10 +229,10 @@ public class ScheduleRepository {
                 periodType.setKeepRepeat("keepRepeat");
                 break;
             case "certain":
-                repeatType.setDay("certain");
+                periodType.setCertain("certain");
                 break;
             case "endDate":
-                repeatType.setDay("endDate");
+                periodType.setRepeatEndDate("endDate");
                 break;
         }
         return new Certain(repeatType, periodType);

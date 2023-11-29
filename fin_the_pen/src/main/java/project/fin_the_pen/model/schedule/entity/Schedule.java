@@ -1,7 +1,6 @@
 package project.fin_the_pen.model.schedule.entity;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.embedded.RepeatType;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -9,34 +8,15 @@ import project.fin_the_pen.model.schedule.type.PriceType;
 import javax.persistence.*;
 
 @Entity
-@Data
+@Builder
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
 public class Schedule {
-    public Schedule() {
-    }
-    @Builder
-    public Schedule(String id, String userId, String eventName, String category, String startDate, String endDate, String startTime, String endTime, boolean allDay, RepeatType repeat, PeriodType period, PriceType priceType, boolean isExclude, String importance, String amount, boolean isFixAmount) {
-        this.id = id;
-        this.userId = userId;
-        this.eventName = eventName;
-        this.category = category;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.allDay = allDay;
-        this.repeat = repeat;
-        this.period = period;
-        this.priceType = priceType;
-        this.isExclude = isExclude;
-        this.importance = importance;
-        this.amount = amount;
-        this.isFixAmount = isFixAmount;
-    }
-
-
     @Id
-    @Column(name = "session_id")
-    private String id;
+    @Column(name = "access_token")
+    private String token;
 
     // 일단 schedule와 같은 column을 가져간다고 하자.
     @Column(name = "user_id")
@@ -72,12 +52,12 @@ public class Schedule {
 
     // 반복
     @Column(name = "repeat")
-    @Embedded
+//    @Embedded
     private RepeatType repeat;
 
     // 반복 기간
     @Column(name = "period")
-    @Embedded
+//    @Embedded
     private PeriodType period;
 
     // 자산 ================================================
@@ -106,6 +86,6 @@ public class Schedule {
 //    @Column(name = "regular_type")
 //    private RegularType regularType;
 
-    @OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
-    private ScheduleManage scheduleManage;
+    /*@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
+    private ScheduleManage scheduleManage;*/
 }

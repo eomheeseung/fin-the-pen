@@ -39,7 +39,7 @@ springdoc:
   cache:
     disabled: true
 
-  packages-to-scan: project.fin_the_pen.finClient.api.login.controller
+  packages-to-scan: project.fin_the_pen.finClient
 
 
 # mysql DB

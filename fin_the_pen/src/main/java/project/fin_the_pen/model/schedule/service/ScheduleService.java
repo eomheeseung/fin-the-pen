@@ -5,17 +5,22 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.finClient.core.util.*;
+import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundException;
+import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
+import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.usersToken.entity.UsersToken;
+import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,46 +29,66 @@ import java.util.stream.Collectors;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ObjectMapper objectMapper;
+    private final UsersTokenRepository tokenRepository;
 
     private List convertSnake(List<ScheduleResponseDTO> list) {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         return objectMapper.convertValue(list, List.class);
     }
 
-    // TODO 1. service/ repeat, period 에 따라서
-    public Boolean registerSchedule(ScheduleDTO requestDTO) {
+    // TODO 1. 토큰 인증체계
+    public Boolean registerSchedule(ScheduleDTO requestDTO, String extractToken) {
+        String accessToken = extractToken.substring(7);
+
         try {
+            Optional<UsersToken> usersToken =
+                    Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
+                            .orElseThrow(() -> new TokenNotFoundException("token not found")));
+
+            String token = usersToken.get().getUsersToken();
+            log.info("parseToken : {}", token);
+
             if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                 isType(requestDTO, (dto) ->
-                        scheduleRepository.registerSchedule(dto, PriceType.Plus));
+                        scheduleRepository.registerSchedule(dto, PriceType.Plus, token));
             } else {
                 isType(requestDTO, (dto) ->
-                        scheduleRepository.registerSchedule(dto, PriceType.Minus));
+                        scheduleRepository.registerSchedule(dto, PriceType.Minus, token));
             }
 
-
         } catch (Exception e) {
-            return null;
+            log.info(e.getMessage());
+            return false;
         }
         return true;
     }
 
 
     // 수정 완료
-    public Map<String, Object> findAllSchedule(String userId) {
-        List<Schedule> responseArray = scheduleRepository.findAllSchedule(userId);
-        Map<String, Object> responseMap = new HashMap<>();
+    public Map<String, Object> findAllSchedule(String extractToken) {
+        String accessToken = extractToken.substring(7);
 
-        if (responseArray.isEmpty()) {
-            responseMap.put("data", "error");
-        } else {
-            List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
-                    .map(this::createScheduleResponseDTO)
-                    .collect(Collectors.toList());
-            responseMap.put("data", convertSnake(responseDTOList));
+        try {
+            Optional<UsersToken> usersToken =
+                    Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
+                            .orElseThrow(() -> new TokenNotFoundException("token not found")));
+            String token = usersToken.get().getUsersToken();
+
+            List<Schedule> responseArray = scheduleRepository.findAllSchedule(token);
+            Map<String, Object> responseMap = new HashMap<>();
+
+            if (responseArray.isEmpty()) {
+                responseMap.put("data", "error");
+            } else {
+                List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
+                        .map(this::createScheduleResponseDTO)
+                        .collect(Collectors.toList());
+                responseMap.put("data", convertSnake(responseDTOList));
+            }
+            return responseMap;
+        } catch (Exception e) {
+            throw new RuntimeException("error");
         }
-
-        return responseMap;
     }
 
     /**
@@ -134,7 +159,7 @@ public class ScheduleService {
 
     private ScheduleResponseDTO createScheduleResponseDTO(Schedule schedule) {
         return ScheduleResponseDTO.builder()
-                .id(schedule.getId())
+                // token
                 .userId(schedule.getUserId())
                 .eventName(schedule.getEventName())
                 .category(schedule.getCategory())

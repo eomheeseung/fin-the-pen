@@ -8,7 +8,7 @@ import project.fin_the_pen.thirdparty.codefAPI.service.connectedId.ConnectedServ
 import project.fin_the_pen.thirdparty.codefAPI.service.CodefPublishTokenService;
 import project.fin_the_pen.thirdparty.codefAPI.service.bank.CodefIndIndividualService;
 import project.fin_the_pen.finClient.core.error.customException.ConnectedSaveException;
-import project.fin_the_pen.model.token.entity.Token;
+import project.fin_the_pen.thirdparty.codefAPI.token.entity.Token;
 import project.fin_the_pen.thirdparty.codefAPI.dto.bank.individual.*;
 
 import java.io.IOException;

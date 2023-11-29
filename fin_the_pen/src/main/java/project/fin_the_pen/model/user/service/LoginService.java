@@ -16,9 +16,10 @@ import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.entity.Users;
 import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
 import project.fin_the_pen.model.user.repository.LoginRepository;
+import project.fin_the_pen.model.usersToken.entity.UsersToken;
+import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.annotation.PostConstruct;
-import java.text.SimpleDateFormat;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class LoginService {
     private final ObjectMapper objectMapper;
     private final CRUDLoginRepository crudLoginRepository;
     private final TokenProvider tokenProvider;
-    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    private final UsersTokenRepository tokenRepository;
 
     @PostConstruct
     public void convertStrategy() {
@@ -37,7 +38,6 @@ public class LoginService {
     }
 
     // 등록: 그냥 여기서 처리하자.
-    // TODO 406 에러 해결해야 함..
     @Transactional
     public UserResponseDTO signUp(UserRequestDTO userRequestDTO) {
         Users users = crudLoginRepository.save(Users.from(userRequestDTO, encoder));
@@ -65,6 +65,10 @@ public class LoginService {
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
         log.info("find users Id:{}", users.getUserId());
         String token = tokenProvider.createToken(String.format("%s:%s", users.getUserId(), users.getUserRole()));
+
+        UsersToken accessToken = UsersToken.builder().usersToken(token).build();
+        tokenRepository.save(accessToken);
+
         return new SignInResponse(users.getName(), users.getUserRole(), token);
     }
 

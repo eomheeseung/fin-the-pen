@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import project.fin_the_pen.thirdparty.codefAPI.dto.bank.individual.*;
 import project.fin_the_pen.thirdparty.codefAPI.logic.IndividualAPILogic;
 import project.fin_the_pen.model.thirdparty.codef.repository.TokenRepository;
-import project.fin_the_pen.model.token.entity.Token;
+import project.fin_the_pen.thirdparty.codefAPI.token.entity.Token;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -43,7 +43,7 @@ public class CodefIndIndividualService {
 
     public List<Token> findToken() {
         List<Token> list = tokenRepository.findToken();
-        list.forEach(t -> log.info(t.getAccessToken()));
+        list.forEach(t -> log.info(t.getToken()));
         return list;
     }
 

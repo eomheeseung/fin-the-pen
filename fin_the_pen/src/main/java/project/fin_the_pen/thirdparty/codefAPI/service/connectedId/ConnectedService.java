@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.model.thirdparty.codef.repository.TokenRepository;
-import project.fin_the_pen.model.token.entity.Token;
+import project.fin_the_pen.thirdparty.codefAPI.token.entity.Token;
 import project.fin_the_pen.thirdparty.codefAPI.dto.bank.individual.*;
 
 import javax.crypto.BadPaddingException;

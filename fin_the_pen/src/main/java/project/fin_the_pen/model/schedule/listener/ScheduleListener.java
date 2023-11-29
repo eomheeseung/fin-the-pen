@@ -1,13 +1,6 @@
 package project.fin_the_pen.model.schedule.listener;
 
-import lombok.extern.slf4j.Slf4j;
-import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.ScheduleManage;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-@Slf4j
+/*@Slf4j
 public class ScheduleListener {
     @PersistenceContext
     EntityManager entityManager;
@@ -24,4 +17,4 @@ public class ScheduleListener {
             log.info("test");
         }
     }
-}
+}*/

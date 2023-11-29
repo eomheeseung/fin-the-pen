@@ -70,11 +70,10 @@ public class ScheduleRepository {
     /**
      * 전체 일정 조회 userId에 따라서
      *
-     * @param id
      * @return
      */
-    public List<Schedule> findAllSchedule(String id) {
-        return scheduleRepository.findScheduleByUserId(id);
+    public List<Schedule> findAllSchedule(String token) {
+        return scheduleRepository.findScheduleByUserId(token);
     }
 
     /**

@@ -3,6 +3,7 @@ package project.fin_the_pen.model.user.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginService {
     private final LoginRepository loginRepository;
     private final PasswordEncoder encoder;
@@ -57,9 +59,11 @@ public class LoginService {
     @Transactional(readOnly = true)
     public SignInResponse signIn(SignInRequest request) {
         Users users = crudLoginRepository.findByUserId(request.getLoginId())
+
                 // 암호화된 비밀번호와 비교하도록 수정, 인코딩되서 이렇게 비교해야 함.
-                .filter(it -> encoder.matches(request.getPassword(), it.getPassword()))
+                .filter(find -> encoder.matches(request.getPassword(), find.getPassword()))
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
+        log.info("find users Id:{}", users.getUserId());
         String token = tokenProvider.createToken(String.format("%s:%s", users.getUserId(), users.getUserRole()));
         return new SignInResponse(users.getName(), users.getUserRole(), token);
     }

@@ -3,6 +3,7 @@ package project.fin_the_pen.finClient.core.util;
 import lombok.AllArgsConstructor;
 import project.fin_the_pen.model.user.type.ApiStatus;
 
+// 사용이 안됨....
 @AllArgsConstructor
 public class ApiResponse {
     private ApiStatus apiStatus;

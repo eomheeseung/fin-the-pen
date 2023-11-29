@@ -4,12 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import project.fin_the_pen.finClient.core.util.ApiResponse;
 import project.fin_the_pen.model.user.dto.SignInRequest;
+import project.fin_the_pen.model.user.dto.SignInResponse;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.service.LoginService;
@@ -38,24 +39,35 @@ public class LoginController {
 
     /**
      * 회원 가입
+     *
      * @param userRequestDTO
      * @return
      */
-    @PostMapping("/fin-the-pen-web/sign-up")
+    @PostMapping(value = "/fin-the-pen-web/sign-up", produces = "application/json")
     @Operation(summary = "회원 가입")
-    public ApiResponse signUp(@RequestBody UserRequestDTO userRequestDTO) {
-        return ApiResponse.success(loginService.signUp(userRequestDTO));
+    public ResponseEntity<Object> signUp(@RequestBody UserRequestDTO userRequestDTO) {
+        UserResponseDTO userResponseDTO = loginService.signUp(userRequestDTO);
+        return ResponseEntity.ok().body(userResponseDTO);
+//        return ApiResponse.success(loginService.signUp(userRequestDTO));
     }
 
     /**
      * 로그인
+     *
      * @return
      * @throws IOException
      */
-    @PostMapping("/fin-the-pen-web/sign-in")
+    @PostMapping(value = "/fin-the-pen-web/sign-in", produces = "application/json")
     @Operation(summary = "로그인")
-    public ApiResponse signIn(@RequestBody SignInRequest request) {
-        return ApiResponse.success(loginService.signIn(request));
+    public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest) {
+        try {
+            SignInResponse signInResponse = loginService.signIn(signInRequest);
+            return ResponseEntity.ok().body(signInResponse);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+//        return ApiResponse.success(loginService.signIn(request));
     }
 
 

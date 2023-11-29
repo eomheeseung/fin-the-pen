@@ -48,7 +48,7 @@ public class ScheduleRepository {
                     .build();
 
 
-            log.info(dto.getStartTime());
+            log.info(dto.getUserId());
             log.info(dto.getAmount());
             scheduleRepository.save(schedule);
 //            manageSave(schedule);

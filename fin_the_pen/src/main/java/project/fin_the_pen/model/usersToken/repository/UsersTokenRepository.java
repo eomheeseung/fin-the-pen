@@ -10,6 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface UsersTokenRepository extends JpaRepository<UsersToken, Long> {
-    @Query("select ut from UsersToken ut where ut.usersToken =: accessToken")
+    @Query("select ut from UsersToken ut where ut.usersToken = :accessToken")
     public Optional<UsersToken> findUsersToken(@Param("accessToken") String accessToken);
 }

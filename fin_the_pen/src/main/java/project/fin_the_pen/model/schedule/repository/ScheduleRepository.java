@@ -23,7 +23,6 @@ public class ScheduleRepository {
     private final CRUDRegularScheduleRepository regularScheduleRepository;
 //    private final ManageRepository manageRepository;
 
-    // TODO 1
     public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType, String token) {
         try {
             Certain result = getCertain(dto);

@@ -9,6 +9,7 @@ import project.fin_the_pen.finClient.core.error.customException.DuplicatedSchedu
 import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundException;
 import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
+import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
@@ -18,6 +19,7 @@ import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.usersToken.entity.UsersToken;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ObjectMapper objectMapper;
     private final UsersTokenRepository tokenRepository;
+    private final TokenManager tokenManager;
 
     private List convertSnake(List<ScheduleResponseDTO> list) {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
@@ -38,15 +41,18 @@ public class ScheduleService {
     }
 
     // TODO 1. 토큰 인증체계
-    public String registerSchedule(ScheduleDTO requestDTO, String extractToken) {
-        String accessToken = extractToken.substring(7);
-
+    public String registerSchedule(ScheduleDTO requestDTO, HttpServletRequest request) {
         try {
+            String extractToken = tokenManager.parseBearerToken(request);
+
+            if (extractToken == null)
+                throw new RuntimeException();
+
             Optional<UsersToken> usersToken =
-                    Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
+                    Optional.ofNullable(tokenRepository.findUsersToken(extractToken)
                             .orElseThrow(() -> new TokenNotFoundException("token not found")));
 
-            String token = usersToken.get().getUsersToken();
+            String token = usersToken.get().getAccessToken();
             log.info("parseToken : {}", token);
 
             if (requestDTO.getPriceType().equals(PriceType.Plus)) {
@@ -68,14 +74,17 @@ public class ScheduleService {
 
 
     // 수정 완료
-    public Map<String, Object> findAllSchedule(String extractToken) {
-        String accessToken = extractToken.substring(7);
-
+    public Map<String, Object> findAllSchedule(HttpServletRequest request) {
         try {
+            String accessToken = tokenManager.parseBearerToken(request);
+
+            if (accessToken == null) {
+                throw new RuntimeException();
+            }
             Optional<UsersToken> usersToken =
                     Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
                             .orElseThrow(() -> new TokenNotFoundException("token not found")));
-            String token = usersToken.get().getUsersToken();
+            String token = usersToken.get().getAccessToken();
 
             List<Schedule> responseArray = scheduleRepository.findAllSchedule(token);
             Map<String, Object> responseMap = new HashMap<>();
@@ -121,7 +130,6 @@ public class ScheduleService {
         }
 
     }*/
-
     public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         List<Schedule> responseArray = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
         Map<String, Object> responseMap = new HashMap<>();

@@ -64,10 +64,15 @@ public class LoginService {
                 .filter(find -> encoder.matches(request.getPassword(), find.getPassword()))
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
         log.info("find users Id:{}", users.getUserId());
+
         String token = tokenProvider.createToken(String.format("%s:%s", users.getUserId(), users.getUserRole()));
 
-        UsersToken accessToken = UsersToken.builder().usersToken(token).build();
-        tokenRepository.save(accessToken);
+        tokenRepository.save(
+                UsersToken.builder()
+                        .accessToken(token)
+                        .expireTime(tokenProvider.getExpiredTime())
+                        .userId(request.getLoginId())
+                        .build());
 
         return new SignInResponse(users.getName(), users.getUserRole(), token);
     }

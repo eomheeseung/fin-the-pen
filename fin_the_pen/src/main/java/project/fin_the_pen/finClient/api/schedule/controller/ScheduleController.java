@@ -26,6 +26,13 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final ConvertResponse convertResponse;
 
+    /*
+    TODO
+     toke
+     1. accessToken 관리 -> exprietime이 되면 DB에 토큰 삭제
+     2. refreshToken 발급
+     */
+
     /**
      * header에 authorization에 "Bearer ~"로 들어온 것을 파싱하고 db와 비교해서 로직 수행
      *
@@ -33,16 +40,12 @@ public class ScheduleController {
      * @return
      */
     @PostMapping(value = "/createSchedule", produces = "application/json")
-    @Operation(description = "일정을 등록하는 API입니다. (일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단", summary = "일정등록")
+    @Operation(description = "일정을 등록하는 API입니다. " +
+            "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단",
+            summary = "일정등록")
     public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleDTO dto, HttpServletRequest request) {
-        String extractToken = request.getHeader("Authorization");
-
-        if (extractToken == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
         try {
-            String responseMessage = scheduleService.registerSchedule(dto, extractToken);
+            String responseMessage = scheduleService.registerSchedule(dto, request);
 
             if (responseMessage.equals("success")) {
                 log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
@@ -64,14 +67,8 @@ public class ScheduleController {
     @GetMapping(value = "/getAllSchedules", produces = "application/json")
     @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.", summary = "모든 일정 조회")
     public ResponseEntity<Object> findAllSchedule(HttpServletRequest request) {
-
-        String extractToken = request.getHeader("Authorization");
-
-        if (extractToken == null) {
-            return ResponseEntity.badRequest().build();
-        }
         try {
-            Map<String, Object> responseMap = scheduleService.findAllSchedule(extractToken);
+            Map<String, Object> responseMap = scheduleService.findAllSchedule(request);
             log.info(responseMap.get("data").toString());
             return convertResponse.getResponseEntity(responseMap);
         } catch (Exception e) {

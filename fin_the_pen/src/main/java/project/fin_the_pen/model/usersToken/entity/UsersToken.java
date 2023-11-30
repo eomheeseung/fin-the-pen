@@ -24,13 +24,12 @@ public class UsersToken {
      expire time도 갱신
      사용자가 접속 30분이 지나면 DB에서 token 폐기
      */
-    @Column(name = "refresh_token")
-    private String refreshToken;
 
     @Column(name = "user_id")
     private String userId;
 
     @Column(name = "expire_time")
+    @Setter
     private Date expireTime;
 
 }

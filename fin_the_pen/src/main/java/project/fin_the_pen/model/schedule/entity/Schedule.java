@@ -15,6 +15,9 @@ import javax.persistence.*;
 @Setter
 public class Schedule {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "access_token")
     private String token;
 

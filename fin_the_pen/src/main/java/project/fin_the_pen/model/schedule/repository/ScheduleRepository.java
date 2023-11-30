@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
+import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
@@ -13,13 +14,12 @@ import project.fin_the_pen.model.schedule.entity.embedded.RepeatType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @Slf4j
 @RequiredArgsConstructor
 public class ScheduleRepository {
-    private final CRUDScheduleRepository scheduleRepository;
+    private final CRUDScheduleRepository crudScheduleRepository;
     private final CRUDRegularScheduleRepository regularScheduleRepository;
 //    private final ManageRepository manageRepository;
 
@@ -28,32 +28,45 @@ public class ScheduleRepository {
         try {
             Certain result = getCertain(dto);
 
-            Schedule schedule = Schedule.builder()
-                    .token(token)
-                    .userId(dto.getUserId())
-                    .eventName(dto.getEventName())
-                    .category(dto.getCategory())
-                    .startDate(dto.getStartDate())
-                    .endDate(dto.getEndDate())
-                    .startTime(dto.getStartTime())
-                    .endTime(dto.getEndTime())
-                    .allDay(dto.isAllDay())
-                    .repeat(result.repeatType)
-                    .period(result.periodType)
-                    .priceType(priceType)
-                    .isExclude(dto.isExclude())
-                    .importance(dto.getImportance())
-                    .amount(dto.getAmount())
-                    .isFixAmount(dto.isFixAmount())
-                    .build();
+            List<Schedule> allSchedule = findAllSchedule(token);
+
+            boolean isDifferent = allSchedule.stream().noneMatch(it ->
+                    it.getUserId().equals(dto.getUserId()) &&
+                            it.getEventName().equals(dto.getEventName()) &&
+                            it.getCategory().equals(dto.getCategory()) &&
+                            it.getStartDate().equals(dto.getStartDate()) &&
+                            it.getEndDate().equals(dto.getEndDate()) &&
+                            it.getStartTime().equals(dto.getStartTime()) &&
+                            it.getEndTime().equals(dto.getEndTime()));
+
+            if (isDifferent) {
+                Schedule schedule = Schedule.builder()
+                        .token(token)
+                        .userId(dto.getUserId())
+                        .eventName(dto.getEventName())
+                        .category(dto.getCategory())
+                        .startDate(dto.getStartDate())
+                        .endDate(dto.getEndDate())
+                        .startTime(dto.getStartTime())
+                        .endTime(dto.getEndTime())
+                        .allDay(dto.isAllDay())
+                        .repeat(result.repeatType)
+                        .period(result.periodType)
+                        .priceType(priceType)
+                        .isExclude(dto.isExclude())
+                        .importance(dto.getImportance())
+                        .amount(dto.getAmount())
+                        .isFixAmount(dto.isFixAmount())
+                        .build();
 
 
-            log.info(dto.getUserId());
-            log.info(dto.getAmount());
-            scheduleRepository.save(schedule);
+                log.info(dto.getUserId());
+                log.info(dto.getAmount());
+                crudScheduleRepository.save(schedule);
 //            manageSave(schedule);
-            log.info(schedule.getUserId());
-        } catch (Exception e) {
+                log.info(schedule.getUserId());
+            } else throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
+        } catch (RuntimeException e) {
             return null;
         }
         return true;
@@ -64,7 +77,7 @@ public class ScheduleRepository {
      *
      */
     public List<Schedule> findByContainsName(String name) {
-        return scheduleRepository.findByContainsName(name);
+        return crudScheduleRepository.findByContainsName(name);
     }
 
     /**
@@ -73,7 +86,7 @@ public class ScheduleRepository {
      * @return
      */
     public List<Schedule> findAllSchedule(String token) {
-        return scheduleRepository.findScheduleByUserId(token);
+        return crudScheduleRepository.findByToken(token);
     }
 
     /**
@@ -84,12 +97,12 @@ public class ScheduleRepository {
      * @return
      */
     public List<Schedule> findMonthSchedule(String date, String userId) {
-        return scheduleRepository.findByMonthSchedule(date, userId);
+        return crudScheduleRepository.findByMonthSchedule(date, userId);
 
     }
 
     public List<Schedule> findMonthSectionSchedule(String startDate, String endDate, String userId) {
-        return scheduleRepository.findScheduleByDateContains(startDate, endDate, userId);
+        return crudScheduleRepository.findScheduleByDateContains(startDate, endDate, userId);
     }
 
     /**
@@ -122,13 +135,12 @@ public class ScheduleRepository {
     }*/
 
     /**
-     *
      * 일정 수정
      * TODO
      *  만약, "매주 반복 + 2024.01.01"로 생성했는데
      *  수정에서 "매월 반복 + 2024.02.01"로 수정되면, 매주 반복을 없애고 매월 반복으로 바꿔야 함...
      */
-    public Boolean modifySchedule(ScheduleDTO dto, PriceType priceType) {
+    /*public Boolean modifySchedule(ScheduleDTO dto, PriceType priceType) {
 
         try {
             Optional<Schedule> optionalSchedule = Optional.of(getSingleSchedule(dto.getUserId())
@@ -152,14 +164,13 @@ public class ScheduleRepository {
             findSchedule.setAmount(dto.getAmount());
             findSchedule.setFixAmount(dto.isFixAmount());
 
-            scheduleRepository.save(findSchedule);
+            crudScheduleRepository.save(findSchedule);
             return true;
 
         } catch (RuntimeException e) {
             return false;
         }
-    }
-
+    }*/
 
 
     /**
@@ -174,7 +185,7 @@ public class ScheduleRepository {
     }
 
     public List<Schedule> findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
-        return scheduleRepository.findScheduleByCategory(currentSession, categoryRequestDTO.getCategoryName());
+        return crudScheduleRepository.findScheduleByCategory(currentSession, categoryRequestDTO.getCategoryName());
     }
 
     /*public boolean deleteSchedule(String uuid) {
@@ -188,9 +199,9 @@ public class ScheduleRepository {
         return true;
     }*/
 
-    private Optional<Schedule> getSingleSchedule(String uuid) {
-        return scheduleRepository.findById(uuid);
-    }
+//    private Optional<Schedule> getSingleSchedule(String uuid) {
+//        return crudScheduleRepository.findById(uuid);
+//    }
 
     /*private static void manageSave(Schedule schedule) {
         ScheduleManage manage = new ScheduleManage();

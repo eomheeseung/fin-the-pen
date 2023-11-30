@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundException;
 import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
@@ -37,7 +38,7 @@ public class ScheduleService {
     }
 
     // TODO 1. 토큰 인증체계
-    public Boolean registerSchedule(ScheduleDTO requestDTO, String extractToken) {
+    public String registerSchedule(ScheduleDTO requestDTO, String extractToken) {
         String accessToken = extractToken.substring(7);
 
         try {
@@ -56,11 +57,13 @@ public class ScheduleService {
                         scheduleRepository.registerSchedule(dto, PriceType.Minus, token));
             }
 
-        } catch (Exception e) {
+        } catch (DuplicatedScheduleException e) {
             log.info(e.getMessage());
-            return false;
+            throw new DuplicatedScheduleException(e.getMessage());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("등록 오류입니다.");
         }
-        return true;
+        return "success";
     }
 
 
@@ -97,7 +100,7 @@ public class ScheduleService {
      * @param requestDTO
      * @return
      */
-    public boolean modifySchedule(ScheduleDTO requestDTO) {
+    /*public boolean modifySchedule(ScheduleDTO requestDTO) {
         try {
             boolean flag = false;
 
@@ -117,7 +120,7 @@ public class ScheduleService {
             return false;
         }
 
-    }
+    }*/
 
     public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         List<Schedule> responseArray = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);

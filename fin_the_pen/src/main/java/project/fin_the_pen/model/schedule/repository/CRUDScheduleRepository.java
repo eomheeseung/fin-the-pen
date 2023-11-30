@@ -13,7 +13,7 @@ import java.util.List;
 JpaRepository 내부에 @Transactional 존재
  */
 @Repository
-public interface CRUDScheduleRepository extends JpaRepository<Schedule, String> {
+public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s WHERE s.startDate LIKE CONCAT('%',:date,'%') and s.userId = :userId")
     List<Schedule> findByMonthSchedule(@Param("date") String date, @Param("userId") String userId);
 
@@ -21,7 +21,10 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, String> 
     List<Schedule> findByContainsName(@Param("name") String name);
 
     @Query("select s from Schedule s where s.token = :accessToken")
-    List<Schedule> findScheduleByUserId(@Param("accessToken") String accessToken);
+    List<Schedule> findByToken(@Param("accessToken") String accessToken);
+
+    @Query("select s from Schedule s where s.token = :accessToken and s.eventName = :eventName")
+    Schedule findByTokenAndEventName(@Param("accessToken") String accessToken, @Param("eventName") String eventName);
 
     /*@Query("select s from Schedule s where s.userId = :userId and s.startDate >= :startDate and s.endDate <= :endDate")
     List<Schedule> findScheduleByDateContains(@Param("startDate") String startDate, @Param("endDate") String endDate,

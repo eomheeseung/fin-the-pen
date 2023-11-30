@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
@@ -14,7 +15,6 @@ import project.fin_the_pen.model.schedule.service.ScheduleService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,7 +33,7 @@ public class ScheduleController {
      * @return
      */
     @PostMapping(value = "/createSchedule", produces = "application/json")
-    @Operation(description = "일정을 등록하는 API입니다.", summary = "일정등록")
+    @Operation(description = "일정을 등록하는 API입니다. (일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단", summary = "일정등록")
     public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleDTO dto, HttpServletRequest request) {
         String extractToken = request.getHeader("Authorization");
 
@@ -42,18 +42,21 @@ public class ScheduleController {
         }
 
         try {
-            Boolean flag = scheduleService.registerSchedule(dto, extractToken);
-            if (flag) {
+            String responseMessage = scheduleService.registerSchedule(dto, extractToken);
+
+            if (responseMessage.equals("success")) {
                 log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
                 return ResponseEntity.ok().build();
-            } else {
-                return ResponseEntity.badRequest().build();
             }
-        } catch (Exception e) {
+        } catch (DuplicatedScheduleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
             // 에러 핸들링 로직 추가
             log.error("일정 등록 중 에러 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 등록 중 에러 발생");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+
+        return ResponseEntity.ok().build();
     }
 
 
@@ -121,7 +124,7 @@ public class ScheduleController {
     @PutMapping("/modifySchedule")
     @Operation(description = "일정을 수정합니다.", summary = "일정 수정")
     public ResponseEntity<Object> modifySchedule(@RequestBody ScheduleDTO dto) {
-        log.info(String.valueOf(dto.getUserId()));
+        /*log.info(String.valueOf(dto.getUserId()));
         ResponseEntity<Object> responseEntity = null;
 
         boolean flag = scheduleService.modifySchedule(dto);
@@ -134,8 +137,8 @@ public class ScheduleController {
             responseMap.put("data", false);
             responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
         }
-
-        return responseEntity;
+*/
+        return ResponseEntity.ok().build();
     }
 
     /*@PostMapping("/deleteSchedule")

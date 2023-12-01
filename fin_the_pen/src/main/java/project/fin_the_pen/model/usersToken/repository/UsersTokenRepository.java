@@ -22,10 +22,4 @@ public interface UsersTokenRepository extends JpaRepository<UsersToken, Long> {
     @Modifying
     @Query("delete from UsersToken ut where ut.accessToken = :accessToken")
     public void deleteByAccessToken(@Param("accessToken") String accessToken);
-
-    @Modifying
-    @Query("update UsersToken ut set ut.expireTime = :newExpireTime where ut.accessToken = :accessToken")
-    void updateExpireTimeByAccessToken(@Param("accessToken") String accessToken, @Param("newExpireTime") Date newExpireTim);
-
-
 }

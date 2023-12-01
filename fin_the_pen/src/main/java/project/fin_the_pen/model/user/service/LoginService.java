@@ -74,6 +74,15 @@ public class LoginService {
         return new SignInResponse(users.getName(), users.getUserRole(), token);
     }
 
+    /*
+    TODO
+     - 다시 로그인을 했다면 서비스 이용을 마치고 다시 들어온 것이기 때문에
+     토큰을 다시 발급 기존의 토큰 파기 (access, refresh)
+     and 시간이 지나면 토큰 파기
+     - logout하면 access, refresh 모두 파기
+     - 아래의 코드를 refresh를 두자.
+     - expire time에 대해서 파기가 되는지..
+     */
     @Transactional
     public SignInResponse signIn(SignInRequest dto, HttpServletRequest request) {
         Users users = crudLoginRepository.findByUserId(dto.getLoginId())
@@ -99,13 +108,7 @@ public class LoginService {
             return firstLogin(users, dto);
         }
 
-            /*
-            TODO
-             - 다시 로그인을 했다면 서비스 이용을 마치고 다시 들어온 것이기 때문에
-             토큰을 다시 발급 기존의 토큰 파기 (access, refresh)
-             and 시간이 지나면 토큰 파기
-             - logout하면 access, refresh 모두 파기
-             */
+
     }
 
     @Transactional

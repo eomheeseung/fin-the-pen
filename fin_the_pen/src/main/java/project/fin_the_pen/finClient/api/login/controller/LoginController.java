@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.model.user.dto.SignInRequest;
 import project.fin_the_pen.model.user.dto.SignInResponse;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
@@ -29,7 +26,7 @@ public class LoginController {
     private final LoginService loginService;
     private UserResponseDTO currentUser;
 
-    @PostMapping("/join")
+    //    @PostMapping("/join")
     public UserRequestDTO join(@RequestBody UserRequestDTO userRequestDTO) {
         userRequestDTO.setRegisterDate(LocalDate.now());
         loginService.signUp(userRequestDTO);
@@ -107,14 +104,15 @@ public class LoginController {
     }*/
 
 
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/";
+    @DeleteMapping(value = "/fin-the-pen-web/logout")
+    @Operation(summary = "로그아웃")
+    public ResponseEntity<Object> logout(HttpServletRequest request) {
+        if (loginService.logout(request)) {
+            return ResponseEntity.ok().body("로그아웃 되었습니다.");
+        }
+        return ResponseEntity.badRequest().body("로그아웃 오류");
     }
 
-
-    // TODO 1
     @PostMapping("/app/password")
     public boolean appPasswordSignUp(@RequestBody ConcurrentHashMap<String, String> map) {
         boolean isPassword = loginService.saveAppPassword(map.get("password"));

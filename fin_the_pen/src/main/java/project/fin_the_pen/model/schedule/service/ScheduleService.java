@@ -40,7 +40,6 @@ public class ScheduleService {
         return objectMapper.convertValue(list, List.class);
     }
 
-    // TODO 1. 토큰 인증체계
     public String registerSchedule(ScheduleDTO requestDTO, HttpServletRequest request) {
         try {
             String extractToken = tokenManager.parseBearerToken(request);

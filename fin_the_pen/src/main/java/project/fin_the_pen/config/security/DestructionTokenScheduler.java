@@ -19,13 +19,14 @@ public class DestructionTokenScheduler {
 
     // 주기적으로 실행되어 만료된 토큰을 파기하는 메서드
 //    @Scheduled(fixedRate = 30 * 60 * 1000) // 30분마다 실행
-    @Scheduled(fixedRate = 2 * 60 * 1000) // 2분마다 실행
+    @Scheduled(fixedRate = 5 * 60 * 1000) // 2분마다 실행
     public void invalidateExpiredTokens() {
         Date deleteTime = Date.from(Instant.now());
+
+
+        // logging 추가
         log.info("Scheduled method executed at: {}", deleteTime);
-        tokenRepository.deleteByAccessToken(deleteTime);
-
-        // 로깅 추가
-
+        tokenRepository.deleteByAccessTokenIsAfter(deleteTime);
+        tokenRepository.flush();
     }
 }

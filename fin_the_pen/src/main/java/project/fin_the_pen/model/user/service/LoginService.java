@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.fin_the_pen.config.security.TokenProvider;
+import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.user.dto.SignInRequest;
 import project.fin_the_pen.model.user.dto.SignInResponse;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
@@ -20,8 +21,7 @@ import project.fin_the_pen.model.usersToken.entity.UsersToken;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.annotation.PostConstruct;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Service
@@ -34,6 +34,7 @@ public class LoginService {
     private final CRUDLoginRepository crudLoginRepository;
     private final TokenProvider tokenProvider;
     private final UsersTokenRepository tokenRepository;
+    private final TokenManager tokenManager;
 
     @PostConstruct
     public void convertStrategy() {
@@ -70,29 +71,13 @@ public class LoginService {
         String token = tokenProvider.createToken(String.format("%s:%s", users.getUserId(), users.getUserRole()));
         Optional<UsersToken> findToken = tokenRepository.findUsersToken(token);
 
-
-        /*
-        TODO
-         1. 사용자가 expire time전에 로그인을 하면 기존 토큰은 그대로 사용하고,
-         expire time 만 갱신
-         2. 다시 로그인을 했다면 서비스 이용을 마치고 다시 들어온것이기 때문에
-         토큰을 다시 발급 but 이 방식은 어차피 expire time만 갱신하면 될 것 같음.
-         그리고 이 방식을 사용하면 expire time전에 로그인을 계속 시도할 때
-         토큰이 계속 생성되어 DB과부하
-         */
-        if (findToken.isPresent()) {
-            UsersToken existingToken = findToken.get();
-
-            if (existingToken.getUserId().equals(request.getLoginId())) {
-
-                // 사용자가 일치하고, 토큰의 expire time이 넘기지 않은 경우
-                if (existingToken.getExpireTime().after(Date.from(existingToken.getExpireTime().toInstant().plus(30, ChronoUnit.MINUTES)))) {
-                    // 토큰의 expire time만 갱신
-                    tokenRepository.updateExpireTimeByAccessToken(token, tokenProvider.refreshToken(findToken).getExpireTime());
-                    return new SignInResponse(users.getName(), users.getUserRole(), token);
-                }
-            }
-        }
+            /*
+            TODO
+             - 다시 로그인을 했다면 서비스 이용을 마치고 다시 들어온 것이기 때문에
+             토큰을 다시 발급 기존의 토큰 파기 (access, refresh)
+             and 시간이 지나면 토큰 파기
+             - logout하면 access, refresh 모두 파기
+             */
 
         // 토큰이 존재하지 않거나 사용자가 일치하지 않거나 토큰의 expire time이 넘은 경우
         // 새로운 토큰 생성 및 저장
@@ -103,6 +88,14 @@ public class LoginService {
                 .build());
 
         return new SignInResponse(users.getName(), users.getUserRole(), token);
+    }
+
+    @Transactional
+    public boolean logout(HttpServletRequest request) {
+        String findToken = tokenManager.parseBearerToken(request);
+
+        tokenRepository.deleteByAccessToken(findToken);
+        return true;
     }
 
 

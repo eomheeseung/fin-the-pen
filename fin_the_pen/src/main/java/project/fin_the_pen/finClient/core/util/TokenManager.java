@@ -14,6 +14,4 @@ public class TokenManager {
                 .map(token -> token.substring(7))
                 .orElse(null);
     }
-
-
 }

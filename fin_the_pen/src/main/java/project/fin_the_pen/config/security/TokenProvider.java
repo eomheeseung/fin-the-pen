@@ -1,14 +1,11 @@
 package project.fin_the_pen.config.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.model.usersToken.entity.UsersToken;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.sql.Date;
@@ -16,7 +13,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 @Service
 @PropertySource("classpath:jwt.yml")
@@ -54,26 +50,11 @@ public class TokenProvider {
                 .compact();// JWT 토큰 생성
     }
 
-    // 토큰 갱신
-    public UsersToken refreshToken(Optional<UsersToken> findToken) {
-        if (findToken.isPresent()) {
-            UsersToken usersToken = findToken.get();
-
-            // 토큰 검증 및 정보 추출
-            Jws<Claims> claimsJws = Jwts.parserBuilder()
-                    .setSigningKey(new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS512.getJcaName()))
-                    .build()
-                    .parseClaimsJws(usersToken.getAccessToken());
 
 
-            // 새로운 만료 시간 설정
-            java.util.Date newExpirationTime = Date.from(Instant.now().plus(expirationMinutes, ChronoUnit.MINUTES));
 
-            // 기존 토큰의 만료 시간을 갱신한 후 반환
-            usersToken.setExpireTime(newExpirationTime);
-            return usersToken;
-        } else throw new RuntimeException();
-    }
+
+
 
 
 

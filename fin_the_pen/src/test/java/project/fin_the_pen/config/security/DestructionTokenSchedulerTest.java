@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import project.fin_the_pen.model.user.dto.SignInRequest;
@@ -52,10 +54,11 @@ class DestructionTokenSchedulerTest {
     }
 
     private void login() {
+        MockHttpServletRequest mockHttpServletRequest = new MockMultipartHttpServletRequest();
         SignInRequest request = new SignInRequest();
         request.setLoginId("test1234");
         request.setPassword("1111");
-        SignInResponse signInResponse = loginService.signIn(request);
+        SignInResponse signInResponse = loginService.signIn(request, mockHttpServletRequest);
         log.info("get token:{}", signInResponse.getToken());
     }
 

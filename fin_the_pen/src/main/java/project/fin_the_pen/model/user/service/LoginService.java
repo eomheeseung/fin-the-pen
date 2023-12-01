@@ -60,16 +60,44 @@ public class LoginService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public SignInResponse signIn(SignInRequest request) {
-        Users users = crudLoginRepository.findByUserId(request.getLoginId())
-                .filter(find -> encoder.matches(request.getPassword(), find.getPassword()))
-                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
-
+    private SignInResponse firstLogin(Users users, SignInRequest dto) {
         log.info("find users Id:{}", users.getUserId());
 
         String token = tokenProvider.createToken(String.format("%s:%s", users.getUserId(), users.getUserRole()));
-        Optional<UsersToken> findToken = tokenRepository.findUsersToken(token);
+
+        tokenRepository.save(UsersToken.builder()
+                .accessToken(token)
+                .expireTime(tokenProvider.getExpiredTime())
+                .userId(dto.getLoginId())
+                .build());
+
+        return new SignInResponse(users.getName(), users.getUserRole(), token);
+    }
+
+    @Transactional
+    public SignInResponse signIn(SignInRequest dto, HttpServletRequest request) {
+        Users users = crudLoginRepository.findByUserId(dto.getLoginId())
+                .filter(find -> encoder.matches(dto.getPassword(), find.getPassword()))
+                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
+
+        String find = tokenManager.parseBearerToken(request);
+
+        if (find == null) {
+            return firstLogin(users, dto);
+        } else {
+            // expire time 전에 재 로그인
+            Optional<UsersToken> findToken = tokenRepository.findUsersToken(find);
+
+            // 토큰이 있고, 토큰 테이블에 저장된 id와 현재 id가 같으면...
+            if (findToken.get().getUserId().equals(dto.getLoginId())) {
+                UsersToken usersToken = findToken.get();
+
+                // 가지고 잇는 토큰을 삭제하고, 새로운 토큰발급
+
+                tokenRepository.deleteByAccessToken(usersToken.getAccessToken());
+            }
+            return firstLogin(users, dto);
+        }
 
             /*
             TODO
@@ -78,16 +106,6 @@ public class LoginService {
              and 시간이 지나면 토큰 파기
              - logout하면 access, refresh 모두 파기
              */
-
-        // 토큰이 존재하지 않거나 사용자가 일치하지 않거나 토큰의 expire time이 넘은 경우
-        // 새로운 토큰 생성 및 저장
-        tokenRepository.save(UsersToken.builder()
-                .accessToken(token)
-                .expireTime(tokenProvider.getExpiredTime())
-                .userId(request.getLoginId())
-                .build());
-
-        return new SignInResponse(users.getName(), users.getUserRole(), token);
     }
 
     @Transactional

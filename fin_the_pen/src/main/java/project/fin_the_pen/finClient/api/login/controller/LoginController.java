@@ -56,9 +56,9 @@ public class LoginController {
      */
     @PostMapping(value = "/fin-the-pen-web/sign-in", produces = "application/json")
     @Operation(summary = "로그인")
-    public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest) {
+    public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
         try {
-            SignInResponse signInResponse = loginService.signIn(signInRequest);
+            SignInResponse signInResponse = loginService.signIn(signInRequest, request);
             return ResponseEntity.ok().body(signInResponse);
         } catch (IllegalArgumentException | NullPointerException e) {
             log.info(e.getMessage());

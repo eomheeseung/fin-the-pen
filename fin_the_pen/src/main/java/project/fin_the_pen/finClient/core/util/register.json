@@ -1,0 +1,24 @@
+{
+  "user_id": "test1234",
+  "event_name": "가족들과의 식사",
+  "category": "외식",
+  "start_date": "2024-01-01",
+  "end_date": "2024-01-01",
+  "start_time": "18:00",
+  "end_time": "21:00",
+  "is_all_day": false,
+  "repeat": [
+    {
+      "kindType": "day"
+    },
+    {
+      "value": "1"
+    }
+  ],
+  "period": "keepRepeat",
+  "price_type": "Plus",
+  "exclusion": false,
+  "importance": "상",
+  "set_amount": "30000",
+  "fix_amount": false
+}

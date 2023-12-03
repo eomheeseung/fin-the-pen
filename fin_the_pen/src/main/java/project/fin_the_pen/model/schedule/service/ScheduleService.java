@@ -14,6 +14,10 @@ import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
+import project.fin_the_pen.model.schedule.entity.type.DayType;
+import project.fin_the_pen.model.schedule.entity.type.MonthType;
+import project.fin_the_pen.model.schedule.entity.type.WeekType;
+import project.fin_the_pen.model.schedule.entity.type.YearType;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.usersToken.entity.UsersToken;
@@ -54,13 +58,61 @@ public class ScheduleService {
             String token = usersToken.get().getAccessToken();
             log.info("parseToken : {}", token);
 
-            if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                isType(requestDTO, (dto) ->
-                        scheduleRepository.registerSchedule(dto, PriceType.Plus, token));
-            } else {
-                isType(requestDTO, (dto) ->
-                        scheduleRepository.registerSchedule(dto, PriceType.Minus, token));
+            if (requestDTO.getRepeat().getKindType().equals("day")) {
+                DayType dayType = new DayType();
+                dayType.setValue(requestDTO.getRepeat().getValue());
+
+                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                    isType(requestDTO, (dto) ->
+                            dto.setPriceType(PriceType.Plus));
+                    scheduleRepository.registerSchedule(requestDTO, token, dayType);
+                } else {
+                    isType(requestDTO, (dto) ->
+                            dto.setPriceType(PriceType.Plus));
+                    scheduleRepository.registerSchedule(requestDTO, token, dayType);
+                }
             }
+            else if (requestDTO.getRepeat().getKindType().equals("week")) {
+                WeekType weekType = new WeekType();
+                weekType.setValue(requestDTO.getRepeat().getValue());
+
+                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                    isType(requestDTO, (dto) ->
+                            dto.setPriceType(PriceType.Plus));
+                    scheduleRepository.registerSchedule(requestDTO, token, weekType);
+                } else {
+                    isType(requestDTO, (dto) ->
+                            dto.setPriceType(PriceType.Plus));
+                    scheduleRepository.registerSchedule(requestDTO, token, weekType);
+                }
+            }else if (requestDTO.getRepeat().getKindType().equals("month")) {
+                MonthType monthType = new MonthType();
+                monthType.setValue(requestDTO.getRepeat().getValue());
+
+                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                    isType(requestDTO, (dto) ->
+                            dto.setPriceType(PriceType.Plus));
+                    scheduleRepository.registerSchedule(requestDTO, token, monthType);
+                } else {
+                    isType(requestDTO, (dto) ->
+                            dto.setPriceType(PriceType.Plus));
+                    scheduleRepository.registerSchedule(requestDTO, token, monthType);
+                }
+            }else if (requestDTO.getRepeat().getKindType().equals("year")) {
+                YearType yearType = new YearType();
+                yearType.setValue(requestDTO.getRepeat().getValue());
+
+                if (requestDTO.getPriceType().equals(PriceType.Plus)) {
+                    isType(requestDTO, (dto) ->
+                            dto.setPriceType(PriceType.Plus));
+                    scheduleRepository.registerSchedule(requestDTO, token, yearType);
+                } else {
+                    isType(requestDTO, (dto) ->
+                            dto.setPriceType(PriceType.Plus));
+                    scheduleRepository.registerSchedule(requestDTO, token, yearType);
+                }
+            }
+
 
         } catch (DuplicatedScheduleException e) {
             log.info(e.getMessage());
@@ -178,7 +230,7 @@ public class ScheduleService {
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
                 .allDay(schedule.isAllDay())
-                .repeat(schedule.getRepeat())
+//                .repeat(schedule.getRepeat())
                 .period(schedule.getPeriod())
                 .priceType(schedule.getPriceType())
                 .isExclude(schedule.isExclude())

@@ -3,7 +3,7 @@ package project.fin_the_pen.model.schedule.dto;
 import lombok.Builder;
 import lombok.Data;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.embedded.RepeatType;
+import project.fin_the_pen.model.schedule.entity.type.RepeatType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Data

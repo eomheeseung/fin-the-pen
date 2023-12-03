@@ -2,17 +2,17 @@ package project.fin_the_pen.model.schedule.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.embedded.RepeatType;
+import project.fin_the_pen.model.schedule.entity.type.*;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Repository
@@ -23,10 +23,8 @@ public class ScheduleRepository {
     private final CRUDRegularScheduleRepository regularScheduleRepository;
 //    private final ManageRepository manageRepository;
 
-    public Boolean registerSchedule(ScheduleDTO dto, PriceType priceType, String token) {
+    public Boolean registerSchedule(ScheduleDTO dto, String token, RepeatType repeatType) {
         try {
-            Certain result = getCertain(dto);
-
             List<Schedule> allSchedule = findAllSchedule(token);
 
             boolean isDifferent = allSchedule.stream().noneMatch(it ->
@@ -38,33 +36,156 @@ public class ScheduleRepository {
                             it.getStartTime().equals(dto.getStartTime()) &&
                             it.getEndTime().equals(dto.getEndTime()));
 
-            if (isDifferent) {
-                Schedule schedule = Schedule.builder()
-                        .token(token)
-                        .userId(dto.getUserId())
-                        .eventName(dto.getEventName())
-                        .category(dto.getCategory())
-                        .startDate(dto.getStartDate())
-                        .endDate(dto.getEndDate())
-                        .startTime(dto.getStartTime())
-                        .endTime(dto.getEndTime())
-                        .allDay(dto.isAllDay())
-                        .repeat(result.repeatType)
-                        .period(result.periodType)
-                        .priceType(priceType)
-                        .isExclude(dto.isExclude())
-                        .importance(dto.getImportance())
-                        .amount(dto.getAmount())
-                        .isFixAmount(dto.isFixAmount())
-                        .build();
+            if (!isDifferent) {
+                throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
+            } else {
+                if (repeatType instanceof DayType) {
+
+                    TypeManage typeManage = TypeManage.builder()
+                            .value(((DayType) repeatType).getValue())
+                            .kindType("day").build();
 
 
-                log.info(dto.getUserId());
-                log.info(dto.getAmount());
-                crudScheduleRepository.save(schedule);
-//            manageSave(schedule);
-                log.info(schedule.getUserId());
-            } else throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
+                    log.info(dto.getUserId());
+                    log.info(dto.getAmount());
+
+                    int intervalDays = Integer.parseInt(typeManage.getValue());
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate startDate = LocalDate.parse(dto.getStartDate(), formatter);
+                    LocalDate endDate = LocalDate.parse(dto.getRepeatEndLine(), formatter);
+                    LocalDate currentDate = startDate;
+
+                    while (!currentDate.isAfter(endDate)) {
+                        Schedule schedule = Schedule.builder()
+                                .token(token)
+                                .userId(dto.getUserId())
+                                .eventName(dto.getEventName())
+                                .category(dto.getCategory())
+                                .startDate(currentDate.toString())  // 수정된 부분
+                                .endDate(dto.getEndDate())
+                                .endTime(dto.getEndTime())
+                                .isAllDay(dto.isAllDay())
+                                .repeat(typeManage)
+                                .isExclude(dto.isExclude())
+                                .importance(dto.getImportance())
+                                .amount(dto.getAmount())
+                                .isFixAmount(dto.isFixAmount())
+                                .repeatEndLine(dto.getRepeatEndLine())
+                                .build();
+
+                        schedule.setPriceType(() -> {
+                            if (dto.getPriceType().equals(PriceType.Plus)) {
+                                return PriceType.Plus;
+                            } else return PriceType.Minus;
+                        });
+
+                        crudScheduleRepository.save(schedule);
+
+                        currentDate = currentDate.plusDays(intervalDays);
+                    }
+
+//                    log.info(schedule.getUserId());
+                } else if (repeatType instanceof WeekType) {
+                    TypeManage typeManage = TypeManage.builder()
+                            .value(((WeekType) repeatType).getValue())
+                            .kindType("month").build();
+
+                    Schedule schedule = Schedule.builder()
+                            .token(token)
+                            .userId(dto.getUserId())
+                            .eventName(dto.getEventName())
+                            .category(dto.getCategory())
+                            .startDate(dto.getStartDate())
+                            .endDate(dto.getEndDate())
+                            .startTime(dto.getStartTime())
+                            .endTime(dto.getEndTime())
+                            .isAllDay(dto.isAllDay())
+                            .repeat(typeManage)
+                            .isExclude(dto.isExclude())
+                            .importance(dto.getImportance())
+                            .amount(dto.getAmount())
+                            .isFixAmount(dto.isFixAmount())
+                            .build();
+
+                    schedule.setPriceType(() -> {
+                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                            return PriceType.Plus;
+                        } else return PriceType.Minus;
+                    });
+
+
+                    log.info(dto.getUserId());
+                    log.info(dto.getAmount());
+                    crudScheduleRepository.save(schedule);
+                    log.info(schedule.getUserId());
+                } else if (repeatType instanceof MonthType) {
+                    TypeManage typeManage = TypeManage.builder()
+                            .value(((MonthType) repeatType).getValue())
+                            .kindType("month").build();
+
+                    Schedule schedule = Schedule.builder()
+                            .token(token)
+                            .userId(dto.getUserId())
+                            .eventName(dto.getEventName())
+                            .category(dto.getCategory())
+                            .startDate(dto.getStartDate())
+                            .endDate(dto.getEndDate())
+                            .startTime(dto.getStartTime())
+                            .endTime(dto.getEndTime())
+                            .isAllDay(dto.isAllDay())
+                            .repeat(typeManage)
+                            .isExclude(dto.isExclude())
+                            .importance(dto.getImportance())
+                            .amount(dto.getAmount())
+                            .isFixAmount(dto.isFixAmount())
+                            .build();
+
+                    schedule.setPriceType(() -> {
+                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                            return PriceType.Plus;
+                        } else return PriceType.Minus;
+                    });
+
+
+                    log.info(dto.getUserId());
+                    log.info(dto.getAmount());
+                    crudScheduleRepository.save(schedule);
+                    log.info(schedule.getUserId());
+                } else if (repeatType instanceof YearType) {
+                    TypeManage typeManage = TypeManage.builder()
+                            .value(((YearType) repeatType).getValue())
+                            .kindType("month").build();
+
+                    Schedule schedule = Schedule.builder()
+                            .token(token)
+                            .userId(dto.getUserId())
+                            .eventName(dto.getEventName())
+                            .category(dto.getCategory())
+                            .startDate(dto.getStartDate())
+                            .endDate(dto.getEndDate())
+                            .startTime(dto.getStartTime())
+                            .endTime(dto.getEndTime())
+                            .isAllDay(dto.isAllDay())
+                            .repeat(typeManage)
+                            .isExclude(dto.isExclude())
+                            .importance(dto.getImportance())
+                            .amount(dto.getAmount())
+                            .isFixAmount(dto.isFixAmount())
+                            .build();
+
+                    schedule.setPriceType(() -> {
+                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                            return PriceType.Plus;
+                        } else return PriceType.Minus;
+                    });
+
+
+                    log.info(dto.getUserId());
+                    log.info(dto.getAmount());
+                    crudScheduleRepository.save(schedule);
+                    log.info(schedule.getUserId());
+                }
+            }
         } catch (RuntimeException e) {
             return null;
         }
@@ -207,52 +328,4 @@ public class ScheduleRepository {
         manage.setSchedule(schedule);
         schedule.setScheduleManage(manage);
     }*/
-
-    @NotNull
-    private static Certain getCertain(ScheduleDTO dto) {
-        RepeatType repeatType = new RepeatType();
-        String repeatTypeValue = dto.getRepeat();
-
-        switch (repeatTypeValue) {
-            case "day":
-                repeatType.setDay("day");
-                break;
-            case "everyWeek":
-                repeatType.setEveryYear("everyWeek");
-                break;
-            case "Monthly":
-                repeatType.setMonthly("Monthly");
-                break;
-            case "everyYear":
-                repeatType.setEveryYear("everyYear");
-                break;
-        }
-
-        PeriodType periodType = new PeriodType();
-
-        String periodTypeValue = dto.getPeriod();
-
-        switch (periodTypeValue) {
-            case "keepRepeat":
-                periodType.setKeepRepeat("keepRepeat");
-                break;
-            case "certain":
-                periodType.setCertain("certain");
-                break;
-            case "endDate":
-                periodType.setRepeatEndDate("endDate");
-                break;
-        }
-        return new Certain(repeatType, periodType);
-    }
-
-    private static class Certain {
-        public final RepeatType repeatType;
-        public final PeriodType periodType;
-
-        public Certain(RepeatType repeatType, PeriodType periodType) {
-            this.repeatType = repeatType;
-            this.periodType = periodType;
-        }
-    }
 }

@@ -3,6 +3,7 @@ package project.fin_the_pen.model.schedule.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import project.fin_the_pen.model.schedule.entity.type.TypeManageDTO;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Data
@@ -45,12 +46,12 @@ public class ScheduleDTO {
     // 하루 종일
     @JsonProperty(value = "is_all_day")
     @Schema(description = "일정에 대해 하루 종일 반복인지", example = "false")
-    private boolean allDay;
+    private boolean isAllDay;
 
     // 반복
     @JsonProperty(value = "repeat")
-    @Schema(description = "반복을 얼만큼 할건지",example = "day")
-    private String repeat;
+    @Schema(description = "반복을 얼만큼 할건지")
+    private TypeManageDTO repeat;
 
     // 반복 기간
     @JsonProperty(value = "period")
@@ -80,4 +81,8 @@ public class ScheduleDTO {
     @JsonProperty(value = "fix_amount")
     @Schema(description = "금액을 고정할 것인지",example = "false")
     private boolean isFixAmount;
+
+    @JsonProperty(value = "repeat_end_line")
+    @Schema(description = "반복의 종료 기간",example = "2024-04-30")
+    private String repeatEndLine;
 }

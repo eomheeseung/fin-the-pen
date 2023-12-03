@@ -2,10 +2,11 @@ package project.fin_the_pen.model.schedule.entity;
 
 import lombok.*;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.embedded.RepeatType;
+import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import javax.persistence.*;
+import java.util.function.Supplier;
 
 @Entity
 @Builder
@@ -51,12 +52,12 @@ public class Schedule {
 
     // 하루 종일
     @Column(name = "is_all_day")
-    private boolean allDay;
+    private boolean isAllDay;
 
     // 반복
     @Column(name = "repeat")
-//    @Embedded
-    private RepeatType repeat;
+    @Embedded
+    private TypeManage repeat;
 
     // 반복 기간
     @Column(name = "period")
@@ -85,10 +86,17 @@ public class Schedule {
     @Column(name = "fix_amount")
     private boolean isFixAmount;
 
+    @Column(name = "repeat_end_line")
+    private String repeatEndLine;
+
     // ScheduleType로 하나 만들어야 함.
 //    @Column(name = "regular_type")
 //    private RegularType regularType;
 
     /*@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
     private ScheduleManage scheduleManage;*/
+
+    public void setPriceType(Supplier<PriceType> priceTypeSupplier) {
+        this.priceType = priceTypeSupplier.get();
+    }
 }

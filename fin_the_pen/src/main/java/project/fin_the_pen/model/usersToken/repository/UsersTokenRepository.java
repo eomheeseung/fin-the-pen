@@ -22,8 +22,4 @@ public interface UsersTokenRepository extends JpaRepository<UsersToken, Long> {
     @Modifying
     @Query("delete from UsersToken ut where ut.accessToken = :accessToken")
     public void deleteByAccessToken(@Param("accessToken") String accessToken);
-
-    @Query("select ut from UsersToken ut where ut.userId = :userId")
-    public void findByAccessTokenExists(@Param("userId") String userId);
-
 }

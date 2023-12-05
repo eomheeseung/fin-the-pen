@@ -75,7 +75,7 @@ public class ScheduleService {
                         flag = scheduleRepository.registerSchedule(requestDTO);
                     } else {
                         isType(requestDTO, (dto) ->
-                                dto.setPriceType(PriceType.Plus));
+                                dto.setPriceType(PriceType.Minus));
                         flag = scheduleRepository.registerSchedule(requestDTO);
                     }
                     break;
@@ -89,7 +89,7 @@ public class ScheduleService {
                         flag = scheduleRepository.registerSchedule(requestDTO, dayType);
                     } else {
                         isType(requestDTO, (dto) ->
-                                dto.setPriceType(PriceType.Plus));
+                                dto.setPriceType(PriceType.Minus));
                         flag = scheduleRepository.registerSchedule(requestDTO, dayType);
                     }
                     break;
@@ -117,7 +117,7 @@ public class ScheduleService {
                         flag = scheduleRepository.registerSchedule(requestDTO, monthType);
                     } else {
                         isType(requestDTO, (dto) ->
-                                dto.setPriceType(PriceType.Plus));
+                                dto.setPriceType(PriceType.Minus));
                         flag = scheduleRepository.registerSchedule(requestDTO, monthType);
                     }
                     break;
@@ -131,7 +131,7 @@ public class ScheduleService {
                         flag = scheduleRepository.registerSchedule(requestDTO, yearType);
                     } else {
                         isType(requestDTO, (dto) ->
-                                dto.setPriceType(PriceType.Plus));
+                                dto.setPriceType(PriceType.Minus));
                         flag = scheduleRepository.registerSchedule(requestDTO, yearType);
                     }
                     break;
@@ -218,6 +218,7 @@ public class ScheduleService {
         List<Schedule> responseArray = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
         Map<String, Object> responseMap = new HashMap<>();
 
+
         if (responseArray.isEmpty()) {
             responseMap.put("data", "error");
         } else {
@@ -235,20 +236,58 @@ public class ScheduleService {
         return getJsonArrayBySchedule(byMonthSchedule, new JSONArray());
     }
 */
-    public Map<String, Object> findMonthSchedule(String date, String userId) {
-        List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
+
+    /**
+     * 수입과 지출에 따라 계산해야 함.
+     *
+     * @param date
+     * @param userId
+     * @param request
+     * @return
+     */
+    public Map<String, Object> findMonthSchedule(String date, String userId, HttpServletRequest request) {
+        String accessToken = tokenManager.parseBearerToken(request);
         Map<String, Object> responseMap = new HashMap<>();
 
-        if (responseArray.isEmpty()) {
-            responseMap.put("data", "error");
-        } else {
-            List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
-                    .map(this::createScheduleResponseDTO)
-                    .collect(Collectors.toList());
+        try {
+            if (accessToken == null) {
+                throw new RuntimeException();
+            }
+            Optional<UsersToken> findToken = Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
+                    .orElseThrow(() -> new TokenNotFoundException("token not found")));
 
-            responseMap.put("data", convertSnakeList(responseDTOList));
+            // 현재 토큰으로 로그인 된 사용자의 userId와 클라이언트로부터 전달받은 userId값이 일치하지 않은 경우 error!!!
+            if (!findToken.get().getUserId().equals(userId)) {
+                throw new Exception("error");
+            } else {
+                List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
+
+                if (responseArray.isEmpty()) {
+                    responseMap.put("data", "error");
+                } else {
+
+                    Map<PriceType, Integer> result = responseArray.stream()
+                            .collect(Collectors.groupingBy(
+                                    Schedule::getPriceType,
+                                    Collectors.summingInt(schedule -> Integer.parseInt(schedule.getAmount()))
+                            ));
+
+                    int deposit = result.getOrDefault(PriceType.Plus, 0);
+                    int withdraw = result.getOrDefault(PriceType.Minus, 0);
+
+                    List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
+                            .map(this::createScheduleResponseDTO)
+                            .collect(Collectors.toList());
+
+                    responseMap.put("data", convertSnakeList(responseDTOList));
+                    responseMap.put("count", responseDTOList.size());
+                    responseMap.put("deposit", deposit);
+                    responseMap.put("withdraw", withdraw);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("error");
         }
-
         return responseMap;
     }
 

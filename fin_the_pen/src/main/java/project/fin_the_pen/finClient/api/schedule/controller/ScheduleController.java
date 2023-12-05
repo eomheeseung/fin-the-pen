@@ -16,6 +16,7 @@ import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
 import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
+import project.fin_the_pen.model.schedule.vo.FindCertainMonthVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -67,12 +68,14 @@ public class ScheduleController {
 
     /**
      * 유저 한명의 모든 일정 조회
+     *
      * @param findAllScheduleVO
      * @param request
      * @return
      */
     @PostMapping(value = "/getAllSchedules", produces = "application/json")
-    @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.", summary = "모든 일정 조회 (O)")
+    @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.",
+            summary = "모든 일정 조회 (O)")
     public ResponseEntity<Object> findAllSchedule(@RequestBody FindAllScheduleVO findAllScheduleVO, HttpServletRequest request) {
         try {
             Map<String, Object> responseMap = scheduleService.findAllSchedule(findAllScheduleVO.getUserId(), request);
@@ -84,9 +87,12 @@ public class ScheduleController {
     }
 
     @PostMapping("/getMonthSchedules")
-    @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.", summary = "월별 조회")
-    public ResponseEntity<Object> findMonthSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        Map<String, Object> responseMap = scheduleService.findMonthSchedule(map.get("date"), map.get("user_id"));
+    @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.",
+            summary = "월별 조회 (-)")
+    public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
+        Map<String, Object> responseMap =
+                scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(),request);
+
         return convertResponse.getResponseEntity(responseMap);
     }
 

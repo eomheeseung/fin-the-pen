@@ -20,11 +20,11 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s WHERE s.eventName LIKE CONCAT('%',:name,'%') ")
     List<Schedule> findByContainsName(@Param("name") String name);
 
-    @Query("select s from Schedule s where s.token = :accessToken")
-    List<Schedule> findByToken(@Param("accessToken") String accessToken);
+    @Query("select s from Schedule s where s.userId = :userId")
+    List<Schedule> findByUserId(@Param("userId") String userId);
 
-    @Query("select s from Schedule s where s.token = :accessToken and s.eventName = :eventName")
-    Schedule findByTokenAndEventName(@Param("accessToken") String accessToken, @Param("eventName") String eventName);
+    /*@Query("select s from Schedule s where s.userId = :userId and s.eventName = :eventName")
+    Schedule findByUserIdAndeAndEventName(@Param("accessToken") String userId, @Param("eventName") String eventName);*/
 
     /*@Query("select s from Schedule s where s.userId = :userId and s.startDate >= :startDate and s.endDate <= :endDate")
     List<Schedule> findScheduleByDateContains(@Param("startDate") String startDate, @Param("endDate") String endDate,

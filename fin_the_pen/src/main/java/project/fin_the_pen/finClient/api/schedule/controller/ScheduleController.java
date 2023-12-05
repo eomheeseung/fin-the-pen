@@ -45,12 +45,12 @@ public class ScheduleController {
             summary = "일정등록")
     public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleDTO dto, HttpServletRequest request) {
         try {
-            String responseMessage = scheduleService.registerSchedule(dto, request);
+            Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
 
-            if (responseMessage.equals("success")) {
+            if (responseMap.get("data").equals(dto.getUserId())) {
                 log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
-                return ResponseEntity.ok().build();
-            }
+                return ResponseEntity.ok().body(responseMap);
+            } else throw new RuntimeException();
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RuntimeException e) {
@@ -58,8 +58,6 @@ public class ScheduleController {
             log.error("일정 등록 중 에러 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-
-        return ResponseEntity.ok().build();
     }
 
 

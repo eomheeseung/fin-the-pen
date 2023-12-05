@@ -23,9 +23,14 @@ public class ScheduleRepository {
     private final CRUDRegularScheduleRepository regularScheduleRepository;
 //    private final ManageRepository manageRepository;
 
-    public Boolean registerSchedule(ScheduleDTO dto, String token, RepeatType repeatType) {
+    /*
+    TODO 등록할 때 accessToken으로만 일정을 찾으면, 로그아웃할 때 accessToken이 파기될 것
+     -> 그럼 다시 재 로그인할 때 일정을 어떻게 찾지?
+     => 토큰은 인증 용도로만 사용하고 user_id로 조회하자.
+     */
+    public Boolean registerSchedule(ScheduleDTO dto, RepeatType repeatType) {
         try {
-            List<Schedule> allSchedule = findAllSchedule(token);
+            List<Schedule> allSchedule = findAllSchedule(dto.getUserId());
 
             boolean isDifferent = allSchedule.stream().noneMatch(it ->
                     it.getUserId().equals(dto.getUserId()) &&
@@ -39,6 +44,7 @@ public class ScheduleRepository {
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
+                // 어느정도 만든 듯
                 if (repeatType instanceof DayType) {
 
                     TypeManage typeManage = TypeManage.builder()
@@ -57,12 +63,12 @@ public class ScheduleRepository {
 
                     while (!currentDate.isAfter(endDate)) {
                         Schedule schedule = Schedule.builder()
-                                .token(token)
                                 .userId(dto.getUserId())
                                 .eventName(dto.getEventName())
                                 .category(dto.getCategory())
                                 .startDate(currentDate.toString())  // 수정된 부분
                                 .endDate(dto.getEndDate())
+                                .startTime(dto.getStartTime())
                                 .endTime(dto.getEndTime())
                                 .isAllDay(dto.isAllDay())
                                 .repeat(typeManage)
@@ -83,15 +89,16 @@ public class ScheduleRepository {
 
                         currentDate = currentDate.plusDays(intervalDays);
                     }
-
-//                    log.info(schedule.getUserId());
+                /*
+                TODO
+                 2. 주간 반복 해야 함.
+                 */
                 } else if (repeatType instanceof WeekType) {
                     TypeManage typeManage = TypeManage.builder()
                             .value(((WeekType) repeatType).getValue())
                             .kindType("month").build();
 
                     Schedule schedule = Schedule.builder()
-                            .token(token)
                             .userId(dto.getUserId())
                             .eventName(dto.getEventName())
                             .category(dto.getCategory())
@@ -124,7 +131,6 @@ public class ScheduleRepository {
                             .kindType("month").build();
 
                     Schedule schedule = Schedule.builder()
-                            .token(token)
                             .userId(dto.getUserId())
                             .eventName(dto.getEventName())
                             .category(dto.getCategory())
@@ -157,7 +163,6 @@ public class ScheduleRepository {
                             .kindType("month").build();
 
                     Schedule schedule = Schedule.builder()
-                            .token(token)
                             .userId(dto.getUserId())
                             .eventName(dto.getEventName())
                             .category(dto.getCategory())
@@ -205,8 +210,8 @@ public class ScheduleRepository {
      *
      * @return
      */
-    public List<Schedule> findAllSchedule(String token) {
-        return crudScheduleRepository.findByToken(token);
+    public List<Schedule> findAllSchedule(String userId) {
+        return crudScheduleRepository.findByUserId(userId);
     }
 
     /**

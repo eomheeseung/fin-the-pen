@@ -19,9 +19,6 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "access_token")
-    private String token;
-
     // 일단 schedule와 같은 column을 가져간다고 하자.
     @Column(name = "user_id")
     private String userId;

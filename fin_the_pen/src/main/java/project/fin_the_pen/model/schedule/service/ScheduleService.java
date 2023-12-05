@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
+import project.fin_the_pen.finClient.core.error.customException.FailSaveScheduleException;
 import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundException;
 import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
@@ -39,12 +40,19 @@ public class ScheduleService {
     private final UsersTokenRepository tokenRepository;
     private final TokenManager tokenManager;
 
-    private List convertSnake(List<ScheduleResponseDTO> list) {
+    private List convertSnakeList(List<ScheduleResponseDTO> list) {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         return objectMapper.convertValue(list, List.class);
     }
 
-    public String registerSchedule(ScheduleDTO requestDTO, HttpServletRequest request) {
+    private ScheduleResponseDTO convertSnakeSingle(ScheduleResponseDTO responseDTO) {
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        return objectMapper.convertValue(responseDTO, ScheduleResponseDTO.class);
+    }
+
+    public Map<Object, Object> registerSchedule(ScheduleDTO requestDTO, HttpServletRequest request) {
+        boolean flag = false;
+
         try {
             String extractToken = tokenManager.parseBearerToken(request);
 
@@ -58,6 +66,7 @@ public class ScheduleService {
             String token = usersToken.get().getAccessToken();
             log.info("parseToken : {}", token);
 
+
             if (requestDTO.getRepeat().getKindType().equals("day")) {
                 DayType dayType = new DayType();
                 dayType.setValue(requestDTO.getRepeat().getValue());
@@ -65,62 +74,65 @@ public class ScheduleService {
                 if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                     isType(requestDTO, (dto) ->
                             dto.setPriceType(PriceType.Plus));
-                    scheduleRepository.registerSchedule(requestDTO, token, dayType);
+                    flag = scheduleRepository.registerSchedule(requestDTO, dayType);
                 } else {
                     isType(requestDTO, (dto) ->
                             dto.setPriceType(PriceType.Plus));
-                    scheduleRepository.registerSchedule(requestDTO, token, dayType);
+                    flag = scheduleRepository.registerSchedule(requestDTO, dayType);
                 }
-            }
-            else if (requestDTO.getRepeat().getKindType().equals("week")) {
+            } else if (requestDTO.getRepeat().getKindType().equals("week")) {
                 WeekType weekType = new WeekType();
                 weekType.setValue(requestDTO.getRepeat().getValue());
 
                 if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                     isType(requestDTO, (dto) ->
                             dto.setPriceType(PriceType.Plus));
-                    scheduleRepository.registerSchedule(requestDTO, token, weekType);
+                    flag = scheduleRepository.registerSchedule(requestDTO, weekType);
                 } else {
                     isType(requestDTO, (dto) ->
                             dto.setPriceType(PriceType.Plus));
-                    scheduleRepository.registerSchedule(requestDTO, token, weekType);
+                    flag = scheduleRepository.registerSchedule(requestDTO, weekType);
                 }
-            }else if (requestDTO.getRepeat().getKindType().equals("month")) {
+            } else if (requestDTO.getRepeat().getKindType().equals("month")) {
                 MonthType monthType = new MonthType();
                 monthType.setValue(requestDTO.getRepeat().getValue());
 
                 if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                     isType(requestDTO, (dto) ->
                             dto.setPriceType(PriceType.Plus));
-                    scheduleRepository.registerSchedule(requestDTO, token, monthType);
+                    flag = scheduleRepository.registerSchedule(requestDTO, monthType);
                 } else {
                     isType(requestDTO, (dto) ->
                             dto.setPriceType(PriceType.Plus));
-                    scheduleRepository.registerSchedule(requestDTO, token, monthType);
+                    flag = scheduleRepository.registerSchedule(requestDTO, monthType);
                 }
-            }else if (requestDTO.getRepeat().getKindType().equals("year")) {
+            } else if (requestDTO.getRepeat().getKindType().equals("year")) {
                 YearType yearType = new YearType();
                 yearType.setValue(requestDTO.getRepeat().getValue());
 
                 if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                     isType(requestDTO, (dto) ->
                             dto.setPriceType(PriceType.Plus));
-                    scheduleRepository.registerSchedule(requestDTO, token, yearType);
+                    flag = scheduleRepository.registerSchedule(requestDTO, yearType);
                 } else {
                     isType(requestDTO, (dto) ->
                             dto.setPriceType(PriceType.Plus));
-                    scheduleRepository.registerSchedule(requestDTO, token, yearType);
+                    flag = scheduleRepository.registerSchedule(requestDTO, yearType);
                 }
             }
 
+            if (flag) {
+                HashMap<Object, Object> responseMap = new HashMap<>();
+                responseMap.put("data", objectMapper.convertValue(requestDTO.getUserId(), String.class));
+                return responseMap;
+            } else throw new FailSaveScheduleException("일정 등록 실패");
 
-        } catch (DuplicatedScheduleException e) {
+        } catch (DuplicatedScheduleException | FailSaveScheduleException e) {
             log.info(e.getMessage());
-            throw new DuplicatedScheduleException(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         } catch (RuntimeException e) {
             throw new RuntimeException("등록 오류입니다.");
         }
-        return "success";
     }
 
 
@@ -146,7 +158,7 @@ public class ScheduleService {
                 List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
                         .map(this::createScheduleResponseDTO)
                         .collect(Collectors.toList());
-                responseMap.put("data", convertSnake(responseDTOList));
+                responseMap.put("data", convertSnakeList(responseDTOList));
             }
             return responseMap;
         } catch (Exception e) {
@@ -157,7 +169,6 @@ public class ScheduleService {
     /**
      * 일정 수정 기본.
      *
-     * @param requestDTO
      * @return
      */
     /*public boolean modifySchedule(ScheduleDTO requestDTO) {
@@ -191,7 +202,7 @@ public class ScheduleService {
             List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
                     .map(this::createScheduleResponseDTO)
                     .collect(Collectors.toList());
-            responseMap.put("data", convertSnake(responseDTOList));
+            responseMap.put("data", convertSnakeList(responseDTOList));
         }
         return responseMap;
     }
@@ -213,7 +224,7 @@ public class ScheduleService {
                     .map(this::createScheduleResponseDTO)
                     .collect(Collectors.toList());
 
-            responseMap.put("data", convertSnake(responseDTOList));
+            responseMap.put("data", convertSnakeList(responseDTOList));
         }
 
         return responseMap;
@@ -252,7 +263,7 @@ public class ScheduleService {
                     .map(this::createScheduleResponseDTO)
                     .collect(Collectors.toList());
 
-            responseMap.put("data", convertSnake(responseDTOList));
+            responseMap.put("data", convertSnakeList(responseDTOList));
         }
         return responseMap;
     }
@@ -283,7 +294,7 @@ public class ScheduleService {
                     .map(this::createScheduleResponseDTO)
                     .collect(Collectors.toList());
 
-            responseMap.put("data", convertSnake(responseDTOList));
+            responseMap.put("data", convertSnakeList(responseDTOList));
         }
         return responseMap;
     }

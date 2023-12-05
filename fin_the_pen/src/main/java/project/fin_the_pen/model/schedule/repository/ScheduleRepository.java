@@ -23,10 +23,65 @@ public class ScheduleRepository {
     private final CRUDRegularScheduleRepository regularScheduleRepository;
 //    private final ManageRepository manageRepository;
 
-    /*
-    TODO 등록할 때 accessToken으로만 일정을 찾으면, 로그아웃할 때 accessToken이 파기될 것
-     -> 그럼 다시 재 로그인할 때 일정을 어떻게 찾지?
-     => 토큰은 인증 용도로만 사용하고 user_id로 조회하자.
+    public Boolean registerSchedule(ScheduleDTO dto) {
+        try {
+            List<Schedule> allSchedule = findAllSchedule(dto.getUserId());
+
+            boolean isDifferent = allSchedule.stream().noneMatch(it ->
+                    it.getUserId().equals(dto.getUserId()) &&
+                            it.getEventName().equals(dto.getEventName()) &&
+                            it.getCategory().equals(dto.getCategory()) &&
+                            it.getStartDate().equals(dto.getStartDate()) &&
+                            it.getEndDate().equals(dto.getEndDate()) &&
+                            it.getStartTime().equals(dto.getStartTime()) &&
+                            it.getEndTime().equals(dto.getEndTime()));
+
+            if (!isDifferent) {
+                throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
+            } else {
+
+                TypeManage typeManage = TypeManage.builder()
+                        .value("none")
+                        .kindType("none")
+                        .build();
+
+                Schedule schedule = Schedule.builder()
+                        .userId(dto.getUserId())
+                        .eventName(dto.getEventName())
+                        .category(dto.getCategory())
+                        .startDate(dto.getStartDate())  // 수정된 부분
+                        .endDate(dto.getEndDate())
+                        .startTime(dto.getStartTime())
+                        .endTime(dto.getEndTime())
+                        .isAllDay(dto.isAllDay())
+                        .repeat(typeManage)
+                        .isExclude(dto.isExclude())
+                        .importance(dto.getImportance())
+                        .amount(dto.getAmount())
+                        .isFixAmount(dto.isFixAmount())
+                        .repeatEndLine(dto.getRepeatEndLine())
+                        .build();
+
+                schedule.setPriceType(() -> {
+                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                        return PriceType.Plus;
+                    } else return PriceType.Minus;
+                });
+
+                crudScheduleRepository.save(schedule);
+            }
+        } catch (RuntimeException e) {
+            return null;
+        }
+        return true;
+    }
+
+
+    /**
+     * 반복일때
+     * @param dto
+     * @param repeatType
+     * @return
      */
     public Boolean registerSchedule(ScheduleDTO dto, RepeatType repeatType) {
         try {

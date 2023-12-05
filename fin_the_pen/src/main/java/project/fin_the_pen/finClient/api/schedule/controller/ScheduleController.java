@@ -6,12 +6,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
+import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -42,7 +46,7 @@ public class ScheduleController {
     @PostMapping(value = "/createSchedule", produces = "application/json")
     @Operation(description = "일정을 등록하는 API입니다. " +
             "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단",
-            summary = "일정등록")
+            summary = "일정등록 (O)")
     public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleDTO dto, HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
@@ -61,16 +65,21 @@ public class ScheduleController {
     }
 
 
-    // 유저 한명의 모든 일정 조회
-    @GetMapping(value = "/getAllSchedules", produces = "application/json")
-    @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.", summary = "모든 일정 조회")
-    public ResponseEntity<Object> findAllSchedule(HttpServletRequest request) {
+    /**
+     * 유저 한명의 모든 일정 조회
+     * @param findAllScheduleVO
+     * @param request
+     * @return
+     */
+    @PostMapping(value = "/getAllSchedules", produces = "application/json")
+    @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.", summary = "모든 일정 조회 (O)")
+    public ResponseEntity<Object> findAllSchedule(@RequestBody FindAllScheduleVO findAllScheduleVO, HttpServletRequest request) {
         try {
-            Map<String, Object> responseMap = scheduleService.findAllSchedule(request);
+            Map<String, Object> responseMap = scheduleService.findAllSchedule(findAllScheduleVO.getUserId(), request);
             log.info(responseMap.get("data").toString());
             return convertResponse.getResponseEntity(responseMap);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("오류 입니다.");
         }
     }
 

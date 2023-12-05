@@ -41,7 +41,7 @@ public class LoginController {
      * @return
      */
     @PostMapping(value = "/fin-the-pen-web/sign-up", produces = "application/json")
-    @Operation(summary = "회원 가입")
+    @Operation(summary = "회원 가입 (O)")
     public ResponseEntity<Object> signUp(@RequestBody UserRequestDTO userRequestDTO) {
         UserResponseDTO userResponseDTO = loginService.signUp(userRequestDTO);
         return ResponseEntity.ok().body(userResponseDTO);
@@ -55,7 +55,7 @@ public class LoginController {
      * @throws IOException
      */
     @PostMapping(value = "/fin-the-pen-web/sign-in", produces = "application/json")
-    @Operation(summary = "로그인")
+    @Operation(summary = "로그인 (O)")
     public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
         try {
             SignInResponse signInResponse = loginService.signIn(signInRequest, request);
@@ -105,7 +105,7 @@ public class LoginController {
 
 
     @DeleteMapping(value = "/fin-the-pen-web/logout")
-    @Operation(summary = "로그아웃")
+    @Operation(summary = "로그아웃 (O)")
     public ResponseEntity<Object> logout(HttpServletRequest request) {
         if (loginService.logout(request)) {
             return ResponseEntity.ok().body("로그아웃 되었습니다.");

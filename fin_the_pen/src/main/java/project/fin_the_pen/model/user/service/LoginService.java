@@ -114,7 +114,6 @@ public class LoginService {
     @Transactional
     public boolean logout(HttpServletRequest request) {
         String findToken = tokenManager.parseBearerToken(request);
-
         tokenRepository.deleteByAccessToken(findToken);
         return true;
     }

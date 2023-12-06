@@ -45,10 +45,10 @@ public class ScheduleController {
      * @return
      */
     @PostMapping(value = "/createSchedule", produces = "application/json")
-    @Operation(description = "일정을 등록하는 API입니다. " +
-            "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 " +
-            "매일의 경우 (value,kind_type)만 넣어주면 됩니다." +
-            "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.",
+    @Operation(description = "일정을 등록하는 API입니다.  " +
+            "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 <br>" +
+            "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" +
+            "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>",
             summary = "일정등록 (O)")
     public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto,
                                                    HttpServletRequest request) {

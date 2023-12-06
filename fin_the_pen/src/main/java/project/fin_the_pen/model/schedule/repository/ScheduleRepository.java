@@ -84,7 +84,7 @@ public class ScheduleRepository {
 
 
     /**
-     * 반복일때
+     * "일" 단위 반복
      *
      * @param dto
      * @param repeatType
@@ -106,7 +106,7 @@ public class ScheduleRepository {
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
-                // 어느정도 만든 듯
+
                 TypeManage typeManage = TypeManage.builder()
                         .value((repeatType).getValue())
                         .kindType("day").build();
@@ -222,6 +222,12 @@ public class ScheduleRepository {
         return true;
     }
 
+    /**
+     * "주" 단위 반복
+     * @param dto
+     * @param repeatType
+     * @return
+     */
     public Boolean registerWeekSchedule(ScheduleRequestDTO dto, WeekType repeatType) {
         try {
             List<Schedule> allSchedule = findAllSchedule(dto.getUserId());
@@ -316,6 +322,15 @@ public class ScheduleRepository {
         }
         return true;
     }
+
+
+
+
+
+
+
+
+
 
     /**
      *

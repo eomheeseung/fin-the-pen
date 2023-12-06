@@ -6,5 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class WeekType implements RepeatType{
-    private String value;
+    private String monthValue;
+    private long repeatValue;
 }

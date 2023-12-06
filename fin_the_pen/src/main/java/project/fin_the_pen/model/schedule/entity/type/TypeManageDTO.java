@@ -10,9 +10,13 @@ import lombok.Setter;
 @Setter
 public class TypeManageDTO {
     @JsonProperty("kind_type")
-    @Schema(example = "day")
+    @Schema(example = "week")
     private String kindType;
 
-    @Schema(example = "2")
+    @Schema(description = "반복 횟수", example = "2")
     private String value;
+
+    @JsonProperty("day_of_XXX")
+    @Schema(description = "요일설정", example = "MONDAY, WEDNESDAY, FRIDAY")
+    private String dayOfXXX;
 }

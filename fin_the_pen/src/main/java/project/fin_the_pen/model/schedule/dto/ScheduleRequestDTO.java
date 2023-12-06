@@ -7,8 +7,8 @@ import project.fin_the_pen.model.schedule.entity.type.TypeManageDTO;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Data
-public class ScheduleDTO {
-    public ScheduleDTO() {
+public class ScheduleRequestDTO {
+    public ScheduleRequestDTO() {
     }
 
     @JsonProperty(value = "user_id")
@@ -25,12 +25,12 @@ public class ScheduleDTO {
 
     // 시작 일자
     @JsonProperty(value = "start_date")
-    @Schema(description = "일정 시작 일자", example = "2024-01-01")
+    @Schema(description = "일정 시작 일자", example = "2023-12-06")
     private String startDate;
 
     // 종료 일자
     @JsonProperty(value = "end_date")
-    @Schema(description = "일정 종료 일자", example = "2024-01-01")
+    @Schema(description = "일정 종료 일자", example = "2023-12-06")
     private String endDate;
 
     // 시작 시간
@@ -83,6 +83,6 @@ public class ScheduleDTO {
     private boolean isFixAmount;
 
     @JsonProperty(value = "repeat_end_line")
-    @Schema(description = "반복의 종료 기간",example = "2024-04-30")
+    @Schema(description = "반복의 종료 기간",example = "2024-01-30")
     private String repeatEndLine;
 }

@@ -17,7 +17,7 @@ import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import project.fin_the_pen.finClient.core.util.TokenManager;
-import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
+import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.user.dto.SignInRequest;
@@ -65,7 +65,7 @@ class DestructionTokenSchedulerTest {
     @Test
     @Order(2)
     public void registerSchedule() throws IOException, ParseException {
-        ScheduleDTO dto = new ScheduleDTO();
+        ScheduleRequestDTO dto = new ScheduleRequestDTO();
         JSONParser parser = new JSONParser();
 
         // JSON 파일 읽기

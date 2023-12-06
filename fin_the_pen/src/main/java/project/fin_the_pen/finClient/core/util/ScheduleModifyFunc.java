@@ -1,8 +1,8 @@
 package project.fin_the_pen.finClient.core.util;
 
-import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
+import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 
 @FunctionalInterface
 public interface ScheduleModifyFunc {
-    public boolean modifyCallBack(ScheduleDTO dto);
+    public boolean modifyCallBack(ScheduleRequestDTO dto);
 }

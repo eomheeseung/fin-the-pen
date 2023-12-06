@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
-import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
+import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
 import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
@@ -46,11 +46,15 @@ public class ScheduleController {
      */
     @PostMapping(value = "/createSchedule", produces = "application/json")
     @Operation(description = "일정을 등록하는 API입니다. " +
-            "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단",
+            "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 " +
+            "매일의 경우 (value,kind_type)만 넣어주면 됩니다." +
+            "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.",
             summary = "일정등록 (O)")
-    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleDTO dto, HttpServletRequest request) {
+    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto,
+                                                   HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
+
 
             if (responseMap.get("data").equals(dto.getUserId())) {
                 log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
@@ -88,10 +92,10 @@ public class ScheduleController {
 
     @PostMapping("/getMonthSchedules")
     @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.",
-            summary = "월별 조회 (-)")
+            summary = "월별 조회 (O)")
     public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
         Map<String, Object> responseMap =
-                scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(),request);
+                scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
 
         return convertResponse.getResponseEntity(responseMap);
     }
@@ -133,7 +137,7 @@ public class ScheduleController {
      */
     @PutMapping("/modifySchedule")
     @Operation(description = "일정을 수정합니다.", summary = "일정 수정")
-    public ResponseEntity<Object> modifySchedule(@RequestBody ScheduleDTO dto) {
+    public ResponseEntity<Object> modifySchedule(@RequestBody ScheduleRequestDTO dto) {
         /*log.info(String.valueOf(dto.getUserId()));
         ResponseEntity<Object> responseEntity = null;
 

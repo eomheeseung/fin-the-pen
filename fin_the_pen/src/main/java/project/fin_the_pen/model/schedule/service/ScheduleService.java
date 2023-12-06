@@ -11,14 +11,12 @@ import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundExc
 import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.core.util.TokenManager;
-import project.fin_the_pen.model.schedule.dto.ScheduleDTO;
+import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.type.DayType;
-import project.fin_the_pen.model.schedule.entity.type.MonthType;
 import project.fin_the_pen.model.schedule.entity.type.WeekType;
-import project.fin_the_pen.model.schedule.entity.type.YearType;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.usersToken.entity.UsersToken;
@@ -50,7 +48,7 @@ public class ScheduleService {
         return objectMapper.convertValue(responseDTO, ScheduleResponseDTO.class);
     }
 
-    public Map<Object, Object> registerSchedule(ScheduleDTO requestDTO, HttpServletRequest request) {
+    public Map<Object, Object> registerSchedule(ScheduleRequestDTO requestDTO, HttpServletRequest request) {
         boolean flag = false;
 
         try {
@@ -63,20 +61,16 @@ public class ScheduleService {
                     Optional.ofNullable(tokenRepository.findUsersToken(extractToken)
                             .orElseThrow(() -> new TokenNotFoundException("token not found")));
 
-            String token = usersToken.get().getAccessToken();
-            log.info("parseToken : {}", token);
-
-
             switch (requestDTO.getRepeat().getKindType()) {
                 case "none":
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerSchedule(requestDTO);
+                        flag = scheduleRepository.registerNoneSchedule(requestDTO);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerSchedule(requestDTO);
+                        flag = scheduleRepository.registerNoneSchedule(requestDTO);
                     }
                     break;
                 case "day":
@@ -86,39 +80,40 @@ public class ScheduleService {
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerSchedule(requestDTO, dayType);
+                        flag = scheduleRepository.registerDaySchedule(requestDTO, dayType);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerSchedule(requestDTO, dayType);
+                        flag = scheduleRepository.registerDaySchedule(requestDTO, dayType);
                     }
                     break;
                 case "week":
                     WeekType weekType = new WeekType();
-                    weekType.setValue(requestDTO.getRepeat().getValue());
+                    weekType.setMonthValue(requestDTO.getRepeat().getDayOfXXX());
+                    weekType.setRepeatValue(Integer.parseInt(requestDTO.getRepeat().getValue()));
 
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerSchedule(requestDTO, weekType);
+                        flag = scheduleRepository.registerWeekSchedule(requestDTO, weekType);
                     } else {
                         isType(requestDTO, (dto) ->
-                                dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerSchedule(requestDTO, weekType);
+                                dto.setPriceType(PriceType.Minus));
+                        flag = scheduleRepository.registerWeekSchedule(requestDTO, weekType);
                     }
                     break;
-                case "month":
+                /*case "month":
                     MonthType monthType = new MonthType();
                     monthType.setValue(requestDTO.getRepeat().getValue());
 
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerSchedule(requestDTO, monthType);
+                        flag = scheduleRepository.registerDaySchedule(requestDTO, monthType);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerSchedule(requestDTO, monthType);
+                        flag = scheduleRepository.registerDaySchedule(requestDTO, monthType);
                     }
                     break;
                 case "year":
@@ -128,13 +123,13 @@ public class ScheduleService {
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerSchedule(requestDTO, yearType);
+                        flag = scheduleRepository.registerDaySchedule(requestDTO, yearType);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerSchedule(requestDTO, yearType);
+                        flag = scheduleRepository.registerDaySchedule(requestDTO, yearType);
                     }
-                    break;
+                    break;*/
             }
 
             if (flag) {
@@ -143,11 +138,12 @@ public class ScheduleService {
                 return responseMap;
             } else throw new FailSaveScheduleException("일정 등록 실패");
 
-        } catch (DuplicatedScheduleException | FailSaveScheduleException e) {
+        } catch (DuplicatedScheduleException | FailSaveScheduleException | TokenNotFoundException e) {
             log.info(e.getMessage());
             throw new RuntimeException(e.getMessage());
         } catch (RuntimeException e) {
-            throw new RuntimeException("등록 오류입니다.");
+            throw new RuntimeException(e.getMessage());
+//            throw new RuntimeException("등록 오류입니다.");
         }
     }
 
@@ -366,11 +362,11 @@ public class ScheduleService {
      * @param
      * @param callback
      */
-    private void isType(ScheduleDTO dto, ScheduleTypeFunc callback) {
+    private void isType(ScheduleRequestDTO dto, ScheduleTypeFunc callback) {
         callback.callbackMethod(dto);
     }
 
-    private boolean modifyIsType(ScheduleDTO dto, ScheduleModifyFunc callback) {
+    private boolean modifyIsType(ScheduleRequestDTO dto, ScheduleModifyFunc callback) {
         return callback.modifyCallBack(dto);
     }
 

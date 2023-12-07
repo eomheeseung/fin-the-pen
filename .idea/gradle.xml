@@ -12,6 +12,15 @@
           </set>
         </option>
       </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/fin_the_pen/src/main" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/fin_the_pen/src/main" />
+          </set>
+        </option>
+      </GradleProjectSettings>
     </option>
   </component>
 </project>

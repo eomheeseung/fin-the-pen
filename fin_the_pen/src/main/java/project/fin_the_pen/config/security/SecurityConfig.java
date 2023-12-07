@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(new AntPathRequestMatcher(Arrays.toString(allowedUrls))).permitAll() // Use AntPathRequestMatcher for specific paths
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
+//                                .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

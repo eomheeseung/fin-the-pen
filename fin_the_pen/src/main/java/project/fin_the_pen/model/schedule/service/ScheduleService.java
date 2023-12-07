@@ -57,9 +57,11 @@ public class ScheduleService {
             if (extractToken == null)
                 throw new RuntimeException();
 
-            Optional<UsersToken> usersToken =
-                    Optional.ofNullable(tokenRepository.findUsersToken(extractToken)
-                            .orElseThrow(() -> new TokenNotFoundException("token not found")));
+            // usersToken 변수를 따로 사용하지 않고, 값이 없으면 예외를 던지도록 처리
+            tokenRepository.findUsersToken(extractToken)
+                    .ifPresent(token -> {
+                        throw new TokenNotFoundException("Token not found");
+                    });
 
             switch (requestDTO.getRepeat().getKindType()) {
                 case "none":
@@ -158,26 +160,23 @@ public class ScheduleService {
             if (accessToken == null) {
                 throw new RuntimeException();
             }
-            Optional<UsersToken> findToken = Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
-                    .orElseThrow(() -> new TokenNotFoundException("token not found")));
 
-            // 현재 토큰으로 로그인 된 사용자의 userId와 클라이언트로부터 전달받은 userId값이 일치하지 않은 경우 error!!!
-            if (!findToken.get().getUserId().equals(userId)) {
-                throw new Exception("error");
-            } else {
-                List<Schedule> responseArray = scheduleRepository.findAllSchedule(userId);
+            Optional<UsersToken> findToken = tokenRepository.findUsersToken(accessToken)
+                    .map(Optional::of)
+                    .orElseThrow(() -> new TokenNotFoundException("Token not found"));
 
-                if (responseArray.isEmpty()) {
-                    responseMap.put("data", "error");
-                } else {
-                    List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
+            findToken
+                    .filter(token -> token.getUserId().equals(userId))
+                    .orElseThrow(() -> new Exception("Error"));
+
+            List<Schedule> responseArray = scheduleRepository.findAllSchedule(userId);
+
+            responseMap.put("data", responseArray.isEmpty() ? "error" :
+                    convertSnakeList(responseArray.stream()
                             .map(this::createScheduleResponseDTO)
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList())));
 
-                    responseMap.put("data", convertSnakeList(responseDTOList));
-                    responseMap.put("count", responseDTOList.size());
-                }
-            }
+            responseMap.put("count", responseArray.size());
         } catch (Exception e) {
             throw new RuntimeException("error");
         }
@@ -249,6 +248,7 @@ public class ScheduleService {
             if (accessToken == null) {
                 throw new RuntimeException();
             }
+
             Optional<UsersToken> findToken = Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
                     .orElseThrow(() -> new TokenNotFoundException("token not found")));
 
@@ -289,7 +289,7 @@ public class ScheduleService {
 
     private ScheduleResponseDTO createScheduleResponseDTO(Schedule schedule) {
         return ScheduleResponseDTO.builder()
-                // token
+                .id(schedule.getId())
                 .userId(schedule.getUserId())
                 .eventName(schedule.getEventName())
                 .category(schedule.getCategory())

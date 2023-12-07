@@ -9,6 +9,7 @@ import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.type.DayType;
+import project.fin_the_pen.model.schedule.entity.type.MonthType;
 import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.entity.type.WeekType;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -20,6 +21,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.Supplier;
 
 @Repository
 @Slf4j
@@ -29,6 +31,11 @@ public class ScheduleRepository {
     private final CRUDRegularScheduleRepository regularScheduleRepository;
 //    private final ManageRepository manageRepository;
 
+    /**
+     * 반복이 아닐 때 (단일일정)
+     * @param dto
+     * @return
+     */
     public Boolean registerNoneSchedule(ScheduleRequestDTO dto) {
         try {
             List<Schedule> allSchedule = findAllSchedule(dto.getUserId());
@@ -66,13 +73,18 @@ public class ScheduleRepository {
                         .amount(dto.getAmount())
                         .isFixAmount(dto.isFixAmount())
                         .repeatEndLine(dto.getRepeatEndLine())
+                        .priceType(judgmentPriceType(() -> {
+                            if (dto.getPriceType().equals(PriceType.Plus)) {
+                                return PriceType.Plus;
+                            } else return PriceType.Minus;
+                        }))
                         .build();
 
-                schedule.setPriceType(() -> {
+                /*schedule.setPriceType(() -> {
                     if (dto.getPriceType().equals(PriceType.Plus)) {
                         return PriceType.Plus;
                     } else return PriceType.Minus;
-                });
+                });*/
 
                 crudScheduleRepository.save(schedule);
             }
@@ -137,13 +149,18 @@ public class ScheduleRepository {
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .repeatEndLine(dto.getRepeatEndLine())
+                            .priceType(judgmentPriceType(() -> {
+                                if (dto.getPriceType().equals(PriceType.Plus)) {
+                                    return PriceType.Plus;
+                                } else return PriceType.Minus;
+                            }))
                             .build();
 
-                    schedule.setPriceType(() -> {
+                    /*schedule.setPriceType(() -> {
                         if (dto.getPriceType().equals(PriceType.Plus)) {
                             return PriceType.Plus;
                         } else return PriceType.Minus;
-                    });
+                    });*/
 
                     crudScheduleRepository.save(schedule);
 
@@ -224,6 +241,7 @@ public class ScheduleRepository {
 
     /**
      * "주" 단위 반복
+     *
      * @param dto
      * @param repeatType
      * @return
@@ -264,7 +282,6 @@ public class ScheduleRepository {
                 // currentDate: 움직일 임시 객체
                 LocalDate currentDate = startDate;
 
-                // TODO!!!!!!
                 while (!currentDate.isAfter(endLine)) {
                     String targetDay = currentDate.getDayOfWeek().toString();
 
@@ -273,16 +290,17 @@ public class ScheduleRepository {
                         log.info("이동하는 요일: {}", targetDay);
                         log.info("일자: {}", currentDate);
 
-                        TypeManage typeManage = TypeManage.builder()
-                                .value(currentDate.getDayOfWeek().toString())
-                                .kindType("week").build();
+                        TypeManage typeManage =
+                                TypeManage.builder()
+                                        .value(currentDate.getDayOfWeek().toString())
+                                        .kindType("week").build();
 
                         Schedule schedule = Schedule.builder()
                                 .userId(dto.getUserId())
                                 .eventName(dto.getEventName())
                                 .category(dto.getCategory())
-                                .startDate(dto.getStartDate())
-                                .endDate(dto.getEndDate())
+                                .startDate(currentDate.toString())
+                                .endDate(currentDate.toString())
                                 .startTime(dto.getStartTime())
                                 .endTime(dto.getEndTime())
                                 .isAllDay(dto.isAllDay())
@@ -291,17 +309,25 @@ public class ScheduleRepository {
                                 .importance(dto.getImportance())
                                 .amount(dto.getAmount())
                                 .isFixAmount(dto.isFixAmount())
+                                .priceType(judgmentPriceType(() -> {
+                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                        return PriceType.Plus;
+                                    } else return PriceType.Minus;
+                                }))
                                 .build();
 
-                        schedule.setPriceType(() -> {
-                            if (dto.getPriceType().equals(PriceType.Plus)) {
-                                return PriceType.Plus;
-                            } else return PriceType.Minus;
-                        });
+
+
+//                        schedule.setPriceType(() -> {
+//                            if (dto.getPriceType().equals(PriceType.Plus)) {
+//                                return PriceType.Plus;
+//                            } else return PriceType.Minus;
+//                        });
 
                         // java에서 한주의 끝은 SUN, 한주의 시작은 MON
                         crudScheduleRepository.save(schedule);
                         log.info(schedule.getUserId());
+
                         if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
                             log.info("term:{}", (repeatType.getRepeatValue()));
                             currentDate = currentDate.plusWeeks(repeatType.getRepeatValue());
@@ -323,12 +349,13 @@ public class ScheduleRepository {
         return true;
     }
 
-
-
-
-
-
-
+    /**
+     * "월" 단위 반복
+     *  TODO!!!!!!
+     */
+    public Boolean registerMonthSchedule(ScheduleRequestDTO dto, MonthType repeatType) {
+        return true;
+    }
 
 
 
@@ -394,7 +421,7 @@ public class ScheduleRepository {
 
     /**
      * 일정 수정
-     * TODO
+     * TODO 수정
      *  만약, "매주 반복 + 2024.01.01"로 생성했는데
      *  수정에서 "매월 반복 + 2024.02.01"로 수정되면, 매주 반복을 없애고 매월 반복으로 바꿔야 함...
      */
@@ -468,4 +495,8 @@ public class ScheduleRepository {
         manage.setSchedule(schedule);
         schedule.setScheduleManage(manage);
     }*/
+
+    private PriceType judgmentPriceType(Supplier<PriceType> supplier) {
+        return supplier.get();
+    }
 }

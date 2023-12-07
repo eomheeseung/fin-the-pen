@@ -32,8 +32,7 @@ public class ScheduleController {
     private final ConvertResponse convertResponse;
 
     /*
-    TODO
-     toke
+    TODO token
      1. accessToken 관리 -> exprietime이 되면 DB에 토큰 삭제
      2. refreshToken 발급
      */

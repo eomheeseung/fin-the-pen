@@ -1,19 +1,21 @@
 package project.fin_the_pen.model.schedule.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import javax.persistence.*;
-import java.util.function.Supplier;
 
 @Entity
 @Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
+//@Setter
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,7 +95,7 @@ public class Schedule {
     /*@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
     private ScheduleManage scheduleManage;*/
 
-    public void setPriceType(Supplier<PriceType> priceTypeSupplier) {
+    /*public void setPriceType(Supplier<PriceType> priceTypeSupplier) {
         this.priceType = priceTypeSupplier.get();
-    }
+    }*/
 }

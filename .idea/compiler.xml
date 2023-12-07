@@ -11,5 +11,10 @@
         <module name="fin_the_pen.main" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="fin-the-pen" target="11" />
+      <module name="fin-the-pen.main" target="11" />
+      <module name="fin-the-pen.test" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

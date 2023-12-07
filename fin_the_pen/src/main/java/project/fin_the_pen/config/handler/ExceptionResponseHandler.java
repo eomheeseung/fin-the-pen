@@ -8,6 +8,7 @@ import project.fin_the_pen.finClient.core.util.ApiResponse;
 
 import java.util.NoSuchElementException;
 
+
 public class ExceptionResponseHandler {
     @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
     public ResponseEntity<ApiResponse> handleIllegalArgumentException(Exception e) {

@@ -7,13 +7,17 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 
-
+/**
+ * 실제로 DB에 들어갈 entity
+ */
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
 @Builder
 public class TypeManage {
-    private String kindType;
-    private String value;
+    private NoneType noneType;
+    private DayType dayType;
+    private WeekType weekType;
+    private MonthType monthType;
 }

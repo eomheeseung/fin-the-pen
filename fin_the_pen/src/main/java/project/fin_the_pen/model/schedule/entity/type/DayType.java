@@ -3,8 +3,11 @@ package project.fin_the_pen.model.schedule.entity.type;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.Embeddable;
+
 @Getter
 @Setter
-public class DayType implements RepeatType{
+@Embeddable
+public class DayType extends RepeatType{
     private String value;
 }

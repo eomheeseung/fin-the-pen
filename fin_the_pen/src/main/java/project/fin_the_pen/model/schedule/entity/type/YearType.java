@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class YearType implements RepeatType {
+public class YearType extends RepeatType {
     private String value;
 }

@@ -3,22 +3,22 @@ package project.fin_the_pen.model.schedule.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.type.DayType;
-import project.fin_the_pen.model.schedule.entity.type.MonthType;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
-import project.fin_the_pen.model.schedule.entity.type.WeekType;
+import project.fin_the_pen.model.schedule.entity.type.*;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
+import java.text.DateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.function.Supplier;
@@ -33,6 +33,7 @@ public class ScheduleRepository {
 
     /**
      * 반복이 아닐 때 (단일일정)
+     *
      * @param dto
      * @return
      */
@@ -52,10 +53,11 @@ public class ScheduleRepository {
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
+                NoneType noneType = new NoneType();
+                noneType.setValue("none");
 
                 TypeManage typeManage = TypeManage.builder()
-                        .value("none")
-                        .kindType("none")
+                        .noneType(noneType)
                         .build();
 
                 Schedule schedule = Schedule.builder()
@@ -98,11 +100,9 @@ public class ScheduleRepository {
     /**
      * "일" 단위 반복
      *
-     * @param dto
-     * @param repeatType
      * @return
      */
-    public Boolean registerDaySchedule(ScheduleRequestDTO dto, DayType repeatType) {
+    public Boolean registerDaySchedule(ScheduleRequestDTO dto) {
         try {
             List<Schedule> allSchedule = findAllSchedule(dto.getUserId());
 
@@ -118,16 +118,17 @@ public class ScheduleRepository {
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
+                DayType bindingDayType = new DayType();
+                bindingDayType.setValue(dto.getRepeat().getDayTypeVO().getValue());
 
                 TypeManage typeManage = TypeManage.builder()
-                        .value((repeatType).getValue())
-                        .kindType("day").build();
-
+                        .dayType(bindingDayType)
+                        .build();
 
                 log.info(dto.getUserId());
                 log.info(dto.getAmount());
 
-                int intervalDays = Integer.parseInt(typeManage.getValue());
+                int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getValue());
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 LocalDate startDate = LocalDate.parse(dto.getStartDate(), formatter);
                 LocalDate endDate = LocalDate.parse(dto.getRepeatEndLine(), formatter);
@@ -139,7 +140,7 @@ public class ScheduleRepository {
                             .eventName(dto.getEventName())
                             .category(dto.getCategory())
                             .startDate(currentDate.toString())  // 수정된 부분
-                            .endDate(dto.getEndDate())
+                            .endDate(currentDate.toString())
                             .startTime(dto.getStartTime())
                             .endTime(dto.getEndTime())
                             .isAllDay(dto.isAllDay())
@@ -243,10 +244,9 @@ public class ScheduleRepository {
      * "주" 단위 반복
      *
      * @param dto
-     * @param repeatType
      * @return
      */
-    public Boolean registerWeekSchedule(ScheduleRequestDTO dto, WeekType repeatType) {
+    public Boolean registerWeekSchedule(ScheduleRequestDTO dto) {
         try {
             List<Schedule> allSchedule = findAllSchedule(dto.getUserId());
 
@@ -262,22 +262,25 @@ public class ScheduleRepository {
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
-                StringTokenizer tokenizer = new StringTokenizer((repeatType).getMonthValue(), ",");
+                StringTokenizer tokenizer =
+                        new StringTokenizer(dto.getRepeat().getWeekTypeVO().getRepeatDayOfWeek(), ",");
 
                 // DateTimeFormatter 인스턴스 생성
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+                int intervalWeeks = Integer.parseInt(dto.getRepeat().getWeekTypeVO().getValue());
                 // 문자열을 LocalDate 객체로 변환
                 LocalDate startDate = LocalDate.parse(dto.getStartDate(), formatter);
                 LocalDate endLine = LocalDate.parse(dto.getRepeatEndLine(), formatter);
 
                 List<String> days = new ArrayList<>();
 
-
                 // 선택된 요일을 토큰화해서 list에 저장
                 while (tokenizer.hasMoreTokens()) {
-                    days.add(tokenizer.nextToken().trim());
+                    String temp = tokenizer.nextToken().trim();
+                    days.add(temp);
                 }
+
 
                 // currentDate: 움직일 임시 객체
                 LocalDate currentDate = startDate;
@@ -290,10 +293,14 @@ public class ScheduleRepository {
                         log.info("이동하는 요일: {}", targetDay);
                         log.info("일자: {}", currentDate);
 
+                        WeekType bindingWeekType = new WeekType();
+                        bindingWeekType.setDayOfWeek(currentDate.getDayOfWeek().toString());
+                        bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
+
                         TypeManage typeManage =
                                 TypeManage.builder()
-                                        .value(currentDate.getDayOfWeek().toString())
-                                        .kindType("week").build();
+                                        .weekType(bindingWeekType)
+                                        .build();
 
                         Schedule schedule = Schedule.builder()
                                 .userId(dto.getUserId())
@@ -316,28 +323,20 @@ public class ScheduleRepository {
                                 }))
                                 .build();
 
-
-
-//                        schedule.setPriceType(() -> {
-//                            if (dto.getPriceType().equals(PriceType.Plus)) {
-//                                return PriceType.Plus;
-//                            } else return PriceType.Minus;
-//                        });
+                        crudScheduleRepository.save(schedule);
+                        log.info("저장된 요일: {}", schedule.getRepeat().getWeekType().getDayOfWeek());
 
                         // java에서 한주의 끝은 SUN, 한주의 시작은 MON
-                        crudScheduleRepository.save(schedule);
-                        log.info(schedule.getUserId());
-
                         if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                            log.info("term:{}", (repeatType.getRepeatValue()));
-                            currentDate = currentDate.plusWeeks(repeatType.getRepeatValue());
+                            log.info("term:{}", intervalWeeks);
+                            currentDate = currentDate.plusWeeks(intervalWeeks);
                             currentDate = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 
                         } else currentDate = currentDate.plusDays(1);
                     } else {
                         if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                            log.info("term:{}", (repeatType.getRepeatValue()));
-                            currentDate = currentDate.plusWeeks(repeatType.getRepeatValue());
+                            log.info("term:{}", intervalWeeks);
+                            currentDate = currentDate.plusWeeks(intervalWeeks);
                             currentDate = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
                         } else currentDate = currentDate.plusDays(1);
                     }
@@ -351,12 +350,117 @@ public class ScheduleRepository {
 
     /**
      * "월" 단위 반복
-     *  TODO!!!!!!
      */
-    public Boolean registerMonthSchedule(ScheduleRequestDTO dto, MonthType repeatType) {
+    public Boolean registerMonthSchedule(ScheduleRequestDTO dto) {
+        try {
+            List<Schedule> allSchedule = findAllSchedule(dto.getUserId());
+
+            boolean isDifferent = allSchedule.stream().noneMatch(it ->
+                    it.getUserId().equals(dto.getUserId()) &&
+                            it.getEventName().equals(dto.getEventName()) &&
+                            it.getCategory().equals(dto.getCategory()) &&
+                            it.getStartDate().equals(dto.getStartDate()) &&
+                            it.getEndDate().equals(dto.getEndDate()) &&
+                            it.getStartTime().equals(dto.getStartTime()) &&
+                            it.getEndTime().equals(dto.getEndTime()));
+
+            if (!isDifferent) {
+                throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
+            } else {
+                StringTokenizer tokenizer =
+                        new StringTokenizer(dto.getRepeat().getMonthTypeVO().getSelectedDate(), ",");
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+                LocalDate startDate = LocalDate.parse(dto.getStartDate(), formatter);
+                LocalDate endLine = LocalDate.parse(dto.getRepeatEndLine(), formatter);
+
+                LocalDate currentDate = startDate;
+
+                List<Integer> dates = new ArrayList<>();
+
+                while (tokenizer.hasMoreTokens()) {
+                    int parseDate = Integer.parseInt(tokenizer.nextToken().trim());
+                    log.info("파싱된 date: {}", parseDate);
+                    dates.add(parseDate);
+                }
+
+                log.info("초기날짜: {}", currentDate.getDayOfMonth());
+
+                while (!currentDate.isAfter(endLine)) {
+                    int dayOfMonth = currentDate.getDayOfMonth();
+
+                    log.info("현재 월에서의 날짜: {}", dayOfMonth);
+
+                    if (dates.contains(dayOfMonth)) {
+                        MonthType bindingMonthType = new MonthType();
+                        bindingMonthType.setMonthValue(dto.getRepeat().getMonthTypeVO().getValue());
+
+                        log.info("*중요 save date: {}", currentDate);
+                        TypeManage typeManage = TypeManage
+                                .builder()
+                                .monthType(bindingMonthType)
+                                .build();
+
+                        Schedule schedule = Schedule.builder()
+                                .userId(dto.getUserId())
+                                .eventName(dto.getEventName())
+                                .category(dto.getCategory())
+                                .startDate(currentDate.toString())
+                                .endDate(currentDate.toString())
+                                .startTime(dto.getStartTime())
+                                .endTime(dto.getEndTime())
+                                .isAllDay(dto.isAllDay())
+                                .repeat(typeManage)
+                                .isExclude(dto.isExclude())
+                                .importance(dto.getImportance())
+                                .amount(dto.getAmount())
+                                .isFixAmount(dto.isFixAmount())
+                                .priceType(judgmentPriceType(() -> {
+                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                        return PriceType.Plus;
+                                    } else return PriceType.Minus;
+                                }))
+                                .build();
+
+                        crudScheduleRepository.save(schedule);
+
+                        currentDate = currentDate.plusDays(1);
+                        log.info("이동된 날짜:{}", currentDate);
+
+
+                        LocalDate lastDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), 1)
+                                .withDayOfMonth(LocalDate.of(currentDate.getYear(), currentDate.getMonth(), 1)
+                                        .lengthOfMonth());
+                        log.info("해당 하는 달의 마지막 날짜:{}", lastDate);
+
+                        if (currentDate.equals(lastDate)) {
+                            currentDate = currentDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getValue()));
+                        }
+
+                    } else {
+                        currentDate = currentDate.plusDays(1);
+                        log.info("이동된 날짜:{}", currentDate);
+
+                        LocalDate lastDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), 1)
+                                .withDayOfMonth(LocalDate.of(currentDate.getYear(), currentDate.getMonth(), 1)
+                                        .lengthOfMonth());
+
+                        log.info("해당 하는 달의 마지막 날짜:{}", lastDate);
+
+                        if (currentDate.equals(lastDate)) {
+                            currentDate = currentDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getValue()));
+                        }
+                    }
+                }
+
+
+            }
+        } catch (RuntimeException e) {
+            return null;
+        }
         return true;
     }
-
 
 
     /**

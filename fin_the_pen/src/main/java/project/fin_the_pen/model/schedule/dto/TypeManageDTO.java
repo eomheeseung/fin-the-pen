@@ -7,6 +7,7 @@ import lombok.Setter;
 import project.fin_the_pen.model.schedule.vo.DayTypeVO;
 import project.fin_the_pen.model.schedule.vo.MonthTypeVO;
 import project.fin_the_pen.model.schedule.vo.WeekTypeVO;
+import project.fin_the_pen.model.schedule.vo.YearTypeVO;
 
 // dto에서만 사용할 것임
 @Getter
@@ -20,6 +21,9 @@ public class TypeManageDTO {
 
     @JsonProperty("month_type")
     private MonthTypeVO monthTypeVO;
+
+    @JsonProperty("year_type")
+    private YearTypeVO yearTypeVO;
 
     @JsonProperty("kind_type")
     private String kindType;

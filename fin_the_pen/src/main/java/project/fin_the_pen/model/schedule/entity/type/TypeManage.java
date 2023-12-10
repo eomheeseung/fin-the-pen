@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.fin_the_pen.model.schedule.vo.YearTypeVO;
 
 import javax.persistence.Embeddable;
 
@@ -20,4 +21,5 @@ public class TypeManage {
     private DayType dayType;
     private WeekType weekType;
     private MonthType monthType;
+    private YearType yearType;
 }

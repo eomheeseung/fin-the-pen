@@ -105,21 +105,17 @@ public class ScheduleService {
                         flag = scheduleRepository.registerMonthSchedule(requestDTO);
                     }
                     break;
-                /*
                 case "year":
-                    YearType yearType = new YearType();
-                    yearType.setValue(requestDTO.getRepeat().getValue());
-
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerDaySchedule(requestDTO, yearType);
+                        flag = scheduleRepository.registerYearSchedule(requestDTO);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerDaySchedule(requestDTO, yearType);
+                        flag = scheduleRepository.registerYearSchedule(requestDTO);
                     }
-                    break;*/
+                    break;
             }
 
             if (flag) {

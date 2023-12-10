@@ -24,12 +24,12 @@ public class ScheduleRequestDTO {
 
     // 시작 일자
     @JsonProperty(value = "start_date")
-    @Schema(description = "일정 시작 일자", example = "2023-12-08")
+    @Schema(description = "일정 시작 일자", example = "2023-12-10")
     private String startDate;
 
     // 종료 일자
     @JsonProperty(value = "end_date")
-    @Schema(description = "일정 종료 일자", example = "2023-12-08")
+    @Schema(description = "일정 종료 일자", example = "2023-12-10")
     private String endDate;
 
     // 시작 시간
@@ -82,6 +82,6 @@ public class ScheduleRequestDTO {
     private boolean isFixAmount;
 
     @JsonProperty(value = "repeat_end_line")
-    @Schema(description = "반복의 종료 기간",example = "2024-02-15")
+    @Schema(description = "반복의 종료 기간",example = "2030-02-15")
     private String repeatEndLine;
 }

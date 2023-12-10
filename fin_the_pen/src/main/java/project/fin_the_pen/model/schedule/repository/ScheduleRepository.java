@@ -464,7 +464,6 @@ public class ScheduleRepository {
         return true;
     }
 
-    // TODO!!!!!!!!!!! 연간 반복
     public Boolean registerYearSchedule(ScheduleRequestDTO dto) {
         try {
             List<Schedule> allSchedule = findAllSchedule(dto.getUserId());
@@ -544,6 +543,7 @@ public class ScheduleRepository {
                 }
                 //  MM월 N번째 D요일
             }
+            // TODO!!!!!!
             if (dto.getRepeat().getYearTypeVO().getYearCategory().equals(YearCategory.NthDayOfMonth.toString())) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 N번째 E요일", Locale.KOREAN);
 

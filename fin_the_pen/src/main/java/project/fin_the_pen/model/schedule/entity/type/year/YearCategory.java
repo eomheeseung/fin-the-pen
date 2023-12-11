@@ -1,4 +1,4 @@
-package project.fin_the_pen.model.schedule.type;
+package project.fin_the_pen.model.schedule.entity.type.year;
 
 import lombok.Getter;
 

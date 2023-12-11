@@ -1,8 +1,8 @@
-package project.fin_the_pen.model.schedule.entity.type;
+package project.fin_the_pen.model.schedule.entity.type.year;
 
 import lombok.Getter;
 import lombok.Setter;
-import project.fin_the_pen.model.schedule.type.YearCategory;
+import project.fin_the_pen.model.schedule.entity.type.RepeatType;
 
 import javax.persistence.Embeddable;
 

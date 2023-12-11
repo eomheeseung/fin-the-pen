@@ -4,7 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.fin_the_pen.model.schedule.vo.YearTypeVO;
+import project.fin_the_pen.model.schedule.entity.type.day.DayType;
+import project.fin_the_pen.model.schedule.entity.type.month.MonthType;
+import project.fin_the_pen.model.schedule.entity.type.week.WeekType;
+import project.fin_the_pen.model.schedule.entity.type.year.YearType;
 
 import javax.persistence.Embeddable;
 

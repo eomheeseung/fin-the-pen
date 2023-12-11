@@ -10,6 +10,7 @@ import project.fin_the_pen.model.schedule.type.YearCategory;
 @Setter
 public class YearTypeVO {
     @JsonProperty("year_repeat")
+    @Schema(example = "11월 2번째 수요일")
     private String yearRepeat;
 
     @JsonProperty("repeat_value")
@@ -17,6 +18,6 @@ public class YearTypeVO {
     private String value;
 
     @JsonProperty("year_category")
-    @Schema(example = "MonthAndDay")
+    @Schema(example = "NthDayOfMonth")
     private String yearCategory;
 }

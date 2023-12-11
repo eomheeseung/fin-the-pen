@@ -19,6 +19,7 @@ import javax.security.auth.callback.Callback;
 import java.text.DateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -481,11 +482,9 @@ public class ScheduleRepository {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
                 // MM월 DD일인 경우 / 어느정도 완성된 듯...
-                log.info("입력받은 repeat data: {}", dto.getRepeat().getYearTypeVO().getYearRepeat());
-                log.info("입력받은 repeat category: {}", dto.getRepeat().getYearTypeVO().getYearCategory());
-                log.info("조건값:{}", dto.getRepeat().getYearTypeVO().getYearCategory().equals("MonthAndDay"));
+                String yearCategory = dto.getRepeat().getYearTypeVO().getYearCategory();
 
-                if (dto.getRepeat().getYearTypeVO().getYearCategory().equals(YearCategory.MonthAndDay.toString())) {
+                if (yearCategory.equals(YearCategory.MonthAndDay.toString())) {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                     LocalDate currentDate = LocalDate.parse(dto.getStartDate(), formatter);
                     LocalDate endLine = LocalDate.parse(dto.getRepeatEndLine(), formatter);
@@ -541,46 +540,39 @@ public class ScheduleRepository {
                         currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
                     }
                 }
+
+
                 //  MM월 N번째 D요일
-            }
-            // TODO!!!!!!
-            if (dto.getRepeat().getYearTypeVO().getYearCategory().equals(YearCategory.NthDayOfMonth.toString())) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 N번째 E요일", Locale.KOREAN);
+                else if (yearCategory.equals("NthDayOfMonth")) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate currentDate = LocalDate.parse(dto.getStartDate(), formatter);
+                    LocalDate endLine = LocalDate.parse(dto.getRepeatEndLine(), formatter);
+                    String yearRepeat = dto.getRepeat().getYearTypeVO().getYearRepeat();
+                    log.info("반복되는 조건:{}", yearRepeat);
 
-                LocalDate currentDate = LocalDate.parse(dto.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                LocalDate endLine = LocalDate.parse(dto.getRepeatEndLine(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                LocalDate repeatDate = LocalDate.parse(dto.getRepeat().getYearTypeVO().getYearRepeat(), formatter);
+                    StringTokenizer tokenizer = new StringTokenizer(yearRepeat, " ");
+                    List<String> parseDatesList = new ArrayList<>();
 
-                // MM월 맞추기
-                while (!currentDate.isAfter(endLine)) {
-                    if (currentDate.getMonthValue() < repeatDate.getMonthValue()) {
-                        currentDate = currentDate.plusMonths(1);
+                    while (tokenizer.hasMoreTokens()) {
+                        String parseData = tokenizer.nextToken().trim();
+                        log.info("파싱된 data:{}", parseData);
+                        parseDatesList.add(parseData);
+                    }
 
-                        // n번째 주 맞추기
-                    } else if (currentDate.getMonthValue() == repeatDate.getMonthValue()) {
-                        // 현재 날짜의 월의 첫 번째 날을 구한다.
-                        LocalDate firstDayOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth());
+                    String parseMonth = parseDatesList.get(0).replaceAll("[^0-9]", "");
+                    int weekValue = Integer.parseInt(parseDatesList.get(1).replaceAll("[^0-9]", ""));
+                    DayOfWeek dayOfWeek = parseKoreanDayOfWeek(parseDatesList.get(2));
 
-                        // 현재 날짜가 몇 번째 주에 속하는지 계산.
-                        int weekOfMonth = (firstDayOfMonth.getDayOfMonth() - 1) / 7 + 1;
-                        int repeatWeekOfMonth = (repeatDate.getDayOfMonth() - 1) / 7 + 1;
+                    LocalDate repeatDate = parseMonthlyDate(parseMonth, weekValue, dayOfWeek);
 
-                        while (weekOfMonth < repeatWeekOfMonth) {
-                            currentDate = currentDate.plusWeeks(1);
-                            firstDayOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth());
-                            weekOfMonth = (firstDayOfMonth.getDayOfMonth() - 1) / 7 + 1;
-                        }
+                    if (currentDate.isBefore(repeatDate)) {
+                        currentDate = repeatDate;
 
-                        // 요일 맞추기
-                        while (!currentDate.getDayOfWeek().equals(repeatDate.getDayOfWeek())) {
-                            currentDate = currentDate.plusDays(1);
-                        }
+                        log.info("*중요 저장될 date:{}", currentDate);
 
                         YearType bindingYearType = new YearType();
                         bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
-                        bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory().toString());
-
-                        log.info("저장되는 date: {}", currentDate);
+                        bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory());
 
                         TypeManage typeManage = TypeManage
                                 .builder()
@@ -610,16 +602,155 @@ public class ScheduleRepository {
 
                         crudScheduleRepository.save(schedule);
 
-                        currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
                     }
+
+                    while (!currentDate.isAfter(endLine)) {
+                        int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+
+                        LocalDate nextDay = parseNextMonthlyDate(currentDate.plusYears(value),
+                                Integer.parseInt(parseMonth),
+                                weekValue,
+                                dayOfWeek);
+
+                        currentDate = nextDay;
+
+                        // 종료 조건 추가: currentDate가 endLine을 초과하면 반복문을 빠져나옴
+                        if (currentDate.isAfter(endLine)) {
+                            break;
+                        }
+
+                        log.info("다음 년도의 조건에 해당하는 date:{}", nextDay);
+
+                        YearType bindingYearType = new YearType();
+                        bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
+                        bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory().toString());
+
+                        log.info("저장되는 repeatDate: {}", currentDate);
+
+                        TypeManage typeManage = TypeManage
+                                .builder()
+                                .yearType(bindingYearType)
+                                .build();
+
+                        Schedule schedule = Schedule.builder()
+                                .userId(dto.getUserId())
+                                .eventName(dto.getEventName())
+                                .category(dto.getCategory())
+                                .startDate(currentDate.toString())
+                                .endDate(currentDate.toString())
+                                .startTime(dto.getStartTime())
+                                .endTime(dto.getEndTime())
+                                .isAllDay(dto.isAllDay())
+                                .repeat(typeManage)
+                                .isExclude(dto.isExclude())
+                                .importance(dto.getImportance())
+                                .amount(dto.getAmount())
+                                .isFixAmount(dto.isFixAmount())
+                                .priceType(judgmentPriceType(() -> {
+                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                        return PriceType.Plus;
+                                    } else return PriceType.Minus;
+                                }))
+                                .build();
+
+                        crudScheduleRepository.save(schedule);
+                    }
+
+
+                   /* // MM월 맞추기
+                    while (!currentDate.isAfter(endLine)) {
+                        if (currentDate.getMonthValue() < repeatDate.getMonthValue()) {
+                            currentDate = currentDate.plusMonths(1);
+
+                            // n번째 주 맞추기
+                        } else if (currentDate.getMonthValue() == repeatDate.getMonthValue()) {
+                            // 현재 날짜의 월의 첫 번째 날을 구한다.
+                            LocalDate firstDayOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth());
+
+                            // 현재 날짜가 몇 번째 주에 속하는지 계산.
+                            int weekOfMonth = (firstDayOfMonth.getDayOfMonth() - 1) / 7 + 1;
+                            int repeatWeekOfMonth = (repeatDate.getDayOfMonth() - 1) / 7 + 1;
+
+                            while (weekOfMonth < repeatWeekOfMonth) {
+                                currentDate = currentDate.plusWeeks(1);
+                                firstDayOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth());
+                                weekOfMonth = (firstDayOfMonth.getDayOfMonth() - 1) / 7 + 1;
+                            }
+
+                            // 요일 맞추기
+                            while (!currentDate.getDayOfWeek().equals(repeatDate.getDayOfWeek())) {
+                                currentDate = currentDate.plusDays(1);
+                            }
+
+                            YearType bindingYearType = new YearType();
+                            bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
+                            bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory().toString());
+
+                            log.info("저장되는 repeatDate: {}", currentDate);
+
+                            TypeManage typeManage = TypeManage
+                                    .builder()
+                                    .yearType(bindingYearType)
+                                    .build();
+
+                            Schedule schedule = Schedule.builder()
+                                    .userId(dto.getUserId())
+                                    .eventName(dto.getEventName())
+                                    .category(dto.getCategory())
+                                    .startDate(currentDate.toString())
+                                    .endDate(currentDate.toString())
+                                    .startTime(dto.getStartTime())
+                                    .endTime(dto.getEndTime())
+                                    .isAllDay(dto.isAllDay())
+                                    .repeat(typeManage)
+                                    .isExclude(dto.isExclude())
+                                    .importance(dto.getImportance())
+                                    .amount(dto.getAmount())
+                                    .isFixAmount(dto.isFixAmount())
+                                    .priceType(judgmentPriceType(() -> {
+                                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                                            return PriceType.Plus;
+                                        } else return PriceType.Minus;
+                                    }))
+                                    .build();
+
+                            crudScheduleRepository.save(schedule);
+
+                            currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
+                        }
+                    }*/
                 }
-
-
             }
         } catch (Exception e) {
             return null;
         }
         return true;
+    }
+
+    /*
+     inputMonth 11(월)
+     ordinalNumber 2(번째)
+     dayOfWeek WEDNESDAY(변환된 요일)
+
+     */
+    private LocalDate parseNextMonthlyDate(LocalDate nextDate, int parseMonth, int weekValue, DayOfWeek dayOfWeek) {
+        LocalDate result = nextDate;
+
+        // 주어진 연도의 해당 월의 1일로 설정
+        result = result.withMonth(parseMonth).withDayOfMonth(1);
+
+        // 해당 월의 첫 날이 몇 번째 요일인지 계산
+        int firstDayOfWeek = result.getDayOfWeek().getValue();
+
+        // 목표하는 요일에 도달할 때까지 날짜를 더함
+        int daysToAdd = (weekValue - 1) * 7 + (dayOfWeek.getValue() - firstDayOfWeek + 7) % 7;
+        result = result.plusDays(daysToAdd);
+
+        if (firstDayOfWeek > dayOfWeek.getValue()) {
+            result = result.minusWeeks(1);
+        }
+
+        return result;
     }
 
 
@@ -652,6 +783,92 @@ public class ScheduleRepository {
 
     public List<Schedule> findMonthSectionSchedule(String startDate, String endDate, String userId) {
         return crudScheduleRepository.findScheduleByDateContains(startDate, endDate, userId);
+    }
+
+
+    /**
+     * callback method
+     * enum type에 따라서 다르게 overriding
+     *
+     * @param dto
+     * @param callBack
+     */
+    private void isType(ScheduleRequestDTO dto, ScheduleTypeFunc callBack) {
+        callBack.callbackMethod(dto);
+    }
+
+    public List<Schedule> findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String
+            currentSession) {
+        return crudScheduleRepository.findScheduleByCategory(currentSession, categoryRequestDTO.getCategoryName());
+    }
+
+    /*public boolean deleteSchedule(String uuid) {
+        Schedule singleSchedule = getSingleSchedule(uuid);
+        try {
+            scheduleRepository.delete(singleSchedule);
+
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }*/
+
+//    private Optional<Schedule> getSingleSchedule(String uuid) {
+//        return crudScheduleRepository.findById(uuid);
+//    }
+
+    /*private static void manageSave(Schedule schedule) {
+        ScheduleManage manage = new ScheduleManage();
+        manage.setDeleteFlag(false);
+        manage.setSchedule(schedule);
+        schedule.setScheduleManage(manage);
+    }*/
+
+    private PriceType judgmentPriceType(Supplier<PriceType> supplier) {
+        return supplier.get();
+    }
+
+    /*
+     inputMonth 11(월)
+     ordinalNumber 2(번째)
+     dayOfWeek WEDNESDAY(변환된 요일)
+     */
+    private LocalDate parseMonthlyDate(String inputMonth, int ordinalNumber, DayOfWeek dayOfWeek) {
+        try {
+            int month = Integer.parseInt(inputMonth);
+            LocalDate firstOfMonth = LocalDate.now().withMonth(month).withDayOfMonth(1);
+
+            LocalDate date = firstOfMonth.with(TemporalAdjusters.nextOrSame(dayOfWeek))
+                    .with(TemporalAdjusters.next(dayOfWeek))
+                    .withDayOfMonth((ordinalNumber - 1) * 7 + 1);
+
+            return date;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return LocalDate.now();
+    }
+
+
+    private DayOfWeek parseKoreanDayOfWeek(String dayOfWeek) {
+        switch (dayOfWeek) {
+            case "일요일":
+                return DayOfWeek.SUNDAY;
+            case "월요일":
+                return DayOfWeek.MONDAY;
+            case "화요일":
+                return DayOfWeek.TUESDAY;
+            case "수요일":
+                return DayOfWeek.WEDNESDAY;
+            case "목요일":
+                return DayOfWeek.THURSDAY;
+            case "금요일":
+                return DayOfWeek.FRIDAY;
+            case "토요일":
+                return DayOfWeek.SATURDAY;
+            default:
+                throw new IllegalArgumentException("올바르지 않은 요일입니다.");
+        }
     }
 
     /**
@@ -721,46 +938,4 @@ public class ScheduleRepository {
         }
     }*/
 
-
-    /**
-     * callback method
-     * enum type에 따라서 다르게 overriding
-     *
-     * @param dto
-     * @param callBack
-     */
-    private void isType(ScheduleRequestDTO dto, ScheduleTypeFunc callBack) {
-        callBack.callbackMethod(dto);
-    }
-
-    public List<Schedule> findScheduleByCategory(CategoryRequestDTO categoryRequestDTO, String
-            currentSession) {
-        return crudScheduleRepository.findScheduleByCategory(currentSession, categoryRequestDTO.getCategoryName());
-    }
-
-    /*public boolean deleteSchedule(String uuid) {
-        Schedule singleSchedule = getSingleSchedule(uuid);
-        try {
-            scheduleRepository.delete(singleSchedule);
-
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }*/
-
-//    private Optional<Schedule> getSingleSchedule(String uuid) {
-//        return crudScheduleRepository.findById(uuid);
-//    }
-
-    /*private static void manageSave(Schedule schedule) {
-        ScheduleManage manage = new ScheduleManage();
-        manage.setDeleteFlag(false);
-        manage.setSchedule(schedule);
-        schedule.setScheduleManage(manage);
-    }*/
-
-    private PriceType judgmentPriceType(Supplier<PriceType> supplier) {
-        return supplier.get();
-    }
 }

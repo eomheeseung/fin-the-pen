@@ -655,70 +655,10 @@ public class ScheduleRepository {
 
                         crudScheduleRepository.save(schedule);
                     }
-
-
-                   /* // MM월 맞추기
-                    while (!currentDate.isAfter(endLine)) {
-                        if (currentDate.getMonthValue() < repeatDate.getMonthValue()) {
-                            currentDate = currentDate.plusMonths(1);
-
-                            // n번째 주 맞추기
-                        } else if (currentDate.getMonthValue() == repeatDate.getMonthValue()) {
-                            // 현재 날짜의 월의 첫 번째 날을 구한다.
-                            LocalDate firstDayOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth());
-
-                            // 현재 날짜가 몇 번째 주에 속하는지 계산.
-                            int weekOfMonth = (firstDayOfMonth.getDayOfMonth() - 1) / 7 + 1;
-                            int repeatWeekOfMonth = (repeatDate.getDayOfMonth() - 1) / 7 + 1;
-
-                            while (weekOfMonth < repeatWeekOfMonth) {
-                                currentDate = currentDate.plusWeeks(1);
-                                firstDayOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth());
-                                weekOfMonth = (firstDayOfMonth.getDayOfMonth() - 1) / 7 + 1;
-                            }
-
-                            // 요일 맞추기
-                            while (!currentDate.getDayOfWeek().equals(repeatDate.getDayOfWeek())) {
-                                currentDate = currentDate.plusDays(1);
-                            }
-
-                            YearType bindingYearType = new YearType();
-                            bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
-                            bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory().toString());
-
-                            log.info("저장되는 repeatDate: {}", currentDate);
-
-                            TypeManage typeManage = TypeManage
-                                    .builder()
-                                    .yearType(bindingYearType)
-                                    .build();
-
-                            Schedule schedule = Schedule.builder()
-                                    .userId(dto.getUserId())
-                                    .eventName(dto.getEventName())
-                                    .category(dto.getCategory())
-                                    .startDate(currentDate.toString())
-                                    .endDate(currentDate.toString())
-                                    .startTime(dto.getStartTime())
-                                    .endTime(dto.getEndTime())
-                                    .isAllDay(dto.isAllDay())
-                                    .repeat(typeManage)
-                                    .isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
-                                    .amount(dto.getAmount())
-                                    .isFixAmount(dto.isFixAmount())
-                                    .priceType(judgmentPriceType(() -> {
-                                        if (dto.getPriceType().equals(PriceType.Plus)) {
-                                            return PriceType.Plus;
-                                        } else return PriceType.Minus;
-                                    }))
-                                    .build();
-
-                            crudScheduleRepository.save(schedule);
-
-                            currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
-                        }
-                    }*/
+                }
+                // TODO!!!!! year의 마지막 파트 구현 필요
+                else if (true) {
+                    return true;
                 }
             }
         } catch (Exception e) {

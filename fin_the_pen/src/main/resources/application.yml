@@ -1,7 +1,13 @@
-operation: local
+#operation: local
+#
+#server:
+#  port: 8080
 
-server:
-  port: 8080
+#h2 DB
+#spring:
+#  disabled: true
+#
+#  packages-to-scan: project.fin_the_pen.finClient
 
 #h2 DB
 spring:

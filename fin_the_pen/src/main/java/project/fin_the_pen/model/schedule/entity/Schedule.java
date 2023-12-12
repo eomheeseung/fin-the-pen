@@ -85,9 +85,6 @@ public class Schedule {
     @Column(name = "fix_amount")
     private boolean isFixAmount;
 
-    @Column(name = "repeat_end_line")
-    private String repeatEndLine;
-
     // ScheduleType로 하나 만들어야 함.
 //    @Column(name = "regular_type")
 //    private RegularType regularType;

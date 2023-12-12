@@ -46,6 +46,14 @@ public class ScheduleService {
         return objectMapper.convertValue(responseDTO, ScheduleResponseDTO.class);
     }
 
+    /*
+    TODO 반복은 모두 완료되었는데 여기서 "기간"을 조건으로 넣어서 해야 함.
+     Ex)
+     currentDate : 2023-12-25
+     endLine : 2050-12-05
+     - 2년 주기로 endLine까지가 아닌 3회만 반복한다면, (2023, 2025, 2027까지만 저장될 것임.)
+     - 현재 만들어 놓은 코드는 endLine까지 계속 반복되는 code
+     */
     public Map<Object, Object> registerSchedule(ScheduleRequestDTO requestDTO, HttpServletRequest request) {
         boolean flag = false;
         try {

@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  finthepen-db:
+    image: mysql:8.0.34
+    restart: always
+    volumes:
+      - mysql-volume:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Finthepen  # root 비밀번호 설정
+      - MYSQL_DATABASE=fin_the_pen
+    ports:
+      - "3306:3306"
+    networks:
+      - finthepen-network
+
+  finthepen-server:
+    container_name: finthepen-server
+    ports:
+      - "8080:8080"
+    image: finthepen-server
+    volumes:
+      - finthepen-volume:/var/log
+    networks:
+      - finthepen-network
+    depends_on:
+      - finthepen-db
+    environment:
+      - DATABASE_URL=jdbc:mysql://finthepen-mysql:3306/fin_the_pen
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=Finthepen
+
+networks:
+  finthepen-network:
+    driver: bridge
+
+volumes:
+  mysql-volume:
+    driver: local
+  finthepen-volume:
+    driver: local

@@ -3,7 +3,7 @@ package project.fin_the_pen.model.schedule.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import project.fin_the_pen.model.schedule.entity.type.TypeManageDTO;
+import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Data
@@ -25,12 +25,12 @@ public class ScheduleRequestDTO {
 
     // 시작 일자
     @JsonProperty(value = "start_date")
-    @Schema(description = "일정 시작 일자", example = "2023-12-06")
+    @Schema(description = "일정 시작 일자", example = "2023-12-10")
     private String startDate;
 
     // 종료 일자
     @JsonProperty(value = "end_date")
-    @Schema(description = "일정 종료 일자", example = "2023-12-06")
+    @Schema(description = "일정 종료 일자", example = "2023-12-10")
     private String endDate;
 
     // 시작 시간
@@ -55,8 +55,8 @@ public class ScheduleRequestDTO {
 
     // 반복 기간
     @JsonProperty(value = "period")
-    @Schema(description = "반복을 언제까지 할 건지",example = "keepRepeat")
-    private String period;
+    @Schema(description = "반복을 언제까지 할 건지")
+    private PeriodTypeDTO period;
 
     @JsonProperty(value = "price_type")
     @Schema(description = "수입인지 지출인지",example = "Plus")
@@ -81,8 +81,4 @@ public class ScheduleRequestDTO {
     @JsonProperty(value = "fix_amount")
     @Schema(description = "금액을 고정할 것인지",example = "false")
     private boolean isFixAmount;
-
-    @JsonProperty(value = "repeat_end_line")
-    @Schema(description = "반복의 종료 기간",example = "2024-01-30")
-    private String repeatEndLine;
 }

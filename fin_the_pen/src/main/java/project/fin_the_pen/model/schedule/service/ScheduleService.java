@@ -15,8 +15,6 @@ import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.type.DayType;
-import project.fin_the_pen.model.schedule.entity.type.WeekType;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.usersToken.entity.UsersToken;
@@ -48,20 +46,23 @@ public class ScheduleService {
         return objectMapper.convertValue(responseDTO, ScheduleResponseDTO.class);
     }
 
+    /*
+    TODO 반복은 모두 완료되었는데 여기서 "기간"을 조건으로 넣어서 해야 함.
+     Ex)
+     currentDate : 2023-12-25
+     endLine : 2050-12-05
+     - 2년 주기로 endLine까지가 아닌 3회만 반복한다면, (2023, 2025, 2027까지만 저장될 것임.)
+     - 현재 만들어 놓은 코드는 endLine까지 계속 반복되는 code
+     */
     public Map<Object, Object> registerSchedule(ScheduleRequestDTO requestDTO, HttpServletRequest request) {
         boolean flag = false;
-
         try {
             String extractToken = tokenManager.parseBearerToken(request);
 
             if (extractToken == null)
                 throw new RuntimeException();
 
-            // usersToken 변수를 따로 사용하지 않고, 값이 없으면 예외를 던지도록 처리
-            tokenRepository.findUsersToken(extractToken)
-                    .ifPresent(token -> {
-                        throw new TokenNotFoundException("Token not found");
-                    });
+            tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
 
             switch (requestDTO.getRepeat().getKindType()) {
                 case "none":
@@ -76,62 +77,49 @@ public class ScheduleService {
                     }
                     break;
                 case "day":
-                    DayType dayType = new DayType();
-                    dayType.setValue(requestDTO.getRepeat().getValue());
-
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerDaySchedule(requestDTO, dayType);
+                        flag = scheduleRepository.registerDaySchedule(requestDTO);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerDaySchedule(requestDTO, dayType);
+                        flag = scheduleRepository.registerDaySchedule(requestDTO);
                     }
                     break;
                 case "week":
-                    WeekType weekType = new WeekType();
-                    weekType.setMonthValue(requestDTO.getRepeat().getDayOfXXX());
-                    weekType.setRepeatValue(Integer.parseInt(requestDTO.getRepeat().getValue()));
-
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerWeekSchedule(requestDTO, weekType);
+                        flag = scheduleRepository.registerWeekSchedule(requestDTO);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerWeekSchedule(requestDTO, weekType);
+                        flag = scheduleRepository.registerWeekSchedule(requestDTO);
                     }
                     break;
-                /*case "month":
-                    MonthType monthType = new MonthType();
-                    monthType.setValue(requestDTO.getRepeat().getValue());
-
+                case "month":
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerDaySchedule(requestDTO, monthType);
+                        flag = scheduleRepository.registerMonthSchedule(requestDTO);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerDaySchedule(requestDTO, monthType);
+                        flag = scheduleRepository.registerMonthSchedule(requestDTO);
                     }
                     break;
                 case "year":
-                    YearType yearType = new YearType();
-                    yearType.setValue(requestDTO.getRepeat().getValue());
-
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Plus));
-                        flag = scheduleRepository.registerDaySchedule(requestDTO, yearType);
+                        flag = scheduleRepository.registerYearSchedule(requestDTO);
                     } else {
                         isType(requestDTO, (dto) ->
                                 dto.setPriceType(PriceType.Minus));
-                        flag = scheduleRepository.registerDaySchedule(requestDTO, yearType);
+                        flag = scheduleRepository.registerYearSchedule(requestDTO);
                     }
-                    break;*/
+                    break;
             }
 
             if (flag) {

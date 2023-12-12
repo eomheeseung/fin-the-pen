@@ -1,32 +1,25 @@
-#operation: local
-#
-#server:
-#  port: 8080
+operation: dev
 
-#h2 DB
-#spring:
-#  disabled: true
-#
-#  packages-to-scan: project.fin_the_pen.finClient
+server:
+  port: 8080
 
-#h2 DB
 spring:
-  datasource:
-    username: sa
-    password:
-    url: jdbc:h2:tcp://localhost/~/fin_the_pen
-    driver-class-name: org.h2.Driver
-  h2:
-    console:
-      enabled: true
+  config:
+    activate:
+      on-profile: dev
   jpa:
-    database: h2
+    database: mysql
     hibernate:
       ddl-auto: none
     properties:
       hibernate:
         format_sql: true
     show-sql: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: finthepen1210
+    url: jdbc:mysql://finthepen-db:3306/fin_the_pen?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
 
   security:
     user:

@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  finthepen-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finthepen-server
+    restart: always
+    volumes:
+      - finthepen-volume:/var/log
+    ports:
+      - "8082:8080"
+    networks:
+      - finthepen-network
+    environment:
+      - DATABASE_URL=jdbc:mysql://finthepen-db:3306/fin_the_pen
+      - DATABASE_USERNAME=root
+      - DATABASE_PASSWORD=finthepen1210
+      - SPRING_PROFILES_ACTIVE=dev
+    image: finthepen-server-image
+
+networks:
+  finthepen-network:
+    external: true
+
+volumes:
+  finthepen-volume:
+    driver: local

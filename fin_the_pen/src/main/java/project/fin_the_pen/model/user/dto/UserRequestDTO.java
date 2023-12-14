@@ -13,6 +13,7 @@ public class UserRequestDTO {
     @JsonProperty("user_id")
     @Schema(description = "회원가입할 id",example = "test1234")
     private String userId;
+
     @Schema(description = "사용할 비밀번호",example = "1111")
     private String password;
 

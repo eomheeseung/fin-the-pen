@@ -68,7 +68,7 @@ public class LoginService {
         tokenRepository.save(UsersToken.builder()
                 .accessToken(token)
                 .expireTime(tokenProvider.getExpiredTime())
-                .userId(dto.getLoginId())
+                .userId(dto.getUserId())
                 .build());
 
         return new SignInResponse(users.getName(), users.getUserRole(), token);
@@ -82,7 +82,7 @@ public class LoginService {
      */
     @Transactional
     public SignInResponse signIn(SignInRequest dto, HttpServletRequest request) {
-        Users users = crudLoginRepository.findByUserId(dto.getLoginId())
+        Users users = crudLoginRepository.findByUserId(dto.getUserId())
                 .filter(find -> encoder.matches(dto.getPassword(), find.getPassword()))
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
@@ -95,11 +95,10 @@ public class LoginService {
             Optional<UsersToken> findToken = tokenRepository.findUsersToken(find);
 
             // 토큰이 있고, 토큰 테이블에 저장된 id와 현재 id가 같으면...
-            if (findToken.get().getUserId().equals(dto.getLoginId())) {
+            if (findToken.get().getUserId().equals(dto.getUserId())) {
                 UsersToken usersToken = findToken.get();
 
                 // 가지고 잇는 토큰을 삭제하고, 새로운 토큰발급
-
                 tokenRepository.deleteByAccessToken(usersToken.getAccessToken());
             }
             return firstLogin(users, dto);

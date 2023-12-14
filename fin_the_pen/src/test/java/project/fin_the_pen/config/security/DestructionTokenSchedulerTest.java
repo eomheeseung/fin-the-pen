@@ -81,7 +81,7 @@ class DestructionTokenSchedulerTest {
         dto.setStartTime((String) jsonObject.get("end_time"));
         dto.setAllDay((Boolean) jsonObject.get("is_all_day"));
 //        dto.setRepeat((String) jsonObject.get("repeat"));
-        dto.setPeriod((String) jsonObject.get("period"));
+//        dto.setPeriod((String) jsonObject.get("period"));
         dto.setPriceType(PriceType.Plus);
         dto.setExclude((Boolean) jsonObject.get("exclusion"));
         dto.setImportance((String) jsonObject.get("importance"));
@@ -109,7 +109,7 @@ class DestructionTokenSchedulerTest {
     private String login() {
         MockHttpServletRequest mockHttpServletRequest = new MockMultipartHttpServletRequest();
         SignInRequest request = new SignInRequest();
-        request.setLoginId("test1234");
+        request.setUserId("test1234");
         request.setPassword("1111");
         SignInResponse signInResponse = loginService.signIn(request, mockHttpServletRequest);
         log.info("get token:{}", signInResponse.getToken());

@@ -2,7 +2,9 @@ package project.fin_the_pen.model.schedule.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
@@ -11,6 +13,7 @@ import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundExc
 import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.core.util.TokenManager;
+import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
@@ -21,10 +24,7 @@ import project.fin_the_pen.model.usersToken.entity.UsersToken;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -268,6 +268,64 @@ public class ScheduleService {
                     responseMap.put("deposit", deposit);
                     responseMap.put("withdraw", withdraw);
                 }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("error");
+        }
+        return responseMap;
+    }
+
+    public Map<String, Object> inquiryReport(ConsumeReportRequestDTO dto, HttpServletRequest request) {
+        String accessToken = tokenManager.parseBearerToken(request);
+        Map<String, Object> responseMap = new HashMap<>();
+
+        String userId = dto.getUserId();
+        String date = dto.getDate();
+        log.info("실행");
+
+        Map<String, Integer> map = new HashMap<>();
+
+        try {
+            if (accessToken == null) {
+                throw new RuntimeException();
+            }
+
+            Optional<UsersToken> findToken = Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
+                    .orElseThrow(() -> new TokenNotFoundException("token not found")));
+
+            // 현재 토큰으로 로그인 된 사용자의 userId와 클라이언트로부터 전달받은 userId값이 일치하지 않은 경우 error!!!
+            if (!findToken.get().getUserId().equals(userId)) {
+                throw new Exception("error");
+            } else {
+                List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
+
+                if (responseArray.isEmpty()) {
+                    responseMap.put("data", "error");
+                } else {
+
+                    responseArray.forEach(schedule -> {
+                        String category = schedule.getCategory();
+                        Integer amount = Integer.parseInt(schedule.getAmount());
+
+                        if (schedule.getPriceType().equals(PriceType.Minus)) {
+                            map.compute(category, (key, value) -> (value == null) ? amount : value + amount);
+                        }
+                    });
+                }
+
+                // Map의 entry를 List로 변환
+                List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
+
+                // Comparator를 사용하여 value를 기준으로 내림차순 정렬
+                entryList.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
+
+                // 정렬된 결과를 다시 Map으로 저장
+                Map<String, Integer> sortedMap = entryList.stream()
+                        .limit(5)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+                responseMap.put("data", sortedMap);
+
             }
         } catch (Exception e) {
             throw new RuntimeException("error");

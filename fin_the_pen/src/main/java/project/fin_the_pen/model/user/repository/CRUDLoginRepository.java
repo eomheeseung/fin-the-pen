@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface CRUDLoginRepository extends JpaRepository<Users, Long> {
     @Query("select u from Users u where u.userId = :loginId")
     public Optional<Users> findByUserId(@Param("loginId") String loginId);
+
 }

@@ -12,6 +12,7 @@ import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.service.LoginService;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -25,6 +26,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LoginController {
     private final LoginService loginService;
     private UserResponseDTO currentUser;
+
+    /*@PostConstruct
+    public void init() {
+        loginService.init();
+    }*/
 
     //    @PostMapping("/join")
     public UserRequestDTO join(@RequestBody UserRequestDTO userRequestDTO) {

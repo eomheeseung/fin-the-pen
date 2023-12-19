@@ -22,6 +22,9 @@ import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Optional;
 
 @Service
@@ -35,6 +38,14 @@ public class LoginService {
     private final TokenProvider tokenProvider;
     private final UsersTokenRepository tokenRepository;
     private final TokenManager tokenManager;
+
+    /*@Transactional
+    @PostConstruct
+    public void init() {
+        LocalDate currentDate = LocalDate.now();
+        Date convertDate = Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        tokenRepository.deleteByAccessTokenIsAfter(convertDate);
+    }*/
 
     @PostConstruct
     public void convertStrategy() {

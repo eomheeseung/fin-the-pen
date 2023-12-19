@@ -24,7 +24,7 @@ services:
     volumes:
       - finthepen-volume:/var/log
     ports:
-      - "8082:8080"
+      - "8083:8080"
     networks:
       - finthepen-network
     depends_on:

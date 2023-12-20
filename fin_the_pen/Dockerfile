@@ -8,4 +8,6 @@ COPY build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar app.jar
 ARG SPRING_PROFILE=dev
 ENV SPRING_PROFILES_ACTIVE=${SPRING_PROFILE}
 
+VOLUME /tmp
+
 ENTRYPOINT ["java","-jar","app.jar"]

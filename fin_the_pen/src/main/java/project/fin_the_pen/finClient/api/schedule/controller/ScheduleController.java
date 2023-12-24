@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
+import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
@@ -54,7 +55,6 @@ public class ScheduleController {
                                                    HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
-
 
             if (responseMap.get("data").equals(dto.getUserId())) {
                 log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
@@ -141,27 +141,27 @@ public class ScheduleController {
     /**
      * 일정 수정
      *
-     * @param dto
      * @return
      */
     @PutMapping("/modifySchedule")
     @Operation(description = "일정을 수정합니다.", summary = "일정 수정")
-    public ResponseEntity<Object> modifySchedule(@RequestBody ScheduleRequestDTO dto) {
-        /*log.info(String.valueOf(dto.getUserId()));
-        ResponseEntity<Object> responseEntity = null;
+    public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO,
+                                                 HttpServletRequest request) {
+        try {
+            Map<Object, Object> responseMap = scheduleService.modifySchedule(modifyScheduleDTO, request);
 
-        boolean flag = scheduleService.modifySchedule(dto);
-        Map<String, Boolean> responseMap = new HashMap<>();
 
-        if (flag) {
-            responseMap.put("data", true);
-            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.OK);
-        } else {
-            responseMap.put("data", false);
-            responseEntity = new ResponseEntity<>(responseMap, HttpStatus.NOT_FOUND);
+            if (responseMap.get("data").equals(modifyScheduleDTO.getUserId())) {
+                log.info("일정 - " + modifyScheduleDTO.getUserId() + " 의 일정 이름: " + modifyScheduleDTO.getScheduleRequestDTO().getEventName());
+                return ResponseEntity.ok().body(responseMap);
+            } else throw new RuntimeException();
+        } catch (DuplicatedScheduleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            // 에러 핸들링 로직 추가
+            log.error("일정 등록 중 에러 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-*/
-        return ResponseEntity.ok().build();
     }
 
     /*@PostMapping("/deleteSchedule")

@@ -59,26 +59,30 @@ public class ScheduleRequestDTO {
     private PeriodTypeDTO period;
 
     @JsonProperty(value = "price_type")
-    @Schema(description = "수입인지 지출인지",example = "Plus")
+    @Schema(description = "수입인지 지출인지", example = "Plus")
     private PriceType priceType;
 
     // 예산에서 제외할 것인지
     @JsonProperty(value = "exclusion")
-    @Schema(description = "예산에서 제외할 것인지",example = "false")
+    @Schema(description = "예산에서 제외할 것인지", example = "false")
     private boolean isExclude;
 
     // 중요도
     @JsonProperty(value = "importance")
-    @Schema(description = "중요도",example = "상")
+    @Schema(description = "중요도", example = "상")
     private String importance;
 
     // 자산 설정
     @JsonProperty(value = "set_amount")
-    @Schema(description = "자산 설정",example = "30000")
+    @Schema(description = "자산 설정", example = "30000")
     private String amount;
 
     // 금액 고정
     @JsonProperty(value = "fix_amount")
-    @Schema(description = "금액을 고정할 것인지",example = "false")
+    @Schema(description = "금액을 고정할 것인지", example = "false")
     private boolean isFixAmount;
+
+    /*@JsonProperty(value = "repeat_options")
+    @Schema(description = "반복되는 일정인지 아닌지", example = "false")
+    private boolean repeatOptions;*/
 }

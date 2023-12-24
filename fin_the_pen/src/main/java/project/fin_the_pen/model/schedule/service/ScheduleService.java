@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Response;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.error.customException.FailSaveScheduleException;
@@ -14,6 +15,7 @@ import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
+import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
@@ -56,6 +58,7 @@ public class ScheduleService {
      */
     public Map<Object, Object> registerSchedule(ScheduleRequestDTO requestDTO, HttpServletRequest request) {
         boolean flag = false;
+
         try {
             String extractToken = tokenManager.parseBearerToken(request);
 
@@ -171,32 +174,41 @@ public class ScheduleService {
         return responseMap;
     }
 
-    /**
-     * 일정 수정 기본.
-     *
-     * @return
-     */
-    /*public boolean modifySchedule(ScheduleDTO requestDTO) {
+    public Map<Object, Object> modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
             boolean flag = false;
 
-            if (requestDTO.getPriceType().equals(PriceType.Plus)) {
-                flag = modifyIsType(requestDTO, (dto) ->
-                        scheduleRepository.modifySchedule(dto, PriceType.Plus));
-            } else {
-                flag = modifyIsType(requestDTO, (dto) ->
-                        scheduleRepository.modifySchedule(dto, PriceType.Minus));
+            try {
+                String extractToken = tokenManager.parseBearerToken(request);
+
+                if (extractToken == null)
+                    throw new RuntimeException();
+
+                tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
+                String options = modifyScheduleDTO.getOptions();
+
+                switch (options){
+                    case "nowFromAfter":
+                        flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO.getScheduleRequestDTO(),
+                                modifyScheduleDTO.getScheduleId());
+                        break;
+
+                }
+
+            } catch (Exception e) {
+
             }
-            if (!flag) {
-                throw new RuntimeException();
-            }
-            return flag;
-        } catch (
-                RuntimeException e) {
-            return false;
+        } catch (Exception e) {
+
         }
 
-    }*/
+
+
+
+        HashMap<Object, Object> responseMap = new HashMap<>();
+        return responseMap;
+    }
+
     public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         List<Schedule> responseArray = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
         Map<String, Object> responseMap = new HashMap<>();

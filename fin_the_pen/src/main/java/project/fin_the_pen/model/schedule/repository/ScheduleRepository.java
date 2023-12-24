@@ -3,8 +3,12 @@ package project.fin_the_pen.model.schedule.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.servlet.view.tiles3.SpringWildcardServletTilesApplicationContext;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
+import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
@@ -1589,6 +1593,30 @@ public class ScheduleRepository {
         }
         return true;
     }*/
+
+    /**
+     *  현재부터 이 이후의 일정들
+     *
+     *  TODO 수정
+     *   1. 현재부터 이 이후의 모든 일정들
+     *   type1의 조건에 맞게 또 반복일정이면, registerXXX의 logic을 가져와서 사용해야 하는데..
+     * @param dto
+     * @param scheduleId
+     * @return
+     */
+    public Boolean modifyNowFromAfter(ScheduleRequestDTO dto, String scheduleId) {
+        Optional<Schedule> findModifySchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), scheduleId);
+        String targetDate = findModifySchedule.get().getStartDate();
+
+        List<Schedule> entities = crudScheduleRepository.findByAllDayNowAfter(targetDate);
+
+        for (Schedule schedule : entities) {
+
+        }
+
+
+        return true;
+    }
 
     @NotNull
     private LocalDate formatDate(String convertDate) {

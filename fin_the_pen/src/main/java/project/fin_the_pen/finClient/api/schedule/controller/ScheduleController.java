@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
@@ -143,23 +142,22 @@ public class ScheduleController {
      *
      * @return
      */
-    @PutMapping("/modifySchedule")
+    @PostMapping("/modifySchedule")
     @Operation(description = "일정을 수정합니다.", summary = "일정 수정")
     public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO,
                                                  HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.modifySchedule(modifyScheduleDTO, request);
 
-
-            if (responseMap.get("data").equals(modifyScheduleDTO.getUserId())) {
-                log.info("일정 - " + modifyScheduleDTO.getUserId() + " 의 일정 이름: " + modifyScheduleDTO.getScheduleRequestDTO().getEventName());
-                return ResponseEntity.ok().body(responseMap);
-            } else throw new RuntimeException();
+           /* if (responseMap.get("data").equals(modifyScheduleDTO.getScheduleRequestDTO().getUserId())) {
+                log.info("일정 - " + modifyScheduleDTO.getScheduleRequestDTO().getUserId() + " 의 일정 이름: " + modifyScheduleDTO.getScheduleRequestDTO().getEventName());*/
+                return ResponseEntity.ok().build();
+//            } throw new RuntimeException();
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RuntimeException e) {
             // 에러 핸들링 로직 추가
-            log.error("일정 등록 중 에러 발생", e);
+            log.error("일정 수정 중 에러 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

@@ -39,9 +39,9 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("select s from Schedule s where s.userId = :userId and s.category LIKE CONCAT('%', :categoryName, '%')")
     List<Schedule> findScheduleByCategory(@Param("userId") String userSessionId, @Param("categoryName") String categoryName);
 
-    @Query("select s from Schedule  s where s.userId = :userId and s.id = :scheduleId")
-    Optional<Schedule> findByIdAndUserId(@Param("userId") String userId, @Param("scheduleId") String scheduleId);
+    @Query("select s from Schedule s where s.userId = :userId and s.id = :scheduleId")
+    Optional<Schedule> findByIdAndUserId(@Param("userId") String userId, @Param("scheduleId") Long scheduleId);
 
-    @Query("SELECT s FROM Schedule s WHERE TO_DATE(s.startDate, 'yyyy-MM-dd') > TO_DATE(:targetDate, 'yyyy-MM-dd')")
+    @Query("SELECT s FROM Schedule s WHERE TO_DATE(s.startDate, 'yyyy-MM-dd') >= TO_DATE(:targetDate, 'yyyy-MM-dd')")
     List<Schedule> findByAllDayNowAfter(@Param("targetDate") String targetDate);
 }

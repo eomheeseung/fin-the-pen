@@ -2,11 +2,8 @@ package project.fin_the_pen.model.schedule.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Response;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.error.customException.FailSaveScheduleException;
@@ -18,6 +15,7 @@ import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
+import project.fin_the_pen.model.schedule.dto.TypeManageDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
@@ -27,6 +25,7 @@ import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -174,6 +173,8 @@ public class ScheduleService {
         return responseMap;
     }
 
+
+    // TODO
     public Map<Object, Object> modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
             boolean flag = false;
@@ -186,27 +187,64 @@ public class ScheduleService {
 
                 tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
                 String options = modifyScheduleDTO.getOptions();
+                TypeManageDTO repeat = modifyScheduleDTO.getRepeat();
 
-                switch (options){
+                switch (options) {
                     case "nowFromAfter":
-                        flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO.getScheduleRequestDTO(),
-                                modifyScheduleDTO.getScheduleId());
-                        break;
+                        if (repeat.getKindType().equals("day")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "day");
 
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "day");
+                            }
+                        } else if (repeat.getKindType().equals("week")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "week");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "week");
+                            }
+                        } else if (repeat.getKindType().equals("month")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "month");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "month");
+                            }
+                        } else if (repeat.getKindType().equals("year")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "year");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "year");
+                            }
+                        }
+
+                        break;
+                    /*case "exceptNowAfter":
+                        break;
+                    case "all":
+                        break;*/
                 }
 
-            } catch (Exception e) {
 
+                if (flag) {
+                    HashMap<Object, Object> responseMap = new HashMap<>();
+                    responseMap.put("data", objectMapper.convertValue(modifyScheduleDTO.getUserId(), String.class));
+                    return responseMap;
+                } else throw new FailSaveScheduleException("일정 수정 실패");
+            } catch (TokenNotFoundException e) {
+                throw new RuntimeException();
             }
         } catch (Exception e) {
-
+            throw new RuntimeException();
         }
-
-
-
-
-        HashMap<Object, Object> responseMap = new HashMap<>();
-        return responseMap;
     }
 
     public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
@@ -422,6 +460,10 @@ public class ScheduleService {
      */
     private void isType(ScheduleRequestDTO dto, ScheduleTypeFunc callback) {
         callback.callbackMethod(dto);
+    }
+
+    private void isType(ModifyScheduleDTO dto, Consumer<ModifyScheduleDTO> consumer) {
+        consumer.accept(dto);
     }
 
     private boolean modifyIsType(ScheduleRequestDTO dto, ScheduleModifyFunc callback) {

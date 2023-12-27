@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -95,4 +96,23 @@ public class Schedule {
     /*public void setPriceType(Supplier<PriceType> priceTypeSupplier) {
         this.priceType = priceTypeSupplier.get();
     }*/
+
+
+    // TODO
+    public void updateFrom(ScheduleRequestDTO dto) {
+        this.eventName = dto.getEventName();
+        this.category = dto.getCategory();
+        this.startDate = dto.getStartDate();
+        this.endDate = dto.getEndDate();
+        this.startTime = dto.getStartTime();
+        this.endTime = dto.getEndTime();
+        this.isAllDay = dto.isAllDay();
+//        this.repeat = dto.getRepeat();
+//        this.period = dto.getPeriod();
+        this.priceType = dto.getPriceType();
+        this.isExclude = dto.isExclude();
+        this.importance = dto.getImportance();
+        this.amount = dto.getAmount();
+        this.isFixAmount = dto.isFixAmount();
+    }
 }

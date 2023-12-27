@@ -26,7 +26,7 @@ public class TypeManageDTO {
     private YearTypeVO yearTypeVO;
 
     @JsonProperty("kind_type")
-    @Schema(example = "year")
+    @Schema(example = "day")
     private String kindType;
 
 

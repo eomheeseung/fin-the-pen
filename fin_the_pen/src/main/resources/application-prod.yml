@@ -18,8 +18,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password:
-    url:
+    password: Finthepen!0102
+    url: jdbc:mysql://finthepen-database.crcicmakykrx.ap-northeast-2.rds.amazonaws.com:3306/fin_the_pen?allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
 
   security:
     user:

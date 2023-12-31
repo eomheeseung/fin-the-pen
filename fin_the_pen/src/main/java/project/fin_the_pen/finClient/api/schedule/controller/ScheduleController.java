@@ -32,12 +32,6 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final ConvertResponse convertResponse;
 
-    /*
-    TODO token
-     1. accessToken 관리 -> exprietime이 되면 DB에 토큰 삭제
-     2. refreshToken 발급
-     */
-
     /**
      * header에 authorization에 "Bearer ~"로 들어온 것을 파싱하고 db와 비교해서 로직 수행
      *
@@ -93,6 +87,10 @@ public class ScheduleController {
     @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.",
             summary = "월별 조회 (O)")
     public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
+        if (findCertainMonthVO.getDate() == null) {
+            return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
+        }
+
         Map<String, Object> responseMap =
                 scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
 

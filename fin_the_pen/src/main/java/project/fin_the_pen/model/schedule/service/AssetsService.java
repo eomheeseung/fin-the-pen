@@ -22,8 +22,6 @@ public class AssetsService {
         jsonArray.add(scheduleRepository.findMonthSchedule(date, userId));
         return jsonArray;
     }
-
-    // TODO 나중에 정기일정도 고려해서 계산해야 함.
     private JSONObject assetsCalc(JSONArray jsonArray, JSONObject responseJson) {
         JSONObject totalJson = new JSONObject();
 

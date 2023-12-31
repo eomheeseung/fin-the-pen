@@ -20,7 +20,8 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;    // JwtAuthenticationFilter 주입
-    private final String[] allowedUrls = {"/", "/swagger-ui/**", "/v3/**", "/fin-the-pen-web/sign-up", "/fin-the-pen-web/sign-in","/alive"};
+    private final String[] allowedUrls = {"/", "/swagger-ui/**", "/v3/**", "/fin-the-pen-web/sign-up", "/fin-the-pen-web/sign-in","/alive","/fin-the-pen-web/getMonthSchedules"};
+//    private final String[] allowedUrls = {"/", "/swagger-ui/**", "/v3/**", "/fin-the-pen-web/sign-up", "/fin-the-pen-web/sign-in","/alive"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

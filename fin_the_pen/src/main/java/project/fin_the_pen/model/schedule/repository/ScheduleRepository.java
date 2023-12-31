@@ -12,13 +12,18 @@ import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.entity.type.day.DayType;
+import project.fin_the_pen.model.schedule.entity.type.week.WeekType;
 import project.fin_the_pen.model.schedule.service.register.*;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringTokenizer;
 import java.util.function.Supplier;
 
 @Repository
@@ -76,10 +81,6 @@ public class ScheduleRepository {
 
     /**
      * 현재부터 이 이후의 일정들
-     * <p>
-     *  TODO 수정
-     *   1. 현재부터 이 이후의 모든 일정들
-     *   type1의 조건에 맞게 또 반복일정이면, registerXXX의 logic을 가져와서 사용해야 하는데..
      *
      * @param dto
      * @return
@@ -96,35 +97,88 @@ public class ScheduleRepository {
             int size = entities.size() - 1;
 
             if (repeatType.equals("day")) {
-                DayType bindingDayType = new DayType();
-                bindingDayType.setValue(dto.getRepeat().getDayTypeVO().getValue());
+                modifyDay(dto, targetDate, size, entities);
 
-                TypeManage typeManage = TypeManage.builder()
-                        .dayType(bindingDayType)
-                        .build();
 
-                int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getValue());
-                LocalDate criteriaDate = formatDate(targetDate);
+                /*
+                TODO !!!!!
+                 week 수정
+                 사용자가 선택한 요일들의 수정요청이 현재와 부분적으로 일치한다면, 
+                 일치하는 것은 udpate
+                 일치하지 않는다면 요청한 요일보다 뒤인 경우 delete 필요
+                 */
+            } else if (repeatType.equals("week")) {
+                StringTokenizer tokenizer =
+                        new StringTokenizer(dto.getRepeat().getWeekTypeVO().getRepeatDayOfWeek(), ",");
+
+                int intervalWeeks = Integer.parseInt(dto.getRepeat().getWeekTypeVO().getValue());
+                // 문자열을 LocalDate 객체로 변환
+                LocalDate startDate = formatDate(dto.getStartDate());
+                LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
+
+                List<String> days = new ArrayList<>();
+
+                // 선택된 요일을 토큰화해서 list에 저장
+                while (tokenizer.hasMoreTokens()) {
+                    String temp = tokenizer.nextToken().trim();
+                    days.add(temp);
+                }
+
+                // currentDate: 움직일 임시 객체
+                LocalDate criteriaDate = startDate;
                 int endRepeat = 50;
 
-                // day 1 logic
-                if (dto.getPeriod().isRepeatAgain()) {
-                    for (int i = 0; i < endRepeat; i++) {
-                        if (i <= size) {
-                            // entities 리스트에 엔터티가 이미 존재할 때
-                            Schedule existingSchedule = entities.get(i);
+                WeekType bindingWeekType = new WeekType();
+                bindingWeekType.setDayOfWeek(criteriaDate.getDayOfWeek().toString());
+                bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
 
-                            existingSchedule.updateFrom(
-                                    dto, criteriaDate.toString(), criteriaDate.toString(),
-                                    typeManage,
-                                    createPeriodType(() -> PeriodType.builder()
-                                            .isRepeatAgain(true)
-                                            .repeatNumberOfTime("0")
-                                            .repeatEndLine(null)
-                                            .build()),
-                                    judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus));
-                            crudScheduleRepository.save(existingSchedule);
-                            log.info("수정 성공");
+                TypeManage typeManage =
+                        TypeManage.builder()
+                                .weekType(bindingWeekType)
+                                .build();
+
+                if (dto.getPeriod().isRepeatAgain()) {
+
+                    // week logic 1
+                    for (int i = 0; i < endRepeat; i++) {
+                        String targetDay = criteriaDate.getDayOfWeek().toString();
+
+                        if (i <= size) {
+                            // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
+                            if (days.contains(targetDay)) {
+                                log.info("이동하는 요일: {}", targetDay);
+                                log.info("일자: {}", criteriaDate);
+
+                                // entities 리스트에 엔터티가 이미 존재할 때
+                                Schedule existingSchedule = entities.get(i);
+
+                                existingSchedule.updateFrom(
+                                        dto, criteriaDate.toString(), criteriaDate.toString(),
+                                        typeManage,
+                                        createPeriodType(() -> PeriodType.builder()
+                                                .isRepeatAgain(true)
+                                                .repeatNumberOfTime("0")
+                                                .repeatEndLine(null)
+                                                .build()),
+                                        judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus));
+                                crudScheduleRepository.save(existingSchedule);
+
+                                log.info("수정 성공");
+                                crudScheduleRepository.save(existingSchedule);
+
+                                // java에서 한주의 끝은 SUN, 한주의 시작은 MON
+                                if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                    criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
+                                    criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+                                } else criteriaDate = criteriaDate.plusDays(1);
+                            } else {
+                                i--;
+                                if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                    criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
+                                    criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                                } else criteriaDate = criteriaDate.plusDays(1);
+                            }
                         } else {
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -153,40 +207,28 @@ public class ScheduleRepository {
                             log.info(schedule.getStartDate());
                             crudScheduleRepository.save(schedule);
                         }
-                        criteriaDate = criteriaDate.plusDays(intervalDays);
-                    }
-                    // test 필요
-                    if (endRepeat < entities.size()) {
-                        for (int j = endRepeat; j < entities.size(); j++) {
-                            crudScheduleRepository.delete(entities.get(j));
-                        }
+                        criteriaDate = criteriaDate.plusDays(intervalWeeks);
                     }
 
-                    // day 2 logic
+                    // week logic 2
                 } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
                     int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
-                    for (int i = 0; i < repeatNumberOfTime; i++) {
-                        if (i <= size) {
-                            // entities 리스트에 엔터티가 이미 존재할 때
-                            Schedule existingSchedule = entities.get(i);
+                    int repeatValue = repeatNumberOfTime * intervalWeeks;
 
-                            existingSchedule.updateFrom(
-                                    dto, criteriaDate.toString(), criteriaDate.toString(),
-                                    typeManage,
-                                    createPeriodType(() -> PeriodType.builder()
-                                            .isRepeatAgain(true)
-                                            .repeatNumberOfTime("0")
-                                            .repeatEndLine(null)
-                                            .build()),
-                                    judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus));
-                            crudScheduleRepository.save(existingSchedule);
-                            log.info("수정 성공");
-                        } else {
+                    for (int i = 0; i < repeatValue; i++) {
+                        String targetDay = criteriaDate.getDayOfWeek().toString();
+
+                        log.info("반복 횟수:{}", i);
+                        // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
+                        if (days.contains(targetDay)) {
+                            log.info("이동하는 요일: {}", targetDay);
+                            log.info("일자: {}", criteriaDate);
+
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
                                     .eventName(dto.getEventName())
                                     .category(dto.getCategory())
-                                    .startDate(criteriaDate.toString())  // 수정된 부분
+                                    .startDate(criteriaDate.toString())
                                     .endDate(criteriaDate.toString())
                                     .startTime(dto.getStartTime())
                                     .endTime(dto.getEndTime())
@@ -199,8 +241,7 @@ public class ScheduleRepository {
                                     .period(createPeriodType(() -> {
                                         return PeriodType.builder()
                                                 .isRepeatAgain(false)
-                                                .repeatEndLine(null)
-                                                .build();
+                                                .repeatEndLine(endLine.toString()).build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -208,54 +249,240 @@ public class ScheduleRepository {
                                         } else return PriceType.Minus;
                                     }))
                                     .build();
-                            // entities 리스트를 모두 순회한 경우
-                            log.info("나머지 저장");
-                            log.info(schedule.getStartDate());
+
                             crudScheduleRepository.save(schedule);
+
+                            // java에서 한주의 끝은 SUN, 한주의 시작은 MON
+                            if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
+                                criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+                            } else criteriaDate = criteriaDate.plusDays(1);
+                            // TODO (수정) 일요일부터 시작하는 경우를 수정해야 함...
+                        } else {
+                            i--;
+                            if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
+                                criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                            } else criteriaDate = criteriaDate.plusDays(1);
                         }
-                        criteriaDate = criteriaDate.plusDays(intervalDays);
                     }
-
-                    // day 3 logic
                 } else if (dto.getPeriod().getRepeatEndLine() != null) {
-                    LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
-
                     while (!criteriaDate.isAfter(endLine)) {
-                        Schedule schedule = Schedule.builder()
-                                .userId(dto.getUserId())
-                                .eventName(dto.getEventName())
-                                .category(dto.getCategory())
-                                .startDate(criteriaDate.toString())  // 수정된 부분
-                                .endDate(criteriaDate.toString())
-                                .startTime(dto.getStartTime())
-                                .endTime(dto.getEndTime())
-                                .isAllDay(dto.isAllDay())
-                                .repeat(typeManage)
-                                .isExclude(dto.isExclude())
-                                .importance(dto.getImportance())
-                                .amount(dto.getAmount())
-                                .isFixAmount(dto.isFixAmount())
-                                .period(createPeriodType(() -> {
-                                    return PeriodType.builder()
-                                            .isRepeatAgain(false)
-                                            .repeatEndLine(endLine.toString())
-                                            .build();
-                                }))
-                                .priceType(judgmentPriceType(() -> {
-                                    if (dto.getPriceType().equals(PriceType.Plus)) {
-                                        return PriceType.Plus;
-                                    } else return PriceType.Minus;
-                                }))
-                                .build();
+                        String targetDay = criteriaDate.getDayOfWeek().toString();
 
-                        crudScheduleRepository.save(schedule);
+                        // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
+                        if (days.contains(targetDay)) {
+                            log.info("이동하는 요일: {}", targetDay);
+                            log.info("일자: {}", criteriaDate);
 
-                        criteriaDate = criteriaDate.plusDays(intervalDays);
+                            Schedule schedule = Schedule.builder()
+                                    .userId(dto.getUserId())
+                                    .eventName(dto.getEventName())
+                                    .category(dto.getCategory())
+                                    .startDate(criteriaDate.toString())
+                                    .endDate(criteriaDate.toString())
+                                    .startTime(dto.getStartTime())
+                                    .endTime(dto.getEndTime())
+                                    .isAllDay(dto.isAllDay())
+                                    .repeat(typeManage)
+                                    .isExclude(dto.isExclude())
+                                    .importance(dto.getImportance())
+                                    .amount(dto.getAmount())
+                                    .isFixAmount(dto.isFixAmount())
+                                    .period(createPeriodType(() -> {
+                                        return PeriodType.builder()
+                                                .isRepeatAgain(false)
+                                                .repeatEndLine(endLine.toString()).build();
+                                    }))
+                                    .priceType(judgmentPriceType(() -> {
+                                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                                            return PriceType.Plus;
+                                        } else return PriceType.Minus;
+                                    }))
+                                    .build();
+
+                            crudScheduleRepository.save(schedule);
+
+                            // java에서 한주의 끝은 SUN, 한주의 시작은 MON
+                            if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
+                                criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+                            } else criteriaDate = criteriaDate.plusDays(1);
+                            // TODO (수정) 일요일부터 시작하는 경우를 수정해야 함...
+                        } else {
+                            if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
+                                criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                            } else criteriaDate = criteriaDate.plusDays(1);
+                        }
                     }
                 }
             }
         }
         return true;
+    }
+
+
+    private void modifyDay(ModifyScheduleDTO dto, String targetDate, int size, List<Schedule> entities) {
+        DayType bindingDayType = new DayType();
+        bindingDayType.setValue(dto.getRepeat().getDayTypeVO().getValue());
+
+        TypeManage typeManage = TypeManage.builder()
+                .dayType(bindingDayType)
+                .build();
+
+        int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getValue());
+        LocalDate criteriaDate = formatDate(targetDate);
+        int endRepeat = 50;
+
+        // day 1 logic
+        if (dto.getPeriod().isRepeatAgain()) {
+            for (int i = 0; i < endRepeat; i++) {
+                if (i <= size) {
+                    // entities 리스트에 엔터티가 이미 존재할 때
+                    Schedule existingSchedule = entities.get(i);
+
+                    existingSchedule.updateFrom(
+                            dto, criteriaDate.toString(), criteriaDate.toString(),
+                            typeManage,
+                            createPeriodType(() -> PeriodType.builder()
+                                    .isRepeatAgain(true)
+                                    .repeatNumberOfTime("0")
+                                    .repeatEndLine(null)
+                                    .build()),
+                            judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus));
+                    crudScheduleRepository.save(existingSchedule);
+                    log.info("수정 성공");
+                } else {
+                    Schedule schedule = Schedule.builder()
+                            .userId(dto.getUserId())
+                            .eventName(dto.getEventName())
+                            .category(dto.getCategory())
+                            .startDate(criteriaDate.toString())
+                            .endDate(criteriaDate.toString())
+                            .startTime(dto.getStartTime())
+                            .endTime(dto.getEndTime())
+                            .isAllDay(dto.isAllDay())
+                            .repeat(typeManage)
+                            .isExclude(dto.isExclude())
+                            .importance(dto.getImportance())
+                            .amount(dto.getAmount())
+                            .isFixAmount(dto.isFixAmount())
+                            .period(createPeriodType(() -> PeriodType.builder()
+                                    .isRepeatAgain(true)
+                                    .repeatNumberOfTime("0")
+                                    .repeatEndLine(null)
+                                    .build()))
+                            .priceType(judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus))
+                            .build();
+
+                    // entities 리스트를 모두 순회한 경우
+                    log.info("나머지 저장");
+                    log.info(schedule.getStartDate());
+                    crudScheduleRepository.save(schedule);
+                }
+                criteriaDate = criteriaDate.plusDays(intervalDays);
+            }
+            // test 필요
+            if (endRepeat < entities.size()) {
+                for (int j = endRepeat; j < entities.size(); j++) {
+                    crudScheduleRepository.delete(entities.get(j));
+                }
+            }
+
+            // day 2 logic
+        } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
+            int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
+            for (int i = 0; i < repeatNumberOfTime; i++) {
+                if (i <= size) {
+                    // entities 리스트에 엔터티가 이미 존재할 때
+                    Schedule existingSchedule = entities.get(i);
+
+                    existingSchedule.updateFrom(
+                            dto, criteriaDate.toString(), criteriaDate.toString(),
+                            typeManage,
+                            createPeriodType(() -> PeriodType.builder()
+                                    .isRepeatAgain(true)
+                                    .repeatNumberOfTime("0")
+                                    .repeatEndLine(null)
+                                    .build()),
+                            judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus));
+                    crudScheduleRepository.save(existingSchedule);
+                    log.info("수정 성공");
+                } else {
+                    Schedule schedule = Schedule.builder()
+                            .userId(dto.getUserId())
+                            .eventName(dto.getEventName())
+                            .category(dto.getCategory())
+                            .startDate(criteriaDate.toString())  // 수정된 부분
+                            .endDate(criteriaDate.toString())
+                            .startTime(dto.getStartTime())
+                            .endTime(dto.getEndTime())
+                            .isAllDay(dto.isAllDay())
+                            .repeat(typeManage)
+                            .isExclude(dto.isExclude())
+                            .importance(dto.getImportance())
+                            .amount(dto.getAmount())
+                            .isFixAmount(dto.isFixAmount())
+                            .period(createPeriodType(() -> {
+                                return PeriodType.builder()
+                                        .isRepeatAgain(false)
+                                        .repeatEndLine(null)
+                                        .build();
+                            }))
+                            .priceType(judgmentPriceType(() -> {
+                                if (dto.getPriceType().equals(PriceType.Plus)) {
+                                    return PriceType.Plus;
+                                } else return PriceType.Minus;
+                            }))
+                            .build();
+                    // entities 리스트를 모두 순회한 경우
+                    log.info("나머지 저장");
+                    log.info(schedule.getStartDate());
+                    crudScheduleRepository.save(schedule);
+                }
+                criteriaDate = criteriaDate.plusDays(intervalDays);
+            }
+
+            // day 3 logic
+        } else if (dto.getPeriod().getRepeatEndLine() != null) {
+            LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
+
+            while (!criteriaDate.isAfter(endLine)) {
+                Schedule schedule = Schedule.builder()
+                        .userId(dto.getUserId())
+                        .eventName(dto.getEventName())
+                        .category(dto.getCategory())
+                        .startDate(criteriaDate.toString())  // 수정된 부분
+                        .endDate(criteriaDate.toString())
+                        .startTime(dto.getStartTime())
+                        .endTime(dto.getEndTime())
+                        .isAllDay(dto.isAllDay())
+                        .repeat(typeManage)
+                        .isExclude(dto.isExclude())
+                        .importance(dto.getImportance())
+                        .amount(dto.getAmount())
+                        .isFixAmount(dto.isFixAmount())
+                        .period(createPeriodType(() -> {
+                            return PeriodType.builder()
+                                    .isRepeatAgain(false)
+                                    .repeatEndLine(endLine.toString())
+                                    .build();
+                        }))
+                        .priceType(judgmentPriceType(() -> {
+                            if (dto.getPriceType().equals(PriceType.Plus)) {
+                                return PriceType.Plus;
+                            } else return PriceType.Minus;
+                        }))
+                        .build();
+
+                crudScheduleRepository.save(schedule);
+
+                criteriaDate = criteriaDate.plusDays(intervalDays);
+            }
+        }
     }
 
     @NotNull

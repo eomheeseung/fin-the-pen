@@ -56,7 +56,8 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                     return PeriodType.builder()
                                             .isRepeatAgain(true)
                                             .repeatNumberOfTime("0")
-                                            .repeatEndLine(null).build();
+                                            .repeatEndLine(null)
+                                            .build();
                                 }))
                                 .priceType(judgmentPriceType(() -> {
                                     if (dto.getPriceType().equals(PriceType.Plus)) {

@@ -35,12 +35,12 @@ public class ModifyScheduleDTO {
 
     // 시작 일자
     @JsonProperty(value = "start_date")
-    @Schema(description = "일정 시작 일자", example = "2024-01-10")
+    @Schema(description = "일정 시작 일자", example = "2024-01-22")
     private String startDate;
 
     // 종료 일자
     @JsonProperty(value = "end_date")
-    @Schema(description = "일정 종료 일자", example = "2024-01-10")
+    @Schema(description = "일정 종료 일자", example = "2024-01-22")
     private String endDate;
 
     // 시작 시간

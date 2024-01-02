@@ -20,10 +20,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.function.Supplier;
 
 @Repository
@@ -81,6 +78,8 @@ public class ScheduleRepository {
 
     /**
      * 현재부터 이 이후의 일정들
+     * 1. week의 경우
+     * => 1.21일이 저장하려는 요일의 조건에 해당되지 않은 경우 1.21은 삭제됨
      *
      * @param dto
      * @return
@@ -98,7 +97,6 @@ public class ScheduleRepository {
 
             if (repeatType.equals("day")) {
                 modifyDay(dto, targetDate, size, entities);
-
 
                 /*
                 TODO !!!!!
@@ -124,62 +122,35 @@ public class ScheduleRepository {
                     days.add(temp);
                 }
 
+                DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
                 // currentDate: 움직일 임시 객체
-                LocalDate criteriaDate = startDate;
+                LocalDate criteriaDate = LocalDate.parse(dto.getStartDate(), formatter1);
                 int endRepeat = 50;
 
-                WeekType bindingWeekType = new WeekType();
-                bindingWeekType.setDayOfWeek(criteriaDate.getDayOfWeek().toString());
-                bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
-
-                TypeManage typeManage =
-                        TypeManage.builder()
-                                .weekType(bindingWeekType)
-                                .build();
-
                 if (dto.getPeriod().isRepeatAgain()) {
+                    crudScheduleRepository.deleteAll(entities);
 
-                    // week logic 1
+                    /*
+                     week logic 1 => 반복횟수가 없이 default(50)으로 저장
+                     */
                     for (int i = 0; i < endRepeat; i++) {
                         String targetDay = criteriaDate.getDayOfWeek().toString();
 
-                        if (i <= size) {
-                            // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
-                            if (days.contains(targetDay)) {
-                                log.info("이동하는 요일: {}", targetDay);
-                                log.info("일자: {}", criteriaDate);
+                        WeekType bindingWeekType = new WeekType();
+                        bindingWeekType.setDayOfWeek(criteriaDate.getDayOfWeek().toString());
+                        bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
 
-                                // entities 리스트에 엔터티가 이미 존재할 때
-                                Schedule existingSchedule = entities.get(i);
+                        TypeManage typeManage =
+                                TypeManage.builder()
+                                        .weekType(bindingWeekType)
+                                        .build();
 
-                                existingSchedule.updateFrom(
-                                        dto, criteriaDate.toString(), criteriaDate.toString(),
-                                        typeManage,
-                                        createPeriodType(() -> PeriodType.builder()
-                                                .isRepeatAgain(true)
-                                                .repeatNumberOfTime("0")
-                                                .repeatEndLine(null)
-                                                .build()),
-                                        judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus));
-                                crudScheduleRepository.save(existingSchedule);
+                        // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
+                        if (days.contains(targetDay)) {
+                            log.info("이동하는 요일: {}", targetDay);
+                            log.info("일자: {}", criteriaDate);
 
-                                log.info("수정 성공");
-                                crudScheduleRepository.save(existingSchedule);
-
-                                // java에서 한주의 끝은 SUN, 한주의 시작은 MON
-                                if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                                    criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
-                                    criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-
-                                } else criteriaDate = criteriaDate.plusDays(1);
-                            } else {
-                                i--;
-                                if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                                    criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
-                                    criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                                } else criteriaDate = criteriaDate.plusDays(1);
-                            }
-                        } else {
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
                                     .eventName(dto.getEventName())
@@ -194,35 +165,59 @@ public class ScheduleRepository {
                                     .importance(dto.getImportance())
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
-                                    .period(createPeriodType(() -> PeriodType.builder()
-                                            .isRepeatAgain(true)
-                                            .repeatNumberOfTime("0")
-                                            .repeatEndLine(null)
-                                            .build()))
-                                    .priceType(judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus))
+                                    .period(createPeriodType(() -> {
+                                        return PeriodType.builder()
+                                                .isRepeatAgain(true)
+                                                .repeatNumberOfTime("0")
+                                                .repeatEndLine(null).build();
+                                    }))
+                                    .priceType(judgmentPriceType(() -> {
+                                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                                            return PriceType.Plus;
+                                        } else return PriceType.Minus;
+                                    }))
                                     .build();
 
-                            // entities 리스트를 모두 순회한 경우
-                            log.info("나머지 저장");
-                            log.info(schedule.getStartDate());
                             crudScheduleRepository.save(schedule);
+                            log.info("저장된 요일: {}", schedule.getRepeat().getWeekType().getDayOfWeek());
+
+                            // java에서 한주의 끝은 SUN, 한주의 시작은 MON
+                            if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
+                                criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+
+                            } else criteriaDate = criteriaDate.plusDays(1);
+                        } else {
+                            i--;
+                            if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                                criteriaDate = criteriaDate.plusWeeks(intervalWeeks);
+                                criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+                            } else criteriaDate = criteriaDate.plusDays(1);
                         }
-                        criteriaDate = criteriaDate.plusDays(intervalWeeks);
                     }
 
-                    // week logic 2
+                    // week logic 2 => 반복횟수가 주어진 경우
                 } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
+                    crudScheduleRepository.deleteAll(entities);
+
                     int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
                     int repeatValue = repeatNumberOfTime * intervalWeeks;
 
                     for (int i = 0; i < repeatValue; i++) {
                         String targetDay = criteriaDate.getDayOfWeek().toString();
 
-                        log.info("반복 횟수:{}", i);
-                        // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
                         if (days.contains(targetDay)) {
                             log.info("이동하는 요일: {}", targetDay);
                             log.info("일자: {}", criteriaDate);
+
+                            WeekType bindingWeekType = new WeekType();
+                            bindingWeekType.setDayOfWeek(criteriaDate.getDayOfWeek().toString());
+                            bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
+
+                            TypeManage typeManage =
+                                    TypeManage.builder()
+                                            .weekType(bindingWeekType)
+                                            .build();
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -267,6 +262,9 @@ public class ScheduleRepository {
                             } else criteriaDate = criteriaDate.plusDays(1);
                         }
                     }
+
+                    // week logic 3 => 특정 기간까지 반복하는 경우
+                    // TODO
                 } else if (dto.getPeriod().getRepeatEndLine() != null) {
                     while (!criteriaDate.isAfter(endLine)) {
                         String targetDay = criteriaDate.getDayOfWeek().toString();
@@ -275,6 +273,15 @@ public class ScheduleRepository {
                         if (days.contains(targetDay)) {
                             log.info("이동하는 요일: {}", targetDay);
                             log.info("일자: {}", criteriaDate);
+
+                            WeekType bindingWeekType = new WeekType();
+                            bindingWeekType.setDayOfWeek(criteriaDate.getDayOfWeek().toString());
+                            bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
+
+                            TypeManage typeManage =
+                                    TypeManage.builder()
+                                            .weekType(bindingWeekType)
+                                            .build();
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())

@@ -97,16 +97,11 @@ public class ScheduleRepository {
 
             if (repeatType.equals("day")) {
                 modifyDay(dto, targetDate, size, entities);
-
-                /*
-                TODO !!!!!
-                 week 수정
-                 사용자가 선택한 요일들의 수정요청이 현재와 부분적으로 일치한다면, 
-                 일치하는 것은 udpate
-                 일치하지 않는다면 요청한 요일보다 뒤인 경우 delete 필요
-                 */
             } else if (repeatType.equals("week")) {
                 modifyWeek(dto, entities);
+                // TODO!!!!!!
+            } else if (repeatType.equals("month")) {
+
             }
         }
         return true;

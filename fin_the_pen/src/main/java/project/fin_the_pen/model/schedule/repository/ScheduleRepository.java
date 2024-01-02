@@ -110,9 +110,6 @@ public class ScheduleRepository {
                         new StringTokenizer(dto.getRepeat().getWeekTypeVO().getRepeatDayOfWeek(), ",");
 
                 int intervalWeeks = Integer.parseInt(dto.getRepeat().getWeekTypeVO().getValue());
-                // 문자열을 LocalDate 객체로 변환
-                LocalDate startDate = formatDate(dto.getStartDate());
-                LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
 
                 List<String> days = new ArrayList<>();
 
@@ -198,6 +195,8 @@ public class ScheduleRepository {
 
                     // week logic 2 => 반복횟수가 주어진 경우
                 } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
+                    LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
+
                     crudScheduleRepository.deleteAll(entities);
 
                     int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
@@ -264,8 +263,10 @@ public class ScheduleRepository {
                     }
 
                     // week logic 3 => 특정 기간까지 반복하는 경우
-                    // TODO
                 } else if (dto.getPeriod().getRepeatEndLine() != null) {
+                    LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
+                    crudScheduleRepository.deleteAll(entities);
+
                     while (!criteriaDate.isAfter(endLine)) {
                         String targetDay = criteriaDate.getDayOfWeek().toString();
 

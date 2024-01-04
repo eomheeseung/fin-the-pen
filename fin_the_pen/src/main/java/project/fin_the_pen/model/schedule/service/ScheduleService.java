@@ -12,6 +12,7 @@ import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
+import project.fin_the_pen.model.report.ConsumeReportResponseDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
@@ -164,6 +165,7 @@ public class ScheduleService {
         }
         return responseMap;
     }
+
     public Map<Object, Object> modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
             boolean flag = false;
@@ -321,7 +323,6 @@ public class ScheduleService {
 
         String userId = dto.getUserId();
         String date = dto.getDate();
-        log.info("실행");
 
         Map<String, Integer> map = new HashMap<>();
 
@@ -353,18 +354,25 @@ public class ScheduleService {
                     });
                 }
 
+
                 // Map의 entry를 List로 변환
                 List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
 
                 // Comparator를 사용하여 value를 기준으로 내림차순 정렬
                 entryList.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
 
-                // 정렬된 결과를 다시 Map으로 저장
-                Map<String, Integer> sortedMap = entryList.stream()
-                        .limit(5)
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                List<Map.Entry<String, Integer>> topEntries = entryList.subList(0, Math.min(5, entryList.size()));
+                int sum = topEntries.stream().mapToInt(Map.Entry::getValue).sum();
 
-                responseMap.put("data", sortedMap);
+                List<ConsumeReportResponseDTO> responseList = new ArrayList<>();
+
+                for (Map.Entry<String, Integer> entry : topEntries) {
+                    int percentage = (int) ((entry.getValue() * 100.0) / sum);
+                    responseList.add(new ConsumeReportResponseDTO(entry.getKey(), entry.getValue(), String.valueOf(percentage)));
+                }
+
+
+                responseMap.put("data", responseList);
 
             }
         } catch (Exception e) {

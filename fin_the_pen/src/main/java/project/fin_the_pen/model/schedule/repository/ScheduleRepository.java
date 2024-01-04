@@ -102,9 +102,6 @@ public class ScheduleRepository {
                 // TODO!!!!!!
             } else if (repeatType.equals("month")) {
 
-
-
-
                 // return은 다 만들고 지워야 함.
                 return true;
             }

@@ -9,7 +9,7 @@ name: Finthepen CI/CD branche develop
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ develop ]
 
 permissions:
   contents: read

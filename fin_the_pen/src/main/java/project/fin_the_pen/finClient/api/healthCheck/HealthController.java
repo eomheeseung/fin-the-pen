@@ -30,6 +30,6 @@ public class HealthController {
     @Operation(summary = "health check", description = "서버 살아있는지 확인 하는 API")
     @GetMapping
     public ResponseEntity<String> healthCheck(){
-        return ResponseEntity.ok("i'm alive");
+        return ResponseEntity.ok("i'm test");
     }
 }

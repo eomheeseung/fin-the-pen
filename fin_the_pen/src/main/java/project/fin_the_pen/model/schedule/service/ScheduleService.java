@@ -216,12 +216,46 @@ public class ScheduleService {
                                 flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "year");
                             }
                         }
-
                         break;
-                    /*case "exceptNowAfter":
+                    case "exceptNow":
+                        if (repeat.getKindType().equals("day")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "day");
+
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "day");
+                            }
+                        } else if (repeat.getKindType().equals("week")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "week");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "week");
+                            }
+                        } else if (repeat.getKindType().equals("month")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "month");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "month");
+                            }
+                        } else if (repeat.getKindType().equals("year")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "year");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "year");
+                            }
+                        }
                         break;
                     case "all":
-                        break;*/
+                        // TODO 구현 필요
+                        break;
                 }
 
 

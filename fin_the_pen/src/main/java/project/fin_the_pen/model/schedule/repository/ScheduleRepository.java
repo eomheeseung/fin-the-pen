@@ -35,8 +35,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class ScheduleRepository {
     private final CRUDScheduleRepository crudScheduleRepository;
-    private final CRUDRegularScheduleRepository regularScheduleRepository;
-    //    private final ManageRepository manageRepository;
+    //    private final CRUDRegularScheduleRepository regularScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final RegisterNoneSchedule registerNoneSchedule;
     private final RegisterDaySchedule registerDaySchedule;
@@ -99,7 +98,7 @@ public class ScheduleRepository {
 
         if (findModifySchedule.isPresent()) {
             String targetDate = findModifySchedule.get().getStartDate();
-            List<Schedule> entities = crudScheduleRepository.findByAllDayNowAfter(targetDate);
+            List<Schedule> entities = crudScheduleRepository.findByAllDayNowAfter(targetDate, dto.getEventName());
 
             log.info("수정할 list 사이즈:{}", entities.size());
 
@@ -110,6 +109,34 @@ public class ScheduleRepository {
             } else if (repeatType.equals("week")) {
                 modifyWeek(dto, entities);
 
+                /*
+                 TODO!!!!!!
+                  test 필요
+                 */
+            } else if (repeatType.equals("month")) {
+                modifyMonth(dto, entities);
+            } else if (repeatType.equals("year")) {
+                modifyYear(dto, entities);
+            }
+        }
+        return true;
+    }
+
+    public Boolean modifyExceptNowAfter(ModifyScheduleDTO dto, String repeatType) {
+        Optional<Schedule> findModifySchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
+
+        if (findModifySchedule.isPresent()) {
+            String targetDate = findModifySchedule.get().getStartDate();
+            List<Schedule> entities = crudScheduleRepository.findByAllExceptNotAfter(targetDate, dto.getEventName());
+
+            log.info("수정할 list 사이즈:{}", entities.size());
+
+            int size = entities.size() - 1;
+
+            if (repeatType.equals("day")) {
+                modifyDay(dto, targetDate, size, entities);
+            } else if (repeatType.equals("week")) {
+                modifyWeek(dto, entities);
                 /*
                  TODO!!!!!!
                   test 필요
@@ -1461,110 +1488,73 @@ public class ScheduleRepository {
 
         // day 1 logic
         if (dto.getPeriod().isRepeatAgain()) {
+            crudScheduleRepository.deleteAll(entities);
+
             for (int i = 0; i < endRepeat; i++) {
-                if (i <= size) {
-                    // entities 리스트에 엔터티가 이미 존재할 때
-                    Schedule existingSchedule = entities.get(i);
+                Schedule schedule = Schedule.builder()
+                        .userId(dto.getUserId())
+                        .eventName(dto.getEventName())
+                        .category(dto.getCategory())
+                        .startDate(criteriaDate.toString())
+                        .endDate(criteriaDate.toString())
+                        .startTime(dto.getStartTime())
+                        .endTime(dto.getEndTime())
+                        .isAllDay(dto.isAllDay())
+                        .repeat(typeManage)
+                        .isExclude(dto.isExclude())
+                        .importance(dto.getImportance())
+                        .amount(dto.getAmount())
+                        .isFixAmount(dto.isFixAmount())
+                        .period(createPeriodType(() -> PeriodType.builder()
+                                .isRepeatAgain(true)
+                                .repeatNumberOfTime("0")
+                                .repeatEndLine(null)
+                                .build()))
+                        .priceType(judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus))
+                        .build();
 
-                    existingSchedule.updateFrom(
-                            dto, criteriaDate.toString(), criteriaDate.toString(),
-                            typeManage,
-                            createPeriodType(() -> PeriodType.builder()
-                                    .isRepeatAgain(true)
-                                    .repeatNumberOfTime("0")
-                                    .repeatEndLine(null)
-                                    .build()),
-                            judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus));
-                    crudScheduleRepository.save(existingSchedule);
-                    log.info("수정 성공");
-                } else {
-                    Schedule schedule = Schedule.builder()
-                            .userId(dto.getUserId())
-                            .eventName(dto.getEventName())
-                            .category(dto.getCategory())
-                            .startDate(criteriaDate.toString())
-                            .endDate(criteriaDate.toString())
-                            .startTime(dto.getStartTime())
-                            .endTime(dto.getEndTime())
-                            .isAllDay(dto.isAllDay())
-                            .repeat(typeManage)
-                            .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
-                            .amount(dto.getAmount())
-                            .isFixAmount(dto.isFixAmount())
-                            .period(createPeriodType(() -> PeriodType.builder()
-                                    .isRepeatAgain(true)
-                                    .repeatNumberOfTime("0")
-                                    .repeatEndLine(null)
-                                    .build()))
-                            .priceType(judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus))
-                            .build();
+                // entities 리스트를 모두 순회한 경우
+                log.info("나머지 저장");
+                log.info(schedule.getStartDate());
+                crudScheduleRepository.save(schedule);
 
-                    // entities 리스트를 모두 순회한 경우
-                    log.info("나머지 저장");
-                    log.info(schedule.getStartDate());
-                    crudScheduleRepository.save(schedule);
-                }
                 criteriaDate = criteriaDate.plusDays(intervalDays);
             }
-            // test 필요
-            if (endRepeat < entities.size()) {
-                for (int j = endRepeat; j < entities.size(); j++) {
-                    crudScheduleRepository.delete(entities.get(j));
-                }
-            }
-
-            // day 2 logic
         } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
             int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
-            for (int i = 0; i < repeatNumberOfTime; i++) {
-                if (i <= size) {
-                    // entities 리스트에 엔터티가 이미 존재할 때
-                    Schedule existingSchedule = entities.get(i);
+            crudScheduleRepository.deleteAll(entities);
 
-                    existingSchedule.updateFrom(
-                            dto, criteriaDate.toString(), criteriaDate.toString(),
-                            typeManage,
-                            createPeriodType(() -> PeriodType.builder()
-                                    .isRepeatAgain(true)
-                                    .repeatNumberOfTime("0")
+            for (int i = 0; i < repeatNumberOfTime; i++) {
+                Schedule schedule = Schedule.builder()
+                        .userId(dto.getUserId())
+                        .eventName(dto.getEventName())
+                        .category(dto.getCategory())
+                        .startDate(criteriaDate.toString())  // 수정된 부분
+                        .endDate(criteriaDate.toString())
+                        .startTime(dto.getStartTime())
+                        .endTime(dto.getEndTime())
+                        .isAllDay(dto.isAllDay())
+                        .repeat(typeManage)
+                        .isExclude(dto.isExclude())
+                        .importance(dto.getImportance())
+                        .amount(dto.getAmount())
+                        .isFixAmount(dto.isFixAmount())
+                        .period(createPeriodType(() -> {
+                            return PeriodType.builder()
+                                    .isRepeatAgain(false)
                                     .repeatEndLine(null)
-                                    .build()),
-                            judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus));
-                    crudScheduleRepository.save(existingSchedule);
-                    log.info("수정 성공");
-                } else {
-                    Schedule schedule = Schedule.builder()
-                            .userId(dto.getUserId())
-                            .eventName(dto.getEventName())
-                            .category(dto.getCategory())
-                            .startDate(criteriaDate.toString())  // 수정된 부분
-                            .endDate(criteriaDate.toString())
-                            .startTime(dto.getStartTime())
-                            .endTime(dto.getEndTime())
-                            .isAllDay(dto.isAllDay())
-                            .repeat(typeManage)
-                            .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
-                            .amount(dto.getAmount())
-                            .isFixAmount(dto.isFixAmount())
-                            .period(createPeriodType(() -> {
-                                return PeriodType.builder()
-                                        .isRepeatAgain(false)
-                                        .repeatEndLine(null)
-                                        .build();
-                            }))
-                            .priceType(judgmentPriceType(() -> {
-                                if (dto.getPriceType().equals(PriceType.Plus)) {
-                                    return PriceType.Plus;
-                                } else return PriceType.Minus;
-                            }))
-                            .build();
-                    // entities 리스트를 모두 순회한 경우
-                    log.info("나머지 저장");
-                    log.info(schedule.getStartDate());
-                    crudScheduleRepository.save(schedule);
-                }
+                                    .build();
+                        }))
+                        .priceType(judgmentPriceType(() -> {
+                            if (dto.getPriceType().equals(PriceType.Plus)) {
+                                return PriceType.Plus;
+                            } else return PriceType.Minus;
+                        }))
+                        .build();
+                // entities 리스트를 모두 순회한 경우
+                log.info("나머지 저장");
+                log.info(schedule.getStartDate());
+                crudScheduleRepository.save(schedule);
                 criteriaDate = criteriaDate.plusDays(intervalDays);
             }
 

@@ -122,6 +122,12 @@ public class ScheduleRepository {
         return true;
     }
 
+    /**
+     * 현재 선택한 일정 이후의 일정들만 수정
+     * @param dto
+     * @param repeatType
+     * @return
+     */
     public Boolean modifyExceptNowAfter(ModifyScheduleDTO dto, String repeatType) {
         Optional<Schedule> findModifySchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
 

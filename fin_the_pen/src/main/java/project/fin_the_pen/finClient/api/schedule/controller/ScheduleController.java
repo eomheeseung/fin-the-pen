@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
+import project.fin_the_pen.model.schedule.dto.DeleteScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
@@ -156,6 +158,28 @@ public class ScheduleController {
         } catch (RuntimeException e) {
             // 에러 핸들링 로직 추가
             log.error("일정 수정 중 에러 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    /**
+     * 일정 삭제
+     */
+    @DeleteMapping("/deleteSchedule")
+    @Operation(description = "일정을 삭제합니다.",summary = "일정 삭제")
+    public ResponseEntity<Object> deleteSchedule(@RequestBody DeleteScheduleDTO dto, HttpServletRequest request){
+        try {
+            scheduleService.deleteSchedule(dto, request);
+
+           /* if (responseMap.get("data").equals(modifyScheduleDTO.getScheduleRequestDTO().getUserId())) {
+                log.info("일정 - " + modifyScheduleDTO.getScheduleRequestDTO().getUserId() + " 의 일정 이름: " + modifyScheduleDTO.getScheduleRequestDTO().getEventName());*/
+            return ResponseEntity.ok().build();
+//            } throw new RuntimeException();
+        } catch (DuplicatedScheduleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            // 에러 핸들링 로직 추가
+            log.error("일정 삭제 중 에러 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

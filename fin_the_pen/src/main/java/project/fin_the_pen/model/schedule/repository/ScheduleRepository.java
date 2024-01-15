@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
+import project.fin_the_pen.model.schedule.dto.DeleteScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
@@ -85,6 +86,12 @@ public class ScheduleRepository {
         return registerYearSchedule.registerSchedule(dto);
     }
 
+    /*
+    TODO test, query할때 userId도 같이 넘겨서 @Param에 넣어야 할 것 같음. 아니면 stream filter를 사용하던가.
+        @Query("SELECT s FROM Schedule s WHERE TO_DATE(s.startDate, 'yyyy-MM-dd') > TO_DATE(:targetDate, 'yyyy-MM-dd') and s.eventName = :eventName")
+        에서 and userId와 같이...
+
+     */
     /**
      * 현재부터 이 이후의 일정들
      * 1. week의 경우
@@ -102,10 +109,8 @@ public class ScheduleRepository {
 
             log.info("수정할 list 사이즈:{}", entities.size());
 
-            int size = entities.size() - 1;
-
             if (repeatType.equals("day")) {
-                modifyDay(dto, targetDate, size, entities);
+                modifyDay(dto, targetDate, entities);
             } else if (repeatType.equals("week")) {
                 modifyWeek(dto, entities);
 
@@ -137,10 +142,8 @@ public class ScheduleRepository {
 
             log.info("수정할 list 사이즈:{}", entities.size());
 
-            int size = entities.size() - 1;
-
             if (repeatType.equals("day")) {
-                modifyDay(dto, targetDate, size, entities);
+                modifyDay(dto, targetDate, entities);
             } else if (repeatType.equals("week")) {
                 modifyWeek(dto, entities);
                 /*
@@ -151,6 +154,84 @@ public class ScheduleRepository {
                 modifyMonth(dto, entities);
             } else if (repeatType.equals("year")) {
                 modifyYear(dto, entities);
+            }
+        }
+        return true;
+    }
+
+    public Boolean modifyAllSchedule(ModifyScheduleDTO dto, String repeatType) {
+        Optional<Schedule> findModifySchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
+
+        if (findModifySchedule.isPresent()) {
+            String targetDate = findModifySchedule.get().getStartDate();
+            List<Schedule> entities = crudScheduleRepository.findByEventName(dto.getEventName(),findModifySchedule.get().getUserId());
+
+            log.info("수정할 list 사이즈:{}", entities.size());
+
+            if (repeatType.equals("day")) {
+                modifyDay(dto, targetDate, entities);
+            } else if (repeatType.equals("week")) {
+                modifyWeek(dto, entities);
+                /*
+                 TODO!!!!!!
+                  test 필요
+                 */
+            } else if (repeatType.equals("month")) {
+                modifyMonth(dto, entities);
+            } else if (repeatType.equals("year")) {
+                modifyYear(dto, entities);
+            }
+        }
+        return true;
+    }
+
+    public Boolean deleteNowFromAfter(DeleteScheduleDTO dto) {
+        Optional<Schedule> findSchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
+
+        if (findSchedule.isPresent()) {
+            String targetDate = findSchedule.get().getStartDate();
+
+            try {
+                List<Schedule> entities = crudScheduleRepository.findByAllDayNowAfter(targetDate, findSchedule.get().getEventName());
+                log.info("수정할 list 사이즈:{}", entities.size());
+
+                crudScheduleRepository.deleteAll(entities);
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return true;
+    }
+
+    public Boolean deleteExceptNotAfter(DeleteScheduleDTO dto) {
+        Optional<Schedule> findSchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
+
+        if (findSchedule.isPresent()) {
+            String targetDate = findSchedule.get().getStartDate();
+
+            try {
+                List<Schedule> entities = crudScheduleRepository.findByAllExceptNotAfter(targetDate, findSchedule.get().getEventName());
+                log.info("수정할 list 사이즈:{}", entities.size());
+
+                crudScheduleRepository.deleteAll(entities);
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return true;
+    }
+
+    public Boolean deleteAllSchedule(DeleteScheduleDTO dto){
+        Optional<Schedule> findSchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
+
+        if (findSchedule.isPresent()) {
+            try {
+                List<Schedule> entities = crudScheduleRepository.findByEventName(findSchedule.get().getEventName(),findSchedule.get().getUserId());
+                log.info("수정할 list 사이즈:{}", entities.size());
+
+                crudScheduleRepository.deleteAll(entities);
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e);
             }
         }
         return true;
@@ -1480,7 +1561,7 @@ public class ScheduleRepository {
     }
 
 
-    private void modifyDay(ModifyScheduleDTO dto, String targetDate, int size, List<Schedule> entities) {
+    private void modifyDay(ModifyScheduleDTO dto, String targetDate, List<Schedule> entities) {
         DayType bindingDayType = new DayType();
         bindingDayType.setValue(dto.getRepeat().getDayTypeVO().getValue());
 

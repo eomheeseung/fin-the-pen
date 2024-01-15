@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
-import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
@@ -121,15 +120,6 @@ public class ScheduleController {
     @Operation(description = "일정의 이름에 해당하는 단어(키워드)를 넣으면 match된 모든 일정을 조회합니다.", summary = "일정을 이름으로 검색")
     public ResponseEntity<Object> findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
         Map<String, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
-
-        return convertResponse.getResponseEntity(responseMap);
-    }
-
-    @PostMapping("/report")
-    @Operation(description = "입력된 월의 소비 리포트를 조회합니다.", summary = "리포트 조회")
-    public ResponseEntity<Object> consumeReport(@RequestBody ConsumeReportRequestDTO dto, HttpServletRequest request) {
-        Map<String, Object> responseMap =
-                scheduleService.inquiryReport(dto, request);
 
         return convertResponse.getResponseEntity(responseMap);
     }

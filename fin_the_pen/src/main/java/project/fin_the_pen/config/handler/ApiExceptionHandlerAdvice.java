@@ -41,6 +41,7 @@ public class ApiExceptionHandlerAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
         e.printStackTrace();
+
         return ResponseEntity.badRequest().body(ErrorResponse.builder()
                 .message(e.getMessage())
                 .path(request.getRequestURI())

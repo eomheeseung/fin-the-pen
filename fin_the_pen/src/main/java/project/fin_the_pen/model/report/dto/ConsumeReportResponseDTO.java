@@ -1,4 +1,4 @@
-package project.fin_the_pen.model.report;
+package project.fin_the_pen.model.report.dto;
 
 import lombok.Data;
 

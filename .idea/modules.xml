@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fin_the_pen.iml" filepath="$PROJECT_DIR$/.idea/modules/fin_the_pen.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/fin_the_pen.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fin_the_pen.main.iml" />
     </modules>
   </component>

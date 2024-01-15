@@ -11,8 +11,6 @@ import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundExc
 import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.core.util.TokenManager;
-import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
-import project.fin_the_pen.model.report.ConsumeReportResponseDTO;
 import project.fin_the_pen.model.schedule.dto.*;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;

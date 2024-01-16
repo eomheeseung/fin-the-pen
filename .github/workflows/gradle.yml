@@ -26,8 +26,12 @@ jobs:
       run: pwd
     - name: ls
       run: ls -al
+      
     - name: cd
       run: cd fin_the_pen
+      
+    - name: path and lss
+      run: pwd
     - name: ls al
       run: ls -al
     

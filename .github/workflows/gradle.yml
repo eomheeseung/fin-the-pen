@@ -31,4 +31,7 @@ jobs:
       run: chmod +x fin_the_pen/gradlew
       
     - name: Build with Gradle
-      run: .fin-the-pen/fin_the_pen/gradlew clean bootjar -x test -Pprofile=prod
+      run: 
+        ls -al
+        cd fin_the_pen
+        ./gradlew clean bootjar -x test -Pprofile=prod

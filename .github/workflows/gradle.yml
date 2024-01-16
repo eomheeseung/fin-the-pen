@@ -26,6 +26,8 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
     - run: ls -al fin_the_pen
+    - name: Grand execute permission for graldew
+      run: chmod +x fin_the_pen/gradlew
   # build:
   #   runs-on: ubuntu-latest
     

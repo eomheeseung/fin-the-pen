@@ -22,8 +22,7 @@ jobs:
      - uses: actions/checkout@v4
      - run: ls -al
      - run: cat .github/workflows/gradle.yml
-     - run: cd fin_the_pen
-     - run: ls -al
+     - run: ls -al fin_the_pen
   # build:
   #   runs-on: ubuntu-latest
     

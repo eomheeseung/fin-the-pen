@@ -21,6 +21,8 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
+      with:
+        path: fin-the-pen/fin_the_pen
 
     - name: path and ls
       run: pwd

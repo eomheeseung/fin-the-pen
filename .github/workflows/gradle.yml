@@ -25,16 +25,12 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '11'
-        distribution: 'temurin'
-
-    - name: change directory to fin_the_pen
-      run: cd fin_the_pen
-      
+        distribution: 'temurin' 
     - name: list file fin_the_pen
       run: ls -al
         
     - name: Grand execute permission for graldew
-      run: chmod +x gradlew
+      run: chmod +x fin_the_pen/gradlew
       
     - name: Build with Gradle
       run: ./gradlew clean bootjar -x test -Pprofile=prod

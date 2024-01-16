@@ -31,9 +31,6 @@ jobs:
         
     - name: Grand execute permission for graldew
       run: chmod +x fin_the_pen/gradlew
-
-    - name: test 
-      run: cd fin_the_pen; ls -al
       
     - name: Build with Gradle
-      run: ./gradlew clean bootjar -x test -Pprofile=prod
+      run: cd fin_the_pen; ls -al; ./gradlew clean bootjar -x test -Pprofile=prod

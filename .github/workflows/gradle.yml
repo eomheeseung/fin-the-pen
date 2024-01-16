@@ -22,17 +22,11 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v3
 
-    - name: path and ls
-      run: pwd
-    - name: ls
-      run: ls -al
-      
     - name: cd
       run: cd fin_the_pen
-      
-    - name: path and lss
+    - name: pwd
       run: pwd
-    - name: ls al
+    - name: ls
       run: ls -al
     
     # - name: Set up JDK 11

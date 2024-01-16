@@ -16,7 +16,6 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -30,7 +29,10 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+        
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: chmod +x fin-the-pen/fin_the_pen/gradlew
+      
     - name: Build with Gradle
+      working-directory: fin-the-pen/fin_the_pen
       run: ./gradlew clean bootjar -x test -Pprofile=prod

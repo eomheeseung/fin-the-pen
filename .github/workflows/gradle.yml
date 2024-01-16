@@ -19,6 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
      - run: ls -al
+     - uses: actions/checkout@v4
+     - run: ls -al
+     - run: cat .github/workflows/gradle.yml
   # build:
   #   runs-on: ubuntu-latest
     

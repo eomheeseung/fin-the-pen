@@ -59,11 +59,9 @@ jobs:
           remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar";
 
           if ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "[ -f $remote_jar ]"; then
-            ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "rm $remote_jar";
             ehco "없어";
           fi
             ehco "들어오긴함";
-            scp -i ${{ secrets.EC2_SSH_KEY }} $local_jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$remote_path
     
         
           

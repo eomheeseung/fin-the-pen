@@ -57,7 +57,7 @@ jobs:
           local_jar="fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar";
           remote_path="/home/ec2-user/test";
           remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar";
-          echo "$remote_jar"; echo "$local_jar
+          echo "$remote_jar"; echo "$local_jar"
     
         
           

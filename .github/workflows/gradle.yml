@@ -46,7 +46,7 @@ jobs:
     #           ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ec2-user/test
 
 
-    - name: CD to Ec2 instance
+    - name: Search EC2 jar file and Delete
       uses: tiyee/action-ssh@v1.0.1
       with:
         command: |
@@ -56,14 +56,20 @@ jobs:
           if [ -f $remote_jar ]; then
             echo "if일걸";
             rm $remote_jar;
-          else
-            echo "else일걸";
-            scp -i ${{ secrets.EC2_SSH_KEY }} $local_jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$remote_path;
-          fi 
+            ls -al
+          fi
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         port: 22
         privateKey: ${{ secrets.EC2_SSH_KEY }}
+        
+    - name: CD to EC2 instance    
+      run: |
+        ls -al;
+    
+    # - name: start springboot    
+    
+        
     
         
           

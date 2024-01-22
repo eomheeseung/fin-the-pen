@@ -53,7 +53,7 @@ jobs:
         username: ${{ secrets.EC2_USERNAME}}
         port: 22
         privateKey: ${{ secrets.EC2_SSH_KEY}}
-        script: |
+        command: |
           # Set variables
           local_jar="fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar"
           remote_path="/home/ec2-user/test"

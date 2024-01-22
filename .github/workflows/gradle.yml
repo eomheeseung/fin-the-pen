@@ -54,9 +54,11 @@ jobs:
           remote_path="/home/ec2-user/test";
           remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar";
           if [ -f $remote_jar ]; then
+            echo "if일걸";
             rm $remote_jar;
           else
-            echo "else일걸"
+            echo "else일걸";
+            scp -i ${{ secrets.EC2_SSH_KEY }} $local_jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$remote_path;
           fi 
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}

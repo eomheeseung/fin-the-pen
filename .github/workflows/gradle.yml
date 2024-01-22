@@ -62,7 +62,7 @@ jobs:
           if ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "[ -f $remote_jar ]"; then
             ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "rm $remote_jar";
           fi
-            echo "yes"
+            scp -i ${{ secrets.EC2_SSH_KEY }} $local_jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$remote_path
     
         
           

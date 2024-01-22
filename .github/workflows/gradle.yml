@@ -65,7 +65,12 @@ jobs:
         
     - name: CD to EC2 instance    
       run: |
-        ls -al;
+        echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+        scp -i private_key.pem \
+        -o StrictHostKeyChecking=no \
+        fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar \
+        ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/fin_the_pen-0.0.1-SNAPSHOT.jar
     
     # - name: start springboot    
     

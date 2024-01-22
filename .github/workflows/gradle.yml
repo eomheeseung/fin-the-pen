@@ -60,7 +60,7 @@ jobs:
           echo "$remote_jar"; echo "$local_jar";
 
           if ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "[ -f $remote_jar ]"; then
-            echo "no";
+            ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "rm $remote_jar";
           fi
             echo "yes"
     

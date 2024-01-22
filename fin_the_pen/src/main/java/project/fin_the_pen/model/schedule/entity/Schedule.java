@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
-import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -100,6 +99,7 @@ public class Schedule {
 
     /**
      * update method
+     *
      * @param dto
      * @param startDate
      * @param endDate

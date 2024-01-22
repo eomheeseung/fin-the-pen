@@ -3,7 +3,6 @@ package project.fin_the_pen.model.report.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.Value;
 
 @Data
 public class ExpenditureRequestDTO {
@@ -14,4 +13,8 @@ public class ExpenditureRequestDTO {
     @JsonProperty(value = "user_id")
     @Schema(example = "test1234", description = "현재 로그인되어 있는 사용자 id")
     private String userId;
+
+    @JsonProperty(value = "date")
+    @Schema(example = "2024-10", description = "지출 목표액이 설정된 달")
+    private String date;
 }

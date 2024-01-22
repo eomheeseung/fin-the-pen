@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
+import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,4 +51,18 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("select s from Schedule s where s.eventName = :eventName and s.userId = :userId")
     List<Schedule> findByEventName(@Param("eventName") String eventName, @Param("eventName") String userId);
+
+    /**
+     * TODO
+     *   priceType이 entity에서 어떤 타입인지
+     *   1. priceType의 sort number(long)인지, 단순 enum type인지
+     *   2. stiring
+     *
+     * @param date
+     * @param userId
+     * @param priceType
+     * @return
+     */
+    @Query("select s.amount from Schedule s where  TO_DATE(s.startDate, 'yyyy-MM-dd') <= TO_DATE(:date) and s.userId = :userId and s.priceType = :priceType")
+    List<String> findByAmount(@Param("date") String date, @Param("userId") String userId, @Param("priceType") PriceType priceType);
 }

@@ -2,7 +2,6 @@ package project.fin_the_pen.model.report.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -21,4 +20,7 @@ public class Reports {
 
     @Column(name = "amount")
     private String amount;
+
+    @Column(name = "date")
+    private String date;
 }

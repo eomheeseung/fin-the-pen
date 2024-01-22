@@ -58,11 +58,13 @@ jobs:
           remote_path="/home/ec2-user/test";
           remote_jar="${remote_path}";
           ls -al;
+          ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }};
+          ls -al;
           
-          if "[ -f $remote_jar ]"; then
-            echo "없어";
-          fi
-            echo "들어오긴함";
+          # if "[ -f $remote_jar ]"; then
+          #   echo "없어";
+          # fi
+          #   echo "들어오긴함";
     
         
           

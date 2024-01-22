@@ -46,34 +46,33 @@ jobs:
           remote_path="/home/ec2-user/app";
           remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar";
           if [ -f $remote_jar ]; then
-            echo "if일걸";
             rm $remote_jar;
-            ls -al
+            ls -al;
           fi
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         port: 22
         privateKey: ${{ secrets.EC2_SSH_KEY }}
         
-    - name: CD to EC2 instance    
-      run: |
-        echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-        chmod 600 private_key.pem
-        scp -i private_key.pem \
-        -o StrictHostKeyChecking=no \
-        fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar \
-        ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/app/fin_the_pen-0.0.1-SNAPSHOT.jar
+    # - name: CD to EC2 instance    
+    #   run: |
+    #     echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+    #     chmod 600 private_key.pem
+    #     scp -i private_key.pem \
+    #     -o StrictHostKeyChecking=no \
+    #     fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar \
+    #     ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/app/fin_the_pen-0.0.1-SNAPSHOT.jar
     
-    - name: Start finthepen-api
-      uses: tiyee/action-ssh@v1.0.1
-      with:
-        command: |
-          systemctl restart finthepen-api;
-          systemctl status finthepen-api
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        port: 22
-        privateKey: ${{ secrets.EC2_SSH_KEY }}    
+    # - name: Start finthepen-api
+    #   uses: tiyee/action-ssh@v1.0.1
+    #   with:
+    #     command: |
+    #       systemctl restart finthepen-api;
+    #       systemctl status finthepen-api
+    #     host: ${{ secrets.EC2_HOST }}
+    #     username: ${{ secrets.EC2_USERNAME }}
+    #     port: 22
+    #     privateKey: ${{ secrets.EC2_SSH_KEY }}    
     
         
     

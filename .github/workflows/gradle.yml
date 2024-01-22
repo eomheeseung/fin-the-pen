@@ -49,10 +49,10 @@ jobs:
     - name: CD to Ec2 instance
       uses: tiyee/action-ssh@v1.0.1
       with:
-        host: ${{ secrets.EC2_HOST}}
-        username: ${{ secrets.EC2_USERNAME}}
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
         port: 22
-        privateKey: ${{ secrets.EC2_SSH_KEY}}
+        privateKey: ${{ secrets.EC2_SSH_KEY }}
         command: |
           # Set variables
           local_jar="fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar"
@@ -62,9 +62,10 @@ jobs:
           # Check if the file exists on the server
           if ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "[ -f $remote_jar ]"; then
             # If it exists, remove it
-            ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "rm $remote_jar"
-          fi
-          # Copy JAR file to EC2
-          scp -i ${{ secrets.EC2_SSH_KEY }} $local_jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$remote_path
+            # ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "rm $remote_jar"
+          # fi
+          # # Copy JAR file to EC2
+          echo "$remote_jar"; echo "$local_jar
+          # scp -i ${{ secrets.EC2_SSH_KEY }} $local_jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$remote_path
           
       

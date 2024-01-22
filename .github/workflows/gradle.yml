@@ -38,20 +38,12 @@ jobs:
     - name: Find jar file
       run: cd fin_the_pen/build/libs; ls -al
 
-    # - name: Copy JAR to EC2
-    #   run: |
-    #     scp -i ${{ secrets.EC2_SSH_KEY }} \
-    #           -o StrictHostKeyChecking=no \
-    #           fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar \
-    #           ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ec2-user/test
-
-
     - name: Search EC2 jar file and Delete
       uses: tiyee/action-ssh@v1.0.1
       with:
         command: |
           local_jar="fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar";
-          remote_path="/home/ec2-user/test";
+          remote_path="/home/ec2-user/app";
           remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar";
           if [ -f $remote_jar ]; then
             echo "if일걸";
@@ -70,9 +62,17 @@ jobs:
         scp -i private_key.pem \
         -o StrictHostKeyChecking=no \
         fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar \
-        ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/test/fin_the_pen-0.0.1-SNAPSHOT.jar
+        ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/app/fin_the_pen-0.0.1-SNAPSHOT.jar
     
-    # - name: start springboot    
+    - name: Start finthepen-api
+      uses: tiyee/action-ssh@v1.0.1
+      with:
+        command: |
+          systemctl restart finthepen-api
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        port: 22
+        privateKey: ${{ secrets.EC2_SSH_KEY }}    
     
         
     

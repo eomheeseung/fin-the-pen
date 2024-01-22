@@ -55,8 +55,9 @@ jobs:
           remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar";
           if [ -f $remote_jar ]; then
             rm $remote_jar;
+          else
+            echo "else일걸"
           fi 
-            echo "test";
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         port: 22

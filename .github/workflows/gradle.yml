@@ -68,7 +68,8 @@ jobs:
       uses: tiyee/action-ssh@v1.0.1
       with:
         command: |
-          systemctl restart finthepen-api
+          systemctl restart finthepen-api;
+          systemctl status finthepen-api
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         port: 22

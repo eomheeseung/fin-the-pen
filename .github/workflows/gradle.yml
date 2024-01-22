@@ -40,10 +40,12 @@ jobs:
     - name: test Binding
       run: echo "${{ secrets.EC2_HOST}}"; echo "${{ secrets.EC2_USERNAME}}"; echo "${{ secrets.EC2_SSH_KEY}}"
 
-    # - name: CD to Ec2 instance
-    #   uses: tiyee/action-ssh@v1.0.1
-    #   with:
-    #     host: ec2-43-202-60-242.ap-northeast-2.compute.amazonaws.com
-    #     username: ec2-user
-    #     prot: 22
+    - name: CD to Ec2 instance
+      uses: tiyee/action-ssh@v1.0.1
+      with:
+        command: ls -al
+        host: ${{ secrets.EC2_HOST}}
+        username: ${{ secrets.EC2_USERNAME}}
+        port: 22
+        privateKey: ${{ secrets.EC2_SSH_KEY}}
       

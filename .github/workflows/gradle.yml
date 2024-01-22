@@ -33,19 +33,38 @@ jobs:
       run: chmod +x fin_the_pen/gradlew
       
     - name: Build with Gradle
-      run: cd fin_the_pen; ls -al; ./gradlew clean bootjar -x test -Pprofile=prod
+      run: cd fin_the_pen; ./gradlew clean bootjar -x test -Pprofile=prod
+      
     - name: Find jar file
       run: cd fin_the_pen/build/libs; ls -al
 
-    - name: test Binding
-      run: echo "${{ secrets.EC2_HOST}}"; echo "${{ secrets.EC2_USERNAME}}"; echo "${{ secrets.EC2_SSH_KEY}}"
+    # - name: Copy JAR to EC2
+    #   run: |
+    #     scp -i ${{ secrets.EC2_SSH_KEY }} \
+    #           -o StrictHostKeyChecking=no \
+    #           fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar \
+    #           ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ec2-user/test
+
 
     - name: CD to Ec2 instance
       uses: tiyee/action-ssh@v1.0.1
       with:
-        command: ls -al
         host: ${{ secrets.EC2_HOST}}
         username: ${{ secrets.EC2_USERNAME}}
         port: 22
         privateKey: ${{ secrets.EC2_SSH_KEY}}
+        script: |
+          # Set variables
+          local_jar="fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar"
+          remote_path="/home/ec2-user/test"
+          remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar"
+
+          # Check if the file exists on the server
+          if ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "[ -f $remote_jar ]"; then
+            # If it exists, remove it
+            ssh -i ${{ secrets.EC2_SSH_KEY }} ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "rm $remote_jar"
+          fi
+          # Copy JAR file to EC2
+          scp -i ${{ secrets.EC2_SSH_KEY }} $local_jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:$remote_path
+          
       

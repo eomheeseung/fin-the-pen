@@ -37,10 +37,13 @@ jobs:
     - name: Find jar file
       run: cd fin_the_pen/build/libs; ls -al
 
-    - name: CD to Ec2 instance
-      uses: tiyee/action-ssh@v1.0.1
-      with:
-        host: ec2-43-202-60-242.ap-northeast-2.compute.amazonaws.com
-        username: ec2-user
-        prot: 22
+    - name: test Binding
+      run: echo "${{ secrets.EC2_HOST}}"; echo "${{ secrets.EC2_USERNAME}}"; echo "${{ secrets.EC2_SSH_KEY}}"
+
+    # - name: CD to Ec2 instance
+    #   uses: tiyee/action-ssh@v1.0.1
+    #   with:
+    #     host: ec2-43-202-60-242.ap-northeast-2.compute.amazonaws.com
+    #     username: ec2-user
+    #     prot: 22
       

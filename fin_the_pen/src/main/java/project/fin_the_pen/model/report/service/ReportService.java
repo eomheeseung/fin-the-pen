@@ -13,7 +13,10 @@ import project.fin_the_pen.model.report.dto.ExpenditureRequestDTO;
 import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.entity.Reports;
 import project.fin_the_pen.model.report.repository.ReportRepository;
+import project.fin_the_pen.model.schedule.dto.TypeManageDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
+import project.fin_the_pen.model.schedule.entity.type.NoneType;
+import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -21,6 +24,8 @@ import project.fin_the_pen.model.usersToken.entity.UsersToken;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -32,7 +37,7 @@ public class ReportService {
     private final ScheduleRepository scheduleRepository;
     private final ReportRepository reportRepository;
     private final CRUDScheduleRepository crudScheduleRepository;
-
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     public HashMap<Object, Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {
@@ -66,19 +71,82 @@ public class ReportService {
             StringBuilder buffer = new StringBuilder(date);
             String parsingDate = buffer.substring(0, 7);
             String goalAmount = reportRepository.findByAmountAndUserIdAndDate(parsingDate, dto.getUserId());
-            responseMap.put("expenseGoalAmount", goalAmount);
+
+            if (goalAmount == null) {
+                HashMap<Object, Object> expenditureMap = new HashMap<>();
+                expenditureMap.put("goal_amount", false);
+
+            } else {
+                responseMap.put("expenseGoalAmount", goalAmount);
+
+                // 4번
+                int availableAmount = Integer.parseInt(goalAmount) - amountSum;
+                responseMap.put("availableAmount", availableAmount);
+
+                // 6번
+                HashMap<Object, Object> expenditureMap = new HashMap<>();
+                expenditureMap.put("goal_amount", goalAmount);
+
+                // 6-1 이번 달 1일부터 금일까지 사용한 금액 (보라색) : 사용한 금액
+                String dtoDate = dto.getDate();
+                LocalDate parseStartDate = LocalDate.parse(dtoDate, formatter).withDayOfMonth(1);
 
 
-            // 4번
-            int availableAmount = Integer.parseInt(goalAmount) - amountSum;
-            responseMap.put("availableAmount", availableAmount);
+                List<String> byAmount1stMonth = crudScheduleRepository.findByAmountMonth(dto.getUserId(), PriceType.Minus, parseStartDate.toString(), dto.getDate());
+                int amount1stMonthSum = byAmount1stMonth.stream().mapToInt(Integer::parseInt).sum();
+                expenditureMap.put("1st_month_Amount", amount1stMonthSum);
+
+                // 6-2 이번달 금일 이후, 금월 지출 예정 금액 (핑크색) : 지출 예정
+                LocalDate stDate = LocalDate.parse(dto.getDate(), formatter).plusDays(1);
+                LocalDate endDate = stDate.withDayOfMonth(stDate.lengthOfMonth());
+
+                List<String> byAmountLastMonth = crudScheduleRepository.findByAmountMonth(dto.getUserId(), PriceType.Minus, stDate.toString(), endDate.toString());
+                int amountLastMonthSum = byAmountLastMonth.stream().mapToInt(Integer::parseInt).sum();
+                expenditureMap.put("last_month_Amount", amountLastMonthSum);
+
+                // 6-3 이번 달 사용 가능 금액 (지출 목표액 - 이번달 금일까지 사용한 총합) (하늘색) : 사용가능 금액
+                int resultSum = Integer.parseInt(goalAmount) - amount1stMonthSum;
+
+                expenditureMap.put("result_amount", resultSum);
+
+
+                responseMap.put("expenditure_this_month", expenditureMap);
+            }
 
             // 5번
             List<ConsumeReportResponseDTO> consumeList = consumeReportInquiry(dto.getUserId(), date, responseMap);
 
-            responseMap.put("consumeReport", consumeList);
+            responseMap.put("category_consume_report", consumeList);
 
-            // TODO 6번 notion 보고...
+            // 7번
+            String dtoDate = dto.getDate();
+            LocalDate parseCurrentDate = LocalDate.parse(dtoDate, formatter);
+
+            LocalDate parseBeforeDate = parseCurrentDate.minusMonths(1);
+            LocalDate beforeStartDate = parseBeforeDate.withDayOfMonth(1);
+            LocalDate beforeEndDate = parseBeforeDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
+
+
+            /**
+             * typeManage를 넣어야 함.
+             */
+            List<String> beforePlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, , beforeStartDate.toString(), beforeEndDate.toString());
+            int beforePlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+
+            List<String> beforeMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, beforeStartDate.toString(), beforeEndDate.toString());
+            int beforeMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+
+            LocalDate currentStartDate = parseCurrentDate.withDayOfMonth(1);
+            LocalDate currentEndDate = parseCurrentDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
+
+            List<String> currentPlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, currentStartDate.toString(), currentEndDate.toString());
+            int currentPlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+
+            List<String> currentMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, currentStartDate.toString(), currentEndDate.toString());
+            int currentMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+
+
+
 
             return responseMap;
         } catch (RuntimeException e) {

@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.util.List;
@@ -68,10 +67,10 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
     List<String> findByAmount(@Param("date") String date, @Param("userId") String userId, @Param("priceType") PriceType priceType);
 
 
-    @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :PriceType and s.startDate between :stDay and :date")
-    List<String> findByAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("1stDay") String startDate,@Param("date") String endDate);
+    @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :priceType and s.startDate between :startDate and :endDate")
+    List<String> findByAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("startDate") String startDate,@Param("endDate") String endDate);
 
 
-    @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :PriceType and s.startDate between :stDay and :date")
-    List<String> findByFixedAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("type") TypeManage typeManage, @Param("1stDay") String startDate, @Param("date") String endDate);
+//    @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :PriceType and s.startDate between :stDay and :date")
+//    List<String> findByFixedAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("type") TypeManage typeManage, @Param("1stDay") String startDate, @Param("date") String endDate);
 }

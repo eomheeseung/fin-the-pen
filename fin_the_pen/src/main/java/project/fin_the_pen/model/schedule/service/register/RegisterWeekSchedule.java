@@ -3,11 +3,12 @@ package project.fin_the_pen.model.schedule.service.register;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
+import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
-import project.fin_the_pen.model.schedule.entity.type.week.WeekType;
+import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
+import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
@@ -21,8 +22,12 @@ import java.util.StringTokenizer;
 @Component
 @Slf4j
 public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXXXFunc {
-    public RegisterWeekSchedule(CRUDScheduleRepository crudScheduleRepository) {
+    private final ReportRepository reportRepository;
+
+    public RegisterWeekSchedule(CRUDScheduleRepository crudScheduleRepository,
+                                ReportRepository reportRepository) {
         super(crudScheduleRepository);
+        this.reportRepository = reportRepository;
     }
 
     @Override
@@ -61,14 +66,8 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                             log.info("이동하는 요일: {}", targetDay);
                             log.info("일자: {}", currentDate);
 
-                            WeekType bindingWeekType = new WeekType();
-                            bindingWeekType.setDayOfWeek(currentDate.getDayOfWeek().toString());
-                            bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
-
-                            TypeManage typeManage =
-                                    TypeManage.builder()
-                                            .weekType(bindingWeekType)
-                                            .build();
+                            weekOptions weekOptions =
+                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getValue(), currentDate.getDayOfWeek().toString());
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -79,7 +78,11 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .startTime(dto.getStartTime())
                                     .endTime(dto.getEndTime())
                                     .isAllDay(dto.isAllDay())
-                                    .repeat(typeManage)
+                                    .repeatKind(RepeatKind.WEEK.toString())
+                                    .repeatOptions(UnitedType.builder()
+                                            .value(dto.getRepeat().getDayTypeVO().getValue())
+                                            .options(currentDate.getDayOfWeek().toString())
+                                            .build())
                                     .isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
                                     .amount(dto.getAmount())
@@ -98,7 +101,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .build();
 
                             super.getCrudScheduleRepository().save(schedule);
-                            log.info("저장된 요일: {}", schedule.getRepeat().getWeekType().getDayOfWeek());
+                            log.info("저장된 요일: {}", schedule.getRepeatOptions());
 
                             // java에서 한주의 끝은 SUN, 한주의 시작은 MON
                             if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
@@ -127,14 +130,8 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                             log.info("이동하는 요일: {}", targetDay);
                             log.info("일자: {}", currentDate);
 
-                            WeekType bindingWeekType = new WeekType();
-                            bindingWeekType.setDayOfWeek(currentDate.getDayOfWeek().toString());
-                            bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
-
-                            TypeManage typeManage =
-                                    TypeManage.builder()
-                                            .weekType(bindingWeekType)
-                                            .build();
+                            weekOptions weekOptions =
+                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getValue(), currentDate.getDayOfWeek().toString());
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -145,7 +142,11 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .startTime(dto.getStartTime())
                                     .endTime(dto.getEndTime())
                                     .isAllDay(dto.isAllDay())
-                                    .repeat(typeManage)
+                                    .repeatKind(RepeatKind.WEEK.name())
+                                    .repeatOptions(UnitedType.builder()
+                                            .value(dto.getRepeat().getDayTypeVO().getValue())
+                                            .options(currentDate.getDayOfWeek().toString())
+                                            .build())
                                     .isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
                                     .amount(dto.getAmount())
@@ -188,14 +189,8 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                             log.info("이동하는 요일: {}", targetDay);
                             log.info("일자: {}", currentDate);
 
-                            WeekType bindingWeekType = new WeekType();
-                            bindingWeekType.setDayOfWeek(currentDate.getDayOfWeek().toString());
-                            bindingWeekType.setValue(dto.getRepeat().getWeekTypeVO().getValue());
-
-                            TypeManage typeManage =
-                                    TypeManage.builder()
-                                            .weekType(bindingWeekType)
-                                            .build();
+                            weekOptions weekOptions =
+                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getValue(), currentDate.getDayOfWeek().toString());
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -206,7 +201,11 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .startTime(dto.getStartTime())
                                     .endTime(dto.getEndTime())
                                     .isAllDay(dto.isAllDay())
-                                    .repeat(typeManage)
+                                    .repeatKind(RepeatKind.WEEK.name())
+                                    .repeatOptions(UnitedType.builder()
+                                            .value(dto.getRepeat().getDayTypeVO().getValue())
+                                            .options(currentDate.getDayOfWeek().toString())
+                                            .build())
                                     .isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
                                     .amount(dto.getAmount())
@@ -246,4 +245,16 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
         }
         return true;
     }
+
+
+    private class weekOptions {
+        private String value;
+        private String dayOfWeek;
+
+        public weekOptions(String value, String dayOfWeek) {
+            this.value = value;
+            this.dayOfWeek = dayOfWeek;
+        }
+    }
+
 }

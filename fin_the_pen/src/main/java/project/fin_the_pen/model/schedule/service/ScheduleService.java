@@ -212,7 +212,7 @@ public class ScheduleService {
                             }
                         }
                         break;
-                    case "exceptNow":
+                    case "exceptNowAfter":
                         if (repeat.getKindType().equals("day")) {
                             if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
                                 isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));

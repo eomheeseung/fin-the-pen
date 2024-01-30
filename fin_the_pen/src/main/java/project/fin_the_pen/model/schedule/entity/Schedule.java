@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
+import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import javax.persistence.*;
@@ -55,9 +55,14 @@ public class Schedule {
     private boolean isAllDay;
 
     // 반복
-    @Column(name = "repeat")
+    @Column(name = "repeat_kind")
+    private String repeatKind;
+
+    @Column(name = "repeat_options")
     @Embedded
-    private TypeManage repeat;
+    private UnitedType repeatOptions;
+    /*@Embedded
+    private TypeManage repeat;*/
 
     // 반복 기간
     @Column(name = "period")
@@ -79,7 +84,7 @@ public class Schedule {
     private String importance;
 
     // 자산 설정
-    @Column(name = "set_amount")
+    @Column(name = "amount")
     private String amount;
 
     // 금액 고정
@@ -103,12 +108,11 @@ public class Schedule {
      * @param dto
      * @param startDate
      * @param endDate
-     * @param typeManage
      * @param period
      * @param priceType
      */
     public void updateFrom(ModifyScheduleDTO dto, String startDate, String endDate,
-                           TypeManage typeManage, PeriodType period, PriceType priceType) {
+                           String repeatKind, UnitedType repeatOptions, PeriodType period, PriceType priceType) {
         this.eventName = dto.getEventName();
         this.category = dto.getCategory();
         this.startDate = startDate;
@@ -116,7 +120,9 @@ public class Schedule {
         this.startTime = dto.getStartTime();
         this.endTime = dto.getEndTime();
         this.isAllDay = dto.isAllDay();
-        this.repeat = typeManage;
+        this.repeatKind = repeatKind;
+        this.repeatOptions = repeatOptions;
+        this.priceType = priceType;
         this.period = period;
         this.priceType = dto.getPriceType();
         this.isExclude = dto.isExclude();

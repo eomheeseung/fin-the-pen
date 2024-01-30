@@ -5,8 +5,8 @@ import project.fin_the_pen.finClient.core.error.customException.DuplicatedSchedu
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
-import project.fin_the_pen.model.schedule.entity.type.day.DayType;
+import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
+import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
@@ -26,12 +26,6 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
-                DayType bindingDayType = new DayType();
-                bindingDayType.setValue(dto.getRepeat().getDayTypeVO().getValue());
-
-                TypeManage typeManage = TypeManage.builder()
-                        .dayType(bindingDayType)
-                        .build();
 
                 int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getValue());
                 LocalDate currentDate = formatDate(dto.getStartDate());
@@ -47,7 +41,8 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                 .startTime(dto.getStartTime())
                                 .endTime(dto.getEndTime())
                                 .isAllDay(dto.isAllDay())
-                                .repeat(typeManage)
+                                .repeatKind(RepeatKind.DAY.toString())
+                                .repeatOptions(UnitedType.builder().value(dto.getRepeat().getDayTypeVO().getValue()).build())
                                 .isExclude(dto.isExclude())
                                 .importance(dto.getImportance())
                                 .amount(dto.getAmount())
@@ -83,7 +78,8 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                 .startTime(dto.getStartTime())
                                 .endTime(dto.getEndTime())
                                 .isAllDay(dto.isAllDay())
-                                .repeat(typeManage)
+                                .repeatKind(RepeatKind.DAY.toString())
+                                .repeatOptions(UnitedType.builder().value(dto.getRepeat().getDayTypeVO().getValue()).build())
                                 .isExclude(dto.isExclude())
                                 .importance(dto.getImportance())
                                 .amount(dto.getAmount())
@@ -118,7 +114,8 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                 .startTime(dto.getStartTime())
                                 .endTime(dto.getEndTime())
                                 .isAllDay(dto.isAllDay())
-                                .repeat(typeManage)
+                                .repeatKind(RepeatKind.DAY.toString())
+                                .repeatOptions(UnitedType.builder().value(dto.getRepeat().getDayTypeVO().getValue()).build())
                                 .isExclude(dto.isExclude())
                                 .importance(dto.getImportance())
                                 .amount(dto.getAmount())

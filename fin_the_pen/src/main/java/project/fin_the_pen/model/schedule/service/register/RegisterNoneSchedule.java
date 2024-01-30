@@ -1,25 +1,21 @@
 package project.fin_the_pen.model.schedule.service.register;
 
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.type.NoneType;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
+import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
+import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
-import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
-import java.util.List;
-
 @Component
-public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXXXFunc{
+public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXXXFunc {
     public RegisterNoneSchedule(CRUDScheduleRepository crudScheduleRepository) {
         super(crudScheduleRepository);
     }
+
     /**
      * 반복이 아닐 때 (단일일정)
      *
@@ -34,12 +30,6 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
-                NoneType noneType = new NoneType();
-                noneType.setValue("none");
-
-                TypeManage typeManage = TypeManage.builder()
-                        .noneType(noneType)
-                        .build();
 
                 Schedule schedule = Schedule.builder()
                         .userId(dto.getUserId())
@@ -50,7 +40,10 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
                         .startTime(dto.getStartTime())
                         .endTime(dto.getEndTime())
                         .isAllDay(dto.isAllDay())
-                        .repeat(typeManage)
+                        .repeatKind(RepeatKind.NONE.toString())
+                        .repeatOptions(UnitedType.builder().value("0")
+                                .build()
+                        )
                         .isExclude(dto.isExclude())
                         .importance(dto.getImportance())
                         .amount(dto.getAmount())

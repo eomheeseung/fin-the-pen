@@ -6,8 +6,8 @@ import project.fin_the_pen.finClient.core.error.customException.DuplicatedSchedu
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
-import project.fin_the_pen.model.schedule.entity.type.month.MonthType;
+import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
+import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
@@ -54,14 +54,14 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                         log.info("현재 월에서의 날짜: {}", dayOfMonth);
 
                         if (dates.contains(dayOfMonth)) {
-                            MonthType bindingMonthType = new MonthType();
+                            /*MonthType bindingMonthType = new MonthType();
                             bindingMonthType.setMonthValue(dto.getRepeat().getMonthTypeVO().getValue());
 
-                            log.info("*중요 save date: {}", currentDate);
                             TypeManage typeManage = TypeManage
                                     .builder()
                                     .monthType(bindingMonthType)
-                                    .build();
+                                    .build();*/
+                            log.info("*중요 save date: {}", currentDate);
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -72,7 +72,8 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                                     .startTime(dto.getStartTime())
                                     .endTime(dto.getEndTime())
                                     .isAllDay(dto.isAllDay())
-                                    .repeat(typeManage)
+                                    .repeatKind(RepeatKind.MONTH.name())
+                                    .repeatOptions(UnitedType.builder().value(dto.getRepeat().getMonthTypeVO().getValue()).build())
                                     .isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
                                     .amount(dto.getAmount())
@@ -131,15 +132,6 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                         log.info("현재 월에서의 날짜: {}", dayOfMonth);
 
                         if (dates.contains(dayOfMonth)) {
-                            MonthType bindingMonthType = new MonthType();
-                            bindingMonthType.setMonthValue(dto.getRepeat().getMonthTypeVO().getValue());
-
-                            log.info("*중요 save date: {}", currentDate);
-                            TypeManage typeManage = TypeManage
-                                    .builder()
-                                    .monthType(bindingMonthType)
-                                    .build();
-
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
                                     .eventName(dto.getEventName())
@@ -149,7 +141,8 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                                     .startTime(dto.getStartTime())
                                     .endTime(dto.getEndTime())
                                     .isAllDay(dto.isAllDay())
-                                    .repeat(typeManage)
+                                    .repeatKind(RepeatKind.MONTH.name())
+                                    .repeatOptions(UnitedType.builder().value(dto.getRepeat().getMonthTypeVO().getValue()).build())
                                     .isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
                                     .amount(dto.getAmount())
@@ -204,14 +197,6 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                         log.info("현재 월에서의 날짜: {}", dayOfMonth);
 
                         if (dates.contains(dayOfMonth)) {
-                            MonthType bindingMonthType = new MonthType();
-                            bindingMonthType.setMonthValue(dto.getRepeat().getMonthTypeVO().getValue());
-
-                            log.info("*중요 save date: {}", currentDate);
-                            TypeManage typeManage = TypeManage
-                                    .builder()
-                                    .monthType(bindingMonthType)
-                                    .build();
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -222,7 +207,8 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                                     .startTime(dto.getStartTime())
                                     .endTime(dto.getEndTime())
                                     .isAllDay(dto.isAllDay())
-                                    .repeat(typeManage)
+                                    .repeatKind(RepeatKind.MONTH.name())
+                                    .repeatOptions(UnitedType.builder().value(dto.getRepeat().getMonthTypeVO().getValue()).build())
                                     .isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
                                     .amount(dto.getAmount())

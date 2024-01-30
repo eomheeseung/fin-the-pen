@@ -13,10 +13,7 @@ import project.fin_the_pen.model.report.dto.ExpenditureRequestDTO;
 import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.entity.Reports;
 import project.fin_the_pen.model.report.repository.ReportRepository;
-import project.fin_the_pen.model.schedule.dto.TypeManageDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.type.NoneType;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
 import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -128,22 +125,25 @@ public class ReportService {
 
 
             /**
-             * typeManage를 넣어야 함.
+             * TODO
+             *  typeManage를 넣어야 함.
+             *  notice
+             *   enum타입으로 바인딩한 것을 가져오면 됨.
              */
-            List<String> beforePlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, , beforeStartDate.toString(), beforeEndDate.toString());
-            int beforePlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-
-            List<String> beforeMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, beforeStartDate.toString(), beforeEndDate.toString());
-            int beforeMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-
-            LocalDate currentStartDate = parseCurrentDate.withDayOfMonth(1);
-            LocalDate currentEndDate = parseCurrentDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
-
-            List<String> currentPlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, currentStartDate.toString(), currentEndDate.toString());
-            int currentPlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-
-            List<String> currentMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, currentStartDate.toString(), currentEndDate.toString());
-            int currentMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+//            List<String> beforePlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, , beforeStartDate.toString(), beforeEndDate.toString());
+//            int beforePlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+//
+//            List<String> beforeMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, beforeStartDate.toString(), beforeEndDate.toString());
+//            int beforeMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+//
+//            LocalDate currentStartDate = parseCurrentDate.withDayOfMonth(1);
+//            LocalDate currentEndDate = parseCurrentDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
+//
+//            List<String> currentPlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, currentStartDate.toString(), currentEndDate.toString());
+//            int currentPlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+//
+//            List<String> currentMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, currentStartDate.toString(), currentEndDate.toString());
+//            int currentMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
 
 
 

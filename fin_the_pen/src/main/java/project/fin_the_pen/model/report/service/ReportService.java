@@ -14,6 +14,7 @@ import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.entity.Reports;
 import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
+import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -122,29 +123,32 @@ public class ReportService {
             LocalDate beforeStartDate = parseBeforeDate.withDayOfMonth(1);
             LocalDate beforeEndDate = parseBeforeDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
 
+            List<String> beforePlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus.getSortNum() , RepeatKind.MONTH, beforeStartDate.toString(), beforeEndDate.toString());
+            int beforePlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
 
-            /**
-             * TODO
-             *  typeManage를 넣어야 함.
-             *  notice
-             *   enum타입으로 바인딩한 것을 가져오면 됨.
-             */
-//            List<String> beforePlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, , beforeStartDate.toString(), beforeEndDate.toString());
-//            int beforePlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-//
-//            List<String> beforeMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, beforeStartDate.toString(), beforeEndDate.toString());
-//            int beforeMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-//
-//            LocalDate currentStartDate = parseCurrentDate.withDayOfMonth(1);
-//            LocalDate currentEndDate = parseCurrentDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
-//
-//            List<String> currentPlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, currentStartDate.toString(), currentEndDate.toString());
-//            int currentPlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-//
-//            List<String> currentMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, currentStartDate.toString(), currentEndDate.toString());
-//            int currentMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+            List<String> beforeMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus.getSortNum() , RepeatKind.MONTH, beforeStartDate.toString(), beforeEndDate.toString());
+            int beforeMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
 
+            LocalDate currentStartDate = parseCurrentDate.withDayOfMonth(1);
+            LocalDate currentEndDate = parseCurrentDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
 
+            List<String> currentPlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus.getSortNum(), RepeatKind.MONTH, currentStartDate.toString(), currentEndDate.toString());
+            int currentPlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+
+            List<String> currentMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus.getSortNum(), RepeatKind.MONTH, currentStartDate.toString(), currentEndDate.toString());
+            int currentMinusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
+
+            HashMap<Object, Object> fixedMap = new HashMap<>();
+            String previousDate = parseCurrentDate.minusMonths(1).toString();
+
+            fixedMap.put("current_month", dtoDate);
+            fixedMap.put("previous_month", previousDate);
+            fixedMap.put("fixed_deposit", currentPlusSum);
+            fixedMap.put("previous_diff_plus", currentPlusSum - beforePlusSum);
+            fixedMap.put("fixed_withdraw", currentMinusSum);
+            fixedMap.put("previous_diff_minus", currentMinusSum - beforeMinusSum);
+
+            //8번
 
 
             return responseMap;

@@ -36,7 +36,6 @@ public class ReportService {
     private final CRUDScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-
     public HashMap<Object, Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {
         String accessToken = tokenManager.parseBearerToken(request);
 

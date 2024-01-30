@@ -85,13 +85,14 @@ public class ScheduleRepository {
     TODO test, query할때 userId도 같이 넘겨서 @Param에 넣어야 할 것 같음. 아니면 stream filter를 사용하던가.
         @Query("SELECT s FROM Schedule s WHERE TO_DATE(s.startDate, 'yyyy-MM-dd') > TO_DATE(:targetDate, 'yyyy-MM-dd') and s.eventName = :eventName")
         에서 and userId와 같이...
-
      */
 
     /**
      * 현재부터 이 이후의 일정들
      * 1. week의 경우
      * => 1.21일이 저장하려는 요일의 조건에 해당되지 않은 경우 1.21은 삭제됨
+     * <p>
+     * repeatType에는 day, week, month, year이 들어옴.
      *
      * @param dto
      * @return
@@ -102,19 +103,29 @@ public class ScheduleRepository {
 
         if (findModifySchedule.isPresent()) {
             String targetDate = findModifySchedule.get().getStartDate();
-            List<Schedule> entities = crudScheduleRepository.findByAllDayNowAfter(targetDate, dto.getEventName());
+            log.info("삭제할 시점의 date:{}", targetDate);
+            List<Schedule> entities = crudScheduleRepository.findByAllDayNowAfter(targetDate, findModifySchedule.get().getEventName());
 
-            log.info("schedule Id와 매핑된 날짜:{}", targetDate);
+            log.info("DB에서 가져온 id:{}", dto.getScheduleId());
             log.info("수정할 list 사이즈:{}", entities.size());
 
-            if (repeatType.equals("day")) {
-                modifyDaySchedule.modifySchedule(dto, targetDate, entities);
-            } else if (repeatType.equals("week")) {
-                modifyWeekSchedule.modifySchedule(dto, entities);
-            } else if (repeatType.equals("month")) {
-                modifyMonthSchedule.modifySchedule(dto, entities);
-            } else if (repeatType.equals("year")) {
-                modifyYearSchedule.modifySchedule(dto, entities);
+            crudScheduleRepository.deleteAll(entities);
+
+            log.info("수정된 list 사이즈:{}", entities.size());
+
+            switch (repeatType) {
+                case "day":
+                    modifyDaySchedule.modifySchedule(dto, entities);
+                    break;
+                case "week":
+                    modifyWeekSchedule.modifySchedule(dto, entities);
+                    break;
+                case "month":
+                    modifyMonthSchedule.modifySchedule(dto, entities);
+                    break;
+                case "year":
+                    modifyYearSchedule.modifySchedule(dto, entities);
+                    break;
             }
         }
         return true;
@@ -137,7 +148,7 @@ public class ScheduleRepository {
             log.info("수정할 list 사이즈:{}", entities.size());
 
             if (repeatType.equals("day")) {
-                modifyDaySchedule.modifySchedule(dto, targetDate, entities);
+                modifyDaySchedule.modifySchedule(dto, entities);
             } else if (repeatType.equals("week")) {
                 modifyWeekSchedule.modifySchedule(dto, entities);
             } else if (repeatType.equals("month")) {
@@ -159,7 +170,7 @@ public class ScheduleRepository {
             log.info("수정할 list 사이즈:{}", entities.size());
 
             if (repeatType.equals("day")) {
-                modifyDaySchedule.modifySchedule(dto, targetDate, entities);
+                modifyDaySchedule.modifySchedule(dto, entities);
             } else if (repeatType.equals("week")) {
                 modifyWeekSchedule.modifySchedule(dto, entities);
             } else if (repeatType.equals("month")) {

@@ -40,13 +40,8 @@ public class ScheduleController {
      * @return
      */
     @PostMapping(value = "/createSchedule", produces = "application/json")
-    @Operation(description = "일정을 등록하는 API입니다.  " +
-            "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 <br>" +
-            "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" +
-            "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>",
-            summary = "일정등록 (O)")
-    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto,
-                                                   HttpServletRequest request) {
+    @Operation(description = "일정을 등록하는 API입니다.  " + "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 <br>" + "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" + "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>", summary = "일정등록 (O)")
+    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto, HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
 
@@ -72,8 +67,7 @@ public class ScheduleController {
      * @return
      */
     @PostMapping(value = "/getAllSchedules", produces = "application/json")
-    @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.",
-            summary = "모든 일정 조회 (O)")
+    @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.", summary = "모든 일정 조회 (O)")
     public ResponseEntity<Object> findAllSchedule(@RequestBody FindAllScheduleVO findAllScheduleVO, HttpServletRequest request) {
         try {
             Map<String, Object> responseMap = scheduleService.findAllSchedule(findAllScheduleVO.getUserId(), request);
@@ -85,15 +79,13 @@ public class ScheduleController {
     }
 
     @PostMapping("/getMonthSchedules")
-    @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.",
-            summary = "월별 조회 (O)")
+    @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.", summary = "월별 조회 (O)")
     public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
         if (findCertainMonthVO.getDate() == null) {
             return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
         }
 
-        Map<String, Object> responseMap =
-                scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
+        Map<String, Object> responseMap = scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
 
         return convertResponse.getResponseEntity(responseMap);
     }
@@ -101,19 +93,15 @@ public class ScheduleController {
     @PostMapping("/getMonthSchedules/section")
     public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
-        Map<String, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"),
-                map.get("endDate"),
-                map.get("user_id"));
+        Map<String, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"), map.get("endDate"), map.get("user_id"));
 
         return convertResponse.getResponseEntity(responseMap);
     }
 
     @PostMapping("/findCategory")
     @Operation(description = "카테고리로 모든 일정을 조회합니다.", summary = "카테고리 조회")
-    public ResponseEntity<Object> findScheduleCategory(@RequestBody CategoryRequestDTO
-                                                               categoryRequestDTO, HttpSession session) {
-        Map<String, Object> responseMap = scheduleService
-                .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
+    public ResponseEntity<Object> findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
+        Map<String, Object> responseMap = scheduleService.findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
 
         return convertResponse.getResponseEntity(responseMap);
     }
@@ -134,14 +122,13 @@ public class ScheduleController {
      */
     @PostMapping("/modifySchedule")
     @Operation(description = "일정을 수정합니다.", summary = "일정 수정")
-    public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO,
-                                                 HttpServletRequest request) {
+    public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.modifySchedule(modifyScheduleDTO, request);
 
            /* if (responseMap.get("data").equals(modifyScheduleDTO.getScheduleRequestDTO().getUserId())) {
                 log.info("일정 - " + modifyScheduleDTO.getScheduleRequestDTO().getUserId() + " 의 일정 이름: " + modifyScheduleDTO.getScheduleRequestDTO().getEventName());*/
-                return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body(true);
 //            } throw new RuntimeException();
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -156,8 +143,8 @@ public class ScheduleController {
      * 일정 삭제
      */
     @DeleteMapping("/deleteSchedule")
-    @Operation(description = "일정을 삭제합니다.",summary = "일정 삭제")
-    public ResponseEntity<Object> deleteSchedule(@RequestBody DeleteScheduleDTO dto, HttpServletRequest request){
+    @Operation(description = "일정을 삭제합니다.", summary = "일정 삭제")
+    public ResponseEntity<Object> deleteSchedule(@RequestBody DeleteScheduleDTO dto, HttpServletRequest request) {
         try {
             scheduleService.deleteSchedule(dto, request);
 

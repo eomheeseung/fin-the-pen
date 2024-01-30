@@ -26,21 +26,21 @@ public class ModifyScheduleDTO {
     private String userId;
 
     @JsonProperty(value = "event_name")
-    @Schema(description = "등록할 일정 이름", example = "미용")
+    @Schema(description = "등록할 일정 이름", example = "수정")
     private String eventName;
 
     @JsonProperty(value = "category")
-    @Schema(description = "분류될 카테고리", example = "외식")
+    @Schema(description = "분류될 카테고리", example = "수정")
     private String category;
 
     // 시작 일자
     @JsonProperty(value = "start_date")
-    @Schema(description = "일정 시작 일자", example = "2024-01-22")
+    @Schema(description = "일정 시작 일자", example = "2024-02-22")
     private String startDate;
 
     // 종료 일자
     @JsonProperty(value = "end_date")
-    @Schema(description = "일정 종료 일자", example = "2024-01-22")
+    @Schema(description = "일정 종료 일자", example = "2024-02-22")
     private String endDate;
 
     // 시작 시간

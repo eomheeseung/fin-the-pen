@@ -43,7 +43,10 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("select s from Schedule s where s.userId = :userId and s.id = :scheduleId")
     Optional<Schedule> findByIdAndUserId(@Param("userId") String userId, @Param("scheduleId") Long scheduleId);
 
-    @Query("SELECT s FROM Schedule s WHERE TO_DATE(s.startDate, 'yyyy-MM-dd') >= TO_DATE(:targetDate, 'yyyy-MM-dd') and s.eventName = :eventName")
+    /*@Query("SELECT s FROM Schedule s WHERE TO_DATE(s.startDate, 'yyyy-MM-dd') >= TO_DATE(:targetDate, 'yyyy-MM-dd') and s.eventName = :eventName")
+    List<Schedule> findByAllDayNowAfter(@Param("targetDate") String targetDate, @Param("eventName") String eventName);*/
+
+    @Query("SELECT s FROM Schedule s WHERE parsedatetime(s.startDate,'yyyy-MM-dd') >= parsedatetime(:targetDate,'yyyy-MM-dd') and s.eventName = :eventName")
     List<Schedule> findByAllDayNowAfter(@Param("targetDate") String targetDate, @Param("eventName") String eventName);
 
     @Query("SELECT s FROM Schedule s WHERE TO_DATE(s.startDate, 'yyyy-MM-dd') > TO_DATE(:targetDate, 'yyyy-MM-dd') and s.eventName = :eventName")

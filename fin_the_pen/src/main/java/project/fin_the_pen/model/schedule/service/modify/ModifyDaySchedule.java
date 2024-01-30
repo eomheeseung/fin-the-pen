@@ -15,12 +15,13 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class ModifyDaySchedule extends ModifySchedule {
+public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
     public ModifyDaySchedule(CRUDScheduleRepository crudScheduleRepository) {
         super(crudScheduleRepository);
     }
 
-    public void modifySchedule(ModifyScheduleDTO dto, String targetDate, List<Schedule> entities) {
+    @Override
+    public void modifySchedule(ModifyScheduleDTO dto, List<Schedule> entities) {
         /*DayType bindingDayType = new DayType();
         bindingDayType.setValue(dto.getRepeat().getDayTypeVO().getValue());
 
@@ -29,13 +30,11 @@ public class ModifyDaySchedule extends ModifySchedule {
                 .build();*/
 
         int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getValue());
-        LocalDate criteriaDate = formatDate(targetDate);
+        LocalDate criteriaDate = formatDate(dto.getStartDate());
         int endRepeat = 50;
 
         // day 1 logic
         if (dto.getPeriod().isRepeatAgain()) {
-            getCrudScheduleRepository().deleteAll(entities);
-
             for (int i = 0; i < endRepeat; i++) {
                 Schedule schedule = Schedule.builder()
                         .userId(dto.getUserId())
@@ -72,7 +71,6 @@ public class ModifyDaySchedule extends ModifySchedule {
             }
         } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
             int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
-            getCrudScheduleRepository().deleteAll(entities);
 
             for (int i = 0; i < repeatNumberOfTime; i++) {
                 Schedule schedule = Schedule.builder()

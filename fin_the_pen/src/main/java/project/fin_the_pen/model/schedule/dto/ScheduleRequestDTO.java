@@ -3,7 +3,6 @@ package project.fin_the_pen.model.schedule.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Data
@@ -25,12 +24,12 @@ public class ScheduleRequestDTO {
 
     // 시작 일자
     @JsonProperty(value = "start_date")
-    @Schema(description = "일정 시작 일자", example = "2024-01-01")
+    @Schema(description = "일정 시작 일자", example = "2024-02-01")
     private String startDate;
 
     // 종료 일자
     @JsonProperty(value = "end_date")
-    @Schema(description = "일정 종료 일자", example = "2024-01-01")
+    @Schema(description = "일정 종료 일자", example = "2024-02-01")
     private String endDate;
 
     // 시작 시간

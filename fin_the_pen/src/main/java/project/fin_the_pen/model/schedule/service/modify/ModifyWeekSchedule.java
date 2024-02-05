@@ -26,7 +26,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
     }
 
     @Override
-    public void modifySchedule(ModifyScheduleDTO dto, List<Schedule> entities) {
+    public void modifySchedule(ModifyScheduleDTO dto) {
         StringTokenizer tokenizer =
                 new StringTokenizer(dto.getRepeat().getWeekTypeVO().getRepeatDayOfWeek(), ",");
 
@@ -47,7 +47,6 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
         int endRepeat = 50;
 
         if (dto.getPeriod().isRepeatAgain()) {
-            getCrudScheduleRepository().deleteAll(entities);
 
             /*
              week logic 1 => 반복횟수가 없이 default(50)으로 저장
@@ -122,8 +121,6 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
         } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
             LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
 
-            getCrudScheduleRepository().deleteAll(entities);
-
             int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
             int repeatValue = repeatNumberOfTime * intervalWeeks;
 
@@ -195,7 +192,6 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
             // week logic 3 => 특정 기간까지 반복하는 경우
         } else if (dto.getPeriod().getRepeatEndLine() != null) {
             LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
-            getCrudScheduleRepository().deleteAll(entities);
 
             while (!criteriaDate.isAfter(endLine)) {
                 String targetDay = criteriaDate.getDayOfWeek().toString();

@@ -51,7 +51,7 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
                         .period(createPeriodType(() -> {
                             return PeriodType.builder()
                                     .isRepeatAgain(false)
-                                    .repeatNumberOfTime("0")
+                                    .repeatNumberOfTime("none")
                                     .repeatEndLine(null).build();
                         }))
                         .priceType(super.judgmentPriceType(() -> {

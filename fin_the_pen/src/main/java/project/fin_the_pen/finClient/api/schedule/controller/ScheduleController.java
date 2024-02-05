@@ -40,7 +40,10 @@ public class ScheduleController {
      * @return
      */
     @PostMapping(value = "/createSchedule", produces = "application/json")
-    @Operation(description = "일정을 등록하는 API입니다.  " + "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 <br>" + "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" + "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>", summary = "일정등록 (O)")
+    @Operation(description = "일정을 등록하는 API입니다.  " + "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 <br>" +
+            "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" +
+            "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>",
+            summary = "일정등록 (O)")
     public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto, HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
@@ -124,12 +127,9 @@ public class ScheduleController {
     @Operation(description = "일정을 수정합니다.", summary = "일정 수정")
     public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
-            Map<Object, Object> responseMap = scheduleService.modifySchedule(modifyScheduleDTO, request);
+            Boolean flag = scheduleService.modifySchedule(modifyScheduleDTO, request);
 
-           /* if (responseMap.get("data").equals(modifyScheduleDTO.getScheduleRequestDTO().getUserId())) {
-                log.info("일정 - " + modifyScheduleDTO.getScheduleRequestDTO().getUserId() + " 의 일정 이름: " + modifyScheduleDTO.getScheduleRequestDTO().getEventName());*/
-            return ResponseEntity.ok().body(true);
-//            } throw new RuntimeException();
+            return ResponseEntity.ok().body(flag);
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RuntimeException e) {
@@ -148,10 +148,7 @@ public class ScheduleController {
         try {
             scheduleService.deleteSchedule(dto, request);
 
-           /* if (responseMap.get("data").equals(modifyScheduleDTO.getScheduleRequestDTO().getUserId())) {
-                log.info("일정 - " + modifyScheduleDTO.getScheduleRequestDTO().getUserId() + " 의 일정 이름: " + modifyScheduleDTO.getScheduleRequestDTO().getEventName());*/
             return ResponseEntity.ok().build();
-//            } throw new RuntimeException();
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RuntimeException e) {
@@ -160,39 +157,5 @@ public class ScheduleController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-
-    /*@PostMapping("/deleteSchedule")
-    public boolean deleteSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        log.info(map.get("id"));
-        if (scheduleService.deleteSchedule(map.get("id"))) {
-            return true;
-        } else {
-            return false;
-        }
-    }*/
-
-    // 여기를 수정해야 함
-    /*
-     *
-     *
-     * */
-
-
-    /**
-     * uuid 하나로만 일정 조회
-     *
-     * @param
-     * @return
-     */
-//    @PostMapping("/findOne")
-//    @ResponseBody
-//    public ScheduleResponseDTO findOne(@RequestBody ConcurrentHashMap<String, String> map) {
-//        log.info(String.valueOf(map.get("id")));
-//
-//        ScheduleResponseDTO find = scheduleService.findOne(map.get("id"));
-//        log.info(find.getId());
-//
-//        return find;
-//    }
 
 }

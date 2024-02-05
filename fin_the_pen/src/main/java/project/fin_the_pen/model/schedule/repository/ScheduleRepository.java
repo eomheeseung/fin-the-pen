@@ -2,7 +2,6 @@ package project.fin_the_pen.model.schedule.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.model.schedule.dto.DeleteScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
@@ -15,7 +14,6 @@ import project.fin_the_pen.model.schedule.service.modify.ModifyWeekSchedule;
 import project.fin_the_pen.model.schedule.service.modify.ModifyYearSchedule;
 import project.fin_the_pen.model.schedule.service.register.*;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -115,16 +113,16 @@ public class ScheduleRepository {
 
             switch (repeatType) {
                 case "day":
-                    modifyDaySchedule.modifySchedule(dto, entities);
+                    modifyDaySchedule.modifySchedule(dto);
                     break;
                 case "week":
-                    modifyWeekSchedule.modifySchedule(dto, entities);
+                    modifyWeekSchedule.modifySchedule(dto);
                     break;
                 case "month":
-                    modifyMonthSchedule.modifySchedule(dto, entities);
+                    modifyMonthSchedule.modifySchedule(dto);
                     break;
                 case "year":
-                    modifyYearSchedule.modifySchedule(dto, entities);
+                    modifyYearSchedule.modifySchedule(dto);
                     break;
             }
         }
@@ -155,17 +153,19 @@ public class ScheduleRepository {
             log.info("수정된 list 사이즈:{}", entities.size());
 
             switch (repeatType) {
+                case "none":
+
                 case "day":
-                    modifyDaySchedule.modifySchedule(dto, entities);
+                    modifyDaySchedule.modifySchedule(dto);
                     break;
                 case "week":
-                    modifyWeekSchedule.modifySchedule(dto, entities);
+                    modifyWeekSchedule.modifySchedule(dto);
                     break;
                 case "month":
-                    modifyMonthSchedule.modifySchedule(dto, entities);
+                    modifyMonthSchedule.modifySchedule(dto);
                     break;
                 case "year":
-                    modifyYearSchedule.modifySchedule(dto, entities);
+                    modifyYearSchedule.modifySchedule(dto);
                     break;
             }
         }
@@ -173,22 +173,39 @@ public class ScheduleRepository {
     }
 
     public Boolean modifyAllSchedule(ModifyScheduleDTO dto, String repeatType) {
-        Optional<Schedule> findModifySchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
+        Optional<Schedule> findModifySchedule =
+                crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
 
         if (findModifySchedule.isPresent()) {
-            String targetDate = findModifySchedule.get().getStartDate();
-            List<Schedule> entities = crudScheduleRepository.findByEventName(dto.getEventName(), findModifySchedule.get().getUserId());
+            Schedule target = findModifySchedule.get();
+
+            log.info("전체 수정 : {}", target.getId());
+            log.info("전체 수정할 이름 : {}", target.getEventName());
+
+            List<Schedule> entities =
+                    crudScheduleRepository.findByEventName(target.getEventName(), target.getUserId());
+
+            log.info("list size:{}", entities.size());
+
+            crudScheduleRepository.deleteAll(entities);
+
+            log.info("삭제 후 :{}", entities.size());
 
             log.info("수정할 list 사이즈:{}", entities.size());
 
-            if (repeatType.equals("day")) {
-                modifyDaySchedule.modifySchedule(dto, entities);
-            } else if (repeatType.equals("week")) {
-                modifyWeekSchedule.modifySchedule(dto, entities);
-            } else if (repeatType.equals("month")) {
-                modifyMonthSchedule.modifySchedule(dto, entities);
-            } else if (repeatType.equals("year")) {
-                modifyYearSchedule.modifySchedule(dto, entities);
+            switch (repeatType) {
+                case "day":
+                    modifyDaySchedule.modifySchedule(dto);
+                    break;
+                case "week":
+                    modifyWeekSchedule.modifySchedule(dto);
+                    break;
+                case "month":
+                    modifyMonthSchedule.modifySchedule(dto);
+                    break;
+                case "year":
+                    modifyYearSchedule.modifySchedule(dto);
+                    break;
             }
         }
         return true;
@@ -245,12 +262,6 @@ public class ScheduleRepository {
         }
         return true;
     }
-
-    @NotNull
-    private LocalDate formatDate(String convertDate) {
-        return LocalDate.parse(convertDate, formatter);
-    }
-
 
     /**
      *

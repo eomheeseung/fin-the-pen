@@ -128,7 +128,13 @@ public class ScheduleService {
     }
 
 
-    // 수정 완료
+    /**
+     * 모든 일정 조회
+     *
+     * @param userId
+     * @param request
+     * @return
+     */
     public Map<String, Object> findAllSchedule(String userId, HttpServletRequest request) {
         Map<String, Object> responseMap = new HashMap<>();
 
@@ -161,7 +167,7 @@ public class ScheduleService {
         return responseMap;
     }
 
-    public Map<Object, Object> modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
+    public Boolean modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
             boolean flag = false;
 
@@ -287,9 +293,7 @@ public class ScheduleService {
                 }
 
                 if (flag) {
-                    HashMap<Object, Object> responseMap = new HashMap<>();
-                    responseMap.put("data", objectMapper.convertValue(modifyScheduleDTO.getUserId(), String.class));
-                    return responseMap;
+                    return flag;
                 } else throw new FailSaveScheduleException("일정 수정 실패");
             } catch (TokenNotFoundException e) {
                 throw new RuntimeException();
@@ -298,7 +302,8 @@ public class ScheduleService {
             throw new RuntimeException();
         }
     }
-    public Boolean deleteSchedule(DeleteScheduleDTO dto, HttpServletRequest request){
+
+    public Boolean deleteSchedule(DeleteScheduleDTO dto, HttpServletRequest request) {
         try {
             String extractToken = tokenManager.parseBearerToken(request);
 
@@ -308,7 +313,7 @@ public class ScheduleService {
             tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
             String options = dto.getOptions();
 
-            switch (options){
+            switch (options) {
                 case "nowFromAfter":
                     scheduleRepository.deleteNowFromAfter(dto);
                     break;
@@ -320,7 +325,7 @@ public class ScheduleService {
                     break;
             }
 
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return false;
         }
         return true;
@@ -407,7 +412,7 @@ public class ScheduleService {
 
     private ScheduleResponseDTO createScheduleResponseDTO(Schedule schedule) {
         return ScheduleResponseDTO.builder()
-                .id(schedule.getId())
+                .scheduleId(schedule.getId())
                 .userId(schedule.getUserId())
                 .eventName(schedule.getEventName())
                 .category(schedule.getCategory())
@@ -416,7 +421,7 @@ public class ScheduleService {
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
                 .allDay(schedule.isAllDay())
-//                .repeat(schedule.getRepeat())
+                .repeatOptions(schedule.getRepeatOptions())
                 .period(schedule.getPeriod())
                 .priceType(schedule.getPriceType())
                 .isExclude(schedule.isExclude())

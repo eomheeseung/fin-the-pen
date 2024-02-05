@@ -54,7 +54,7 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByAllExceptNotAfter(@Param("targetDate") String targetDate, @Param("eventName") String eventName);
 
     @Query("select s from Schedule s where s.eventName = :eventName and s.userId = :userId")
-    List<Schedule> findByEventName(@Param("eventName") String eventName, @Param("eventName") String userId);
+    List<Schedule> findByEventName(@Param("eventName") String eventName, @Param("userId") String userId);
 
     /**
      * TODO

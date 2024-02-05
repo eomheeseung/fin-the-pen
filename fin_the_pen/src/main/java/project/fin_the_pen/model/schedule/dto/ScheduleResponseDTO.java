@@ -9,7 +9,7 @@ import project.fin_the_pen.model.schedule.type.PriceType;
 @Data
 public class ScheduleResponseDTO {
     // schedule의 기본키
-    private Long id;
+    private Long scheduleId;
     private String userId;
     private String eventName;
     private String category;
@@ -18,7 +18,7 @@ public class ScheduleResponseDTO {
     private String startTime;
     private String endTime;
     private boolean allDay;
-    private UnitedType repeat;
+    private UnitedType repeatOptions;
     private PeriodType period;
     private String priceType;
     private boolean isExclude;
@@ -27,8 +27,8 @@ public class ScheduleResponseDTO {
     private boolean isFixAmount;
 
     @Builder
-    public ScheduleResponseDTO(Long id, String userId, String eventName, String category, String startDate, String endDate, String startTime, String endTime, boolean allDay, UnitedType repeat, PeriodType period, PriceType priceType, boolean isExclude, String importance, String amount, boolean isFixAmount) {
-        this.id = id;
+    public ScheduleResponseDTO(Long scheduleId, String userId, String eventName, String category, String startDate, String endDate, String startTime, String endTime, boolean allDay, UnitedType repeatOptions, PeriodType period, PriceType priceType, boolean isExclude, String importance, String amount, boolean isFixAmount) {
+        this.scheduleId = scheduleId;
         this.userId = userId;
         this.eventName = eventName;
         this.category = category;
@@ -37,7 +37,7 @@ public class ScheduleResponseDTO {
         this.startTime = startTime;
         this.endTime = endTime;
         this.allDay = allDay;
-        this.repeat = repeat;
+        this.repeatOptions = repeatOptions;
         this.period = period;
         this.priceType = priceType.getType();
         this.isExclude = isExclude;

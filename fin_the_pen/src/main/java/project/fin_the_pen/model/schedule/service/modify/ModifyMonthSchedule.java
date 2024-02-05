@@ -24,7 +24,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
     }
 
     @Override
-    public void modifySchedule(ModifyScheduleDTO dto, List<Schedule> entities) {
+    public void modifySchedule(ModifyScheduleDTO dto) {
         StringTokenizer tokenizer =
                 new StringTokenizer(dto.getRepeat().getMonthTypeVO().getSelectedDate(), ",");
 
@@ -41,7 +41,6 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
 
         if (dto.getPeriod().isRepeatAgain()) {
             int endRepeat = 50;
-            getCrudScheduleRepository().deleteAll(entities);
 
             for (int i = 0; i < endRepeat; i++) {
                 int dayOfMonth = criteriaDate.getDayOfMonth();
@@ -123,7 +122,6 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
         } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
             int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
             int repeatValue = repeatNumberOfTime * Integer.parseInt(dto.getRepeat().getMonthTypeVO().getValue());
-            getCrudScheduleRepository().deleteAll(entities);
 
             for (int i = 0; i < repeatValue; i++) {
                 int dayOfMonth = criteriaDate.getDayOfMonth();
@@ -202,7 +200,6 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
             }
         } else if (dto.getPeriod().getRepeatEndLine() != null) {
             LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
-            getCrudScheduleRepository().deleteAll(entities);
 
             while (!criteriaDate.isAfter(endLine)) {
                 int dayOfMonth = criteriaDate.getDayOfMonth();

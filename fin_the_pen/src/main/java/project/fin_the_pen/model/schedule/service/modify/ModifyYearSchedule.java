@@ -28,7 +28,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
     }
 
     @Override
-    public void modifySchedule(ModifyScheduleDTO dto, List<Schedule> entities) {
+    public void modifySchedule(ModifyScheduleDTO dto) {
         YearScheduleFunc yearScheduleFunc = new YearScheduleFunc();
 
         // MM월 DD일인 경우 / 어느정도 완성된 듯...
@@ -37,14 +37,9 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
         LocalDate criteriaDate = formatDate(dto.getStartDate());
         LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
 
-        log.info("수정할 entiy 목록의 개수:{}", entities.size());
-
         if (yearCategory.equals(YearCategory.MonthAndDay.toString())) {
             // 현재 연도를 가져와서 연도 정보를 추가하여 LocalDate로 변환
 
-            // TODO table에 삭제가 안됨.
-            super.getCrudScheduleRepository().deleteAll(entities);
-            log.info("삭제될 entities (0이어야 함.):{},", entities.size());
 
             LocalDate repeatDate = LocalDate.parse(Year.now().getValue() + "-" + dto.getRepeat().getYearTypeVO().getYearRepeat(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
@@ -157,7 +152,6 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                     criteriaDate = criteriaDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
                 }
             } else if (dto.getPeriod().getRepeatEndLine() != null) {
-                getCrudScheduleRepository().deleteAll(entities);
 
                 while (!criteriaDate.isAfter(endLine)) {
                     /*YearType bindingYearType = new YearType();
@@ -210,8 +204,6 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
 
         //  MM월 N번째 D요일
         else if (yearCategory.equals(YearCategory.NthDayOfMonth.toString())) {
-            super.getCrudScheduleRepository().deleteAll(entities);
-            log.info("삭제될 entities (0이어야 함.): {},", entities.size());
 
             if (dto.getPeriod().isRepeatAgain()) {
                 String yearRepeat = dto.getRepeat().getYearTypeVO().getYearRepeat();
@@ -575,10 +567,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
             }
         }
 
-
         else if (yearCategory.equals(YearCategory.LastDayOfMonth.toString())) {
-            super.getCrudScheduleRepository().deleteAll(entities);
-            log.info("삭제될 entities (0이어야 함.):{},", entities.size());
 
             if (dto.getPeriod().isRepeatAgain()) {
 

@@ -11,7 +11,6 @@ import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Component
 @Slf4j
@@ -21,7 +20,7 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
     }
 
     @Override
-    public void modifySchedule(ModifyScheduleDTO dto, List<Schedule> entities) {
+    public void modifySchedule(ModifyScheduleDTO dto) {
         /*DayType bindingDayType = new DayType();
         bindingDayType.setValue(dto.getRepeat().getDayTypeVO().getValue());
 

@@ -18,7 +18,7 @@ import java.util.StringTokenizer;
 
 @Component
 @Slf4j
-public class RegisterMonthSchedule extends RegisterSchedule implements RegisterXXXFunc{
+public class RegisterMonthSchedule extends RegisterSchedule implements RegisterXXXFunc {
     public RegisterMonthSchedule(CRUDScheduleRepository crudScheduleRepository) {
         super(crudScheduleRepository);
     }
@@ -54,13 +54,6 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                         log.info("현재 월에서의 날짜: {}", dayOfMonth);
 
                         if (dates.contains(dayOfMonth)) {
-                            /*MonthType bindingMonthType = new MonthType();
-                            bindingMonthType.setMonthValue(dto.getRepeat().getMonthTypeVO().getValue());
-
-                            TypeManage typeManage = TypeManage
-                                    .builder()
-                                    .monthType(bindingMonthType)
-                                    .build();*/
                             log.info("*중요 save date: {}", currentDate);
 
                             Schedule schedule = Schedule.builder()
@@ -150,6 +143,7 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                                     .period(createPeriodType(() -> {
                                         return PeriodType.builder()
                                                 .isRepeatAgain(false)
+                                                .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
                                                 .repeatEndLine(null).build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
@@ -216,6 +210,7 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                                     .period(createPeriodType(() -> {
                                         return PeriodType.builder()
                                                 .isRepeatAgain(false)
+                                                .repeatNumberOfTime("none")
                                                 .repeatEndLine(endLine.toString())
                                                 .build();
                                     }))

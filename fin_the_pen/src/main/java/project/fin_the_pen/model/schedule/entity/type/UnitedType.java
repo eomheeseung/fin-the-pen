@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Embeddable;
 
@@ -13,7 +14,9 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Builder
 public class UnitedType {
-    private String value = "0";
-    private String options;
+    @ColumnDefault("'0'")
+    private String value;
 
+    @ColumnDefault("'none'")
+    private String options;
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -61,8 +60,6 @@ public class Schedule {
     @Column(name = "repeat_options")
     @Embedded
     private UnitedType repeatOptions;
-    /*@Embedded
-    private TypeManage repeat;*/
 
     // 반복 기간
     @Column(name = "period")
@@ -101,33 +98,4 @@ public class Schedule {
     /*public void setPriceType(Supplier<PriceType> priceTypeSupplier) {
         this.priceType = priceTypeSupplier.get();
     }*/
-
-    /**
-     * update method
-     *
-     * @param dto
-     * @param startDate
-     * @param endDate
-     * @param period
-     * @param priceType
-     */
-    public void updateFrom(ModifyScheduleDTO dto, String startDate, String endDate,
-                           String repeatKind, UnitedType repeatOptions, PeriodType period, PriceType priceType) {
-        this.eventName = dto.getEventName();
-        this.category = dto.getCategory();
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.startTime = dto.getStartTime();
-        this.endTime = dto.getEndTime();
-        this.isAllDay = dto.isAllDay();
-        this.repeatKind = repeatKind;
-        this.repeatOptions = repeatOptions;
-        this.priceType = priceType;
-        this.period = period;
-        this.priceType = dto.getPriceType();
-        this.isExclude = dto.isExclude();
-        this.importance = dto.getImportance();
-        this.amount = dto.getAmount();
-        this.isFixAmount = dto.isFixAmount();
-    }
 }

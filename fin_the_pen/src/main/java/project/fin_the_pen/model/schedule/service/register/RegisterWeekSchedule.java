@@ -91,7 +91,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                         return PeriodType.builder()
                                                 .isRepeatAgain(true)
                                                 .repeatNumberOfTime("0")
-                                                .repeatEndLine(null).build();
+                                                .repeatEndLine("none").build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -154,6 +154,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .period(createPeriodType(() -> {
                                         return PeriodType.builder()
                                                 .isRepeatAgain(false)
+                                                .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
                                                 .repeatEndLine(endLine.toString()).build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
@@ -213,6 +214,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .period(createPeriodType(() -> {
                                         return PeriodType.builder()
                                                 .isRepeatAgain(false)
+                                                .repeatNumberOfTime("none")
                                                 .repeatEndLine(endLine.toString()).build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {

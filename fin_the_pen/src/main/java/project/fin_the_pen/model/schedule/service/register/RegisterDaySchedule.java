@@ -13,7 +13,7 @@ import project.fin_the_pen.model.schedule.type.PriceType;
 import java.time.LocalDate;
 
 @Component
-public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXXFunc{
+public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXXFunc {
     public RegisterDaySchedule(CRUDScheduleRepository crudScheduleRepository) {
         super(crudScheduleRepository);
     }
@@ -87,6 +87,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                 .period(createPeriodType(() -> {
                                     return PeriodType.builder()
                                             .isRepeatAgain(false)
+                                            .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
                                             .repeatEndLine(null)
                                             .build();
                                 }))
@@ -123,6 +124,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                 .period(createPeriodType(() -> {
                                     return PeriodType.builder()
                                             .isRepeatAgain(false)
+                                            .repeatNumberOfTime("none")
                                             .repeatEndLine(endLine.toString())
                                             .build();
                                 }))

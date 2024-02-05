@@ -139,22 +139,34 @@ public class ScheduleRepository {
      * @return
      */
     public Boolean modifyExceptNowAfter(ModifyScheduleDTO dto, String repeatType) {
-        Optional<Schedule> findModifySchedule = crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
+        Optional<Schedule> findModifySchedule =
+                crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
 
         if (findModifySchedule.isPresent()) {
             String targetDate = findModifySchedule.get().getStartDate();
-            List<Schedule> entities = crudScheduleRepository.findByAllExceptNotAfter(targetDate, dto.getEventName());
+            log.info("삭제할 시점의 date:{}", targetDate);
+            List<Schedule> entities = crudScheduleRepository.findByAllExceptNotAfter(targetDate, findModifySchedule.get().getEventName());
 
+            log.info("DB에서 가져온 id:{}", dto.getScheduleId());
             log.info("수정할 list 사이즈:{}", entities.size());
 
-            if (repeatType.equals("day")) {
-                modifyDaySchedule.modifySchedule(dto, entities);
-            } else if (repeatType.equals("week")) {
-                modifyWeekSchedule.modifySchedule(dto, entities);
-            } else if (repeatType.equals("month")) {
-                modifyMonthSchedule.modifySchedule(dto, entities);
-            } else if (repeatType.equals("year")) {
-                modifyYearSchedule.modifySchedule(dto, entities);
+            crudScheduleRepository.deleteAll(entities);
+
+            log.info("수정된 list 사이즈:{}", entities.size());
+
+            switch (repeatType) {
+                case "day":
+                    modifyDaySchedule.modifySchedule(dto, entities);
+                    break;
+                case "week":
+                    modifyWeekSchedule.modifySchedule(dto, entities);
+                    break;
+                case "month":
+                    modifyMonthSchedule.modifySchedule(dto, entities);
+                    break;
+                case "year":
+                    modifyYearSchedule.modifySchedule(dto, entities);
+                    break;
             }
         }
         return true;

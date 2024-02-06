@@ -49,6 +49,7 @@ public class ReportService {
             if (dto.getDate() == null) {
                 throw new RuntimeException();
             }
+
             HashMap<Object, Object> responseMap = new HashMap<>();
 
             List<String> findAmountList = inquiryAmountList(dto);

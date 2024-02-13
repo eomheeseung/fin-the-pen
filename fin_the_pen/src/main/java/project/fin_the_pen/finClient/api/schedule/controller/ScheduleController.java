@@ -124,7 +124,10 @@ public class ScheduleController {
      * @return
      */
     @PostMapping("/modifySchedule")
-    @Operation(description = "일정을 수정합니다.", summary = "일정 수정")
+    @Operation(description = "일정을 수정합니다. <br>"+
+            "nowFromAfter : 선택된 현재 일정부터 이후까지<br>"+
+            "exceptNowAfter : 현재 일정 제외하고 이후<br>" +
+            "all : 모든 일정", summary = "일정 수정")
     public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
             Boolean flag = scheduleService.modifySchedule(modifyScheduleDTO, request);

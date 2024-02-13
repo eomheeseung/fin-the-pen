@@ -52,6 +52,7 @@ public class ReportService {
             List<Schedule> findDemo = crudScheduleRepository.findByAmountDemo(dto.getDate(), dto.getUserId(), PriceType.Minus);
 
             log.info(findDemo.get(0).getId().toString());
+            // TODO!!
 
             /*List<String> findAmountList = inquiryAmountList(dto);
 

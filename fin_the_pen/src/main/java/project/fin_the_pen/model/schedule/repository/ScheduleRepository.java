@@ -79,12 +79,6 @@ public class ScheduleRepository {
         return registerYearSchedule.registerSchedule(dto);
     }
 
-    /*
-    TODO test, query할때 userId도 같이 넘겨서 @Param에 넣어야 할 것 같음. 아니면 stream filter를 사용하던가.
-        @Query("SELECT s FROM Schedule s WHERE TO_DATE(s.startDate, 'yyyy-MM-dd') > TO_DATE(:targetDate, 'yyyy-MM-dd') and s.eventName = :eventName")
-        에서 and userId와 같이...
-     */
-
     /**
      * 현재부터 이 이후의 일정들
      * 1. week의 경우

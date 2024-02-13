@@ -14,7 +14,6 @@ import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.entity.Reports;
 import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -22,10 +21,8 @@ import project.fin_the_pen.model.usersToken.entity.UsersToken;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.BiFunction;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -52,11 +49,11 @@ public class ReportService {
 
             HashMap<Object, Object> responseMap = new HashMap<>();
 
-            List<Schedule> findDemo = crudScheduleRepository.findByAmountDemo(dto.getDate(), dto.getUserId(), PriceType.Minus.getSortNum());
+            List<Schedule> findDemo = crudScheduleRepository.findByAmountDemo(dto.getDate(), dto.getUserId(), PriceType.Minus);
 
             log.info(findDemo.get(0).getId().toString());
 
-            List<String> findAmountList = inquiryAmountList(dto);
+            /*List<String> findAmountList = inquiryAmountList(dto);
 
             int amountSum = findAmountList
                     .stream()
@@ -164,6 +161,7 @@ public class ReportService {
 
 
             fixedMap.put("fixed_withdraw", currentMinusSum);
+
             BiFunction<Integer, Integer, String> withDrawBiFunc = (current, previous) -> {
                 int diff = current - previous;
 
@@ -173,6 +171,7 @@ public class ReportService {
                     return "-" + diff;
                 }
             };
+
             fixedMap.put("previous_diff_minus", withDrawBiFunc.apply(currentMinusSum, beforeMinusSum));
             responseMap.put("Nmonth_fixed", fixedMap);
 
@@ -192,7 +191,7 @@ public class ReportService {
             monthReportMap.put("previous", beforeMinusSum);
             monthReportMap.put("current", currentMinusSum);
 
-            responseMap.put("month_report", monthReportMap);
+            responseMap.put("month_report", monthReportMap);*/
 
             return responseMap;
         } catch (RuntimeException e) {

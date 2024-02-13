@@ -37,7 +37,7 @@ public class ReportController {
 
             return ResponseEntity.ok().body(map);
         } catch (NotFoundDataException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.internalServerError().build();
         }
     }
 

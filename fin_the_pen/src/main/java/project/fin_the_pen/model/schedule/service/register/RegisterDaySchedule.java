@@ -51,7 +51,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                     return PeriodType.builder()
                                             .isRepeatAgain(true)
                                             .repeatNumberOfTime("0")
-                                            .repeatEndLine(null)
+                                            .repeatEndLine("none")
                                             .build();
                                 }))
                                 .priceType(judgmentPriceType(() -> {
@@ -88,7 +88,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                     return PeriodType.builder()
                                             .isRepeatAgain(false)
                                             .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
-                                            .repeatEndLine(null)
+                                            .repeatEndLine("none")
                                             .build();
                                 }))
                                 .priceType(judgmentPriceType(() -> {

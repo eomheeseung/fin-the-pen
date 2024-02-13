@@ -84,7 +84,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         return PeriodType.builder()
                                                 .isRepeatAgain(true)
                                                 .repeatNumberOfTime("0")
-                                                .repeatEndLine(null).build();
+                                                .repeatEndLine("none").build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -231,7 +231,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             return PeriodType.builder()
                                                     .isRepeatAgain(true)
                                                     .repeatNumberOfTime("0")
-                                                    .repeatEndLine(null).build();
+                                                    .repeatEndLine("none").build();
                                         }))
                                         .priceType(judgmentPriceType(() -> {
                                             if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -271,7 +271,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         return PeriodType.builder()
                                                 .isRepeatAgain(true)
                                                 .repeatNumberOfTime("0")
-                                                .repeatEndLine(null).build();
+                                                .repeatEndLine("none").build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -332,7 +332,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             return PeriodType.builder()
                                                     .isRepeatAgain(false)
                                                     .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
-                                                    .repeatEndLine(null).build();
+                                                    .repeatEndLine("none").build();
                                         }))
                                         .priceType(judgmentPriceType(() -> {
                                             if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -371,7 +371,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         return PeriodType.builder()
                                                 .isRepeatAgain(true)
                                                 .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
-                                                .repeatEndLine(null).build();
+                                                .repeatEndLine("none").build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -474,7 +474,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         return PeriodType.builder()
                                                 .isRepeatAgain(true)
                                                 .repeatNumberOfTime("0")
-                                                .repeatEndLine(null).build();
+                                                .repeatEndLine("none").build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -535,7 +535,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             return PeriodType.builder()
                                                     .isRepeatAgain(true)
                                                     .repeatNumberOfTime("0")
-                                                    .repeatEndLine(null).build();
+                                                    .repeatEndLine("none").build();
                                         }))
                                         .priceType(judgmentPriceType(() -> {
                                             if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -581,7 +581,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         return PeriodType.builder()
                                                 .isRepeatAgain(true)
                                                 .repeatNumberOfTime("0")
-                                                .repeatEndLine(null).build();
+                                                .repeatEndLine("none").build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -651,7 +651,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             return PeriodType.builder()
                                                     .isRepeatAgain(false)
                                                     .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
-                                                    .repeatEndLine(null).build();
+                                                    .repeatEndLine("none").build();
                                         }))
                                         .priceType(judgmentPriceType(() -> {
                                             if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -703,7 +703,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         return PeriodType.builder()
                                                 .isRepeatAgain(false)
                                                 .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
-                                                .repeatEndLine(null).build();
+                                                .repeatEndLine("none").build();
                                     }))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {

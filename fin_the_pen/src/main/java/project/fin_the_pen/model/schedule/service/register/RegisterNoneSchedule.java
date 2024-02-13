@@ -52,7 +52,7 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
                             return PeriodType.builder()
                                     .isRepeatAgain(false)
                                     .repeatNumberOfTime("none")
-                                    .repeatEndLine(null).build();
+                                    .repeatEndLine("none").build();
                         }))
                         .priceType(super.judgmentPriceType(() -> {
                             if (dto.getPriceType().equals(PriceType.Plus)) {

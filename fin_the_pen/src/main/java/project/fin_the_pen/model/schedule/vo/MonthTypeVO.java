@@ -16,7 +16,7 @@ public class MonthTypeVO {
     @Schema(example = "4, 7, 10, 16, 25, 30")
     private String selectedDate;
 
-    @JsonProperty("repeat_value")
+    @JsonProperty("repeat_term")
     @Schema(example = "2")
     private String value;
 }

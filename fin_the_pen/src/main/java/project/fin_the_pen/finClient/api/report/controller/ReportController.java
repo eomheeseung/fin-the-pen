@@ -32,6 +32,7 @@ public class ReportController {
     @Operation(description = "리포트 메인 화면입니다.", summary = "리포트 메인 화면")
     public ResponseEntity<Object> reportHome(@RequestBody ReportRequestDemoDTO dto, HttpServletRequest request) {
         try {
+            log.info(dto.getDate());
             HashMap<Object, Object> map = reportService.reportHome(dto, request);
 
             return ResponseEntity.ok().body(map);

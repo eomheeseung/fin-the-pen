@@ -9,7 +9,7 @@ import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
-import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.time.DayOfWeek;
@@ -24,7 +24,7 @@ import java.util.StringTokenizer;
 public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXXXFunc {
     private final ReportRepository reportRepository;
 
-    public RegisterWeekSchedule(CRUDScheduleRepository crudScheduleRepository,
+    public RegisterWeekSchedule(CrudScheduleRepository crudScheduleRepository,
                                 ReportRepository reportRepository) {
         super(crudScheduleRepository);
         this.reportRepository = reportRepository;

@@ -14,7 +14,7 @@ import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.entity.Reports;
 import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.usersToken.entity.UsersToken;
@@ -32,7 +32,7 @@ public class ReportService {
     private final UsersTokenRepository tokenRepository;
     private final ScheduleRepository scheduleRepository;
     private final ReportRepository reportRepository;
-    private final CRUDScheduleRepository crudScheduleRepository;
+    private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public HashMap<Object, Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {

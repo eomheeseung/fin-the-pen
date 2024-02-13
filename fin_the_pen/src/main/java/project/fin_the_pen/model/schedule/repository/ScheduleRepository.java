@@ -22,7 +22,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class ScheduleRepository {
-    private final CRUDScheduleRepository crudScheduleRepository;
+    private final CrudScheduleRepository crudScheduleRepository;
     //    private final CRUDRegularScheduleRepository regularScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final RegisterNoneSchedule registerNoneSchedule;

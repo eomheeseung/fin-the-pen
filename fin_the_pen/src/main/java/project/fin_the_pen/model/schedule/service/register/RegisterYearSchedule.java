@@ -10,7 +10,7 @@ import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.entity.type.year.YearCategory;
 import project.fin_the_pen.model.schedule.entity.type.year.YearScheduleFunc;
-import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.time.DayOfWeek;
@@ -23,7 +23,7 @@ import java.util.StringTokenizer;
 @Component
 @Slf4j
 public class RegisterYearSchedule extends RegisterSchedule implements RegisterXXXFunc {
-    public RegisterYearSchedule(CRUDScheduleRepository crudScheduleRepository) {
+    public RegisterYearSchedule(CrudScheduleRepository crudScheduleRepository) {
         super(crudScheduleRepository);
     }
 

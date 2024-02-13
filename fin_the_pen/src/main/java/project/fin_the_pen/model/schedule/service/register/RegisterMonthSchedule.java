@@ -8,7 +8,7 @@ import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
-import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.time.LocalDate;
@@ -19,7 +19,7 @@ import java.util.StringTokenizer;
 @Component
 @Slf4j
 public class RegisterMonthSchedule extends RegisterSchedule implements RegisterXXXFunc {
-    public RegisterMonthSchedule(CRUDScheduleRepository crudScheduleRepository) {
+    public RegisterMonthSchedule(CrudScheduleRepository crudScheduleRepository) {
         super(crudScheduleRepository);
     }
 

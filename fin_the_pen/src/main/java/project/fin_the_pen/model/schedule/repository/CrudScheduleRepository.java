@@ -16,7 +16,7 @@ import java.util.Optional;
 JpaRepository 내부에 @Transactional 존재
  */
 @Repository
-public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
+public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s WHERE s.startDate LIKE CONCAT('%',:date,'%') and s.userId = :userId")
     List<Schedule> findByMonthSchedule(@Param("date") String date, @Param("userId") String userId);
 
@@ -58,13 +58,7 @@ public interface CRUDScheduleRepository extends JpaRepository<Schedule, Long> {
 
     /**
      * TODO
-     *   priceType이 entity에서 어떤 타입인지
-     *   1. priceType의 sort number(long)인지, 단순 enum type인지
-     *   2. stiring
-     *
-     * @param userId
-     * @param priceType
-     * @return
+     *   h2 => parsedatetime() 사용
      */
     @Query("select s.amount from Schedule s where  parsedatetime(s.startDate,'yyyy-MM-dd') >= parsedatetime(:targetDate,'yyyy-MM-dd')  and s.userId = :userId and s.priceType = :priceType")
     List<String> findByAmount(@Param("targetDate") String targetDate, @Param("userId") String userId, @Param("priceType") PriceType priceType);

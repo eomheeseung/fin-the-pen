@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 @Getter
 public class ModifySchedule {
-    private final CRUDScheduleRepository crudScheduleRepository;
+    private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @NotNull

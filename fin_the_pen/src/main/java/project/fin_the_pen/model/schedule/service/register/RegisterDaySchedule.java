@@ -7,14 +7,14 @@ import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
-import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.time.LocalDate;
 
 @Component
 public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXXFunc {
-    public RegisterDaySchedule(CRUDScheduleRepository crudScheduleRepository) {
+    public RegisterDaySchedule(CrudScheduleRepository crudScheduleRepository) {
         super(crudScheduleRepository);
     }
 

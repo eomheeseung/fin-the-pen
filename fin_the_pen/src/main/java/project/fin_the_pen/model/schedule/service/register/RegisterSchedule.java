@@ -1,17 +1,13 @@
 package project.fin_the_pen.model.schedule.service.register;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
-import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.time.LocalDate;
@@ -23,7 +19,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 @Getter
 public abstract class RegisterSchedule {
-    private final CRUDScheduleRepository crudScheduleRepository;
+    private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @NotNull

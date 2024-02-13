@@ -7,12 +7,12 @@ import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
-import project.fin_the_pen.model.schedule.repository.CRUDScheduleRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Component
 public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXXXFunc {
-    public RegisterNoneSchedule(CRUDScheduleRepository crudScheduleRepository) {
+    public RegisterNoneSchedule(CrudScheduleRepository crudScheduleRepository) {
         super(crudScheduleRepository);
     }
 

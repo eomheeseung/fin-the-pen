@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 import java.util.List;
@@ -67,8 +66,11 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByAmountDemo(@Param("targetDate") String targetDate, @Param("userId") String userId, @Param("priceType") PriceType priceType);
 
     @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :priceType and s.startDate between :startDate and :endDate")
-    List<String> findByAmountMonth(@Param("userId") String userId, @Param("priceType") Long priceType, @Param("startDate") String startDate, @Param("endDate") String endDate);
+    List<String> findByAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
-    @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :priceType and s.repeatKind = :repeatKind and s.startDate between :startDate and :endDate")
-    List<String> findByFixedAmountMonth(@Param("userId") String userId, @Param("priceType") long priceType, @Param("repeatKind") RepeatKind repeatKind, @Param("startDate") String startDate, @Param("endDate") String endDate);
+    @Query("select s from Schedule  s where s.userId = :userId and parsedatetime(s.startDate,'yyyy-MM-dd') >= parsedatetime(:targetDate,'yyyy-MM-dd')")
+    List<Schedule> findByScheduleFromStartDate(@Param("userId") String userId, @Param("targetDate") String targetDate);
+
+    @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :priceType and s.isFixAmount = :fixed and s.startDate between :startDate and :endDate")
+    List<String> findByFixedAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("fixed") boolean fixed, @Param("startDate") String startDate, @Param("endDate") String endDate);
 }

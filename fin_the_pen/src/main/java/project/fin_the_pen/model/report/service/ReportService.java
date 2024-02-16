@@ -51,10 +51,6 @@ public class ReportService {
 
             HashMap<Object, Object> responseMap = new HashMap<>();
 
-            /*List<Schedule> findDemo = crudScheduleRepository.findByAmountDemo(dto.getDate(), dto.getUserId(), PriceType.Minus);
-
-            log.info(findDemo.get(0).getId().toString());*/
-
             List<String> findAmountList = inquiryAmountList(dto);
 
             log.info(String.valueOf(findAmountList.get(2)));

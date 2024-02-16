@@ -18,7 +18,6 @@ import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
 import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
-import project.fin_the_pen.model.schedule.vo.FindCertainMonthVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -81,17 +80,17 @@ public class ScheduleController {
         }
     }
 
-    @PostMapping("/getMonthSchedules")
-    @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.", summary = "월별 조회 (O)")
-    public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
-        if (findCertainMonthVO.getDate() == null) {
-            return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
-        }
-
-        Map<String, Object> responseMap = scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
-
-        return convertResponse.getResponseEntity(responseMap);
-    }
+//    @PostMapping("/getMonthSchedules")
+//    @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.", summary = "월별 조회 (O)")
+//    public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
+//        if (findCertainMonthVO.getDate() == null) {
+//            return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
+//        }
+//
+//        Map<String, Object> responseMap = scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
+//
+//        return convertResponse.getResponseEntity(responseMap);
+//    }
 
     @PostMapping("/getMonthSchedules/section")
     public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {

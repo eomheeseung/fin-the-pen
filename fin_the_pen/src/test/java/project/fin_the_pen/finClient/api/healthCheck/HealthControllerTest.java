@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import project.fin_the_pen.config.security.JwtAuthenticationFilter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -29,9 +31,10 @@ class HealthControllerTest {
     @DisplayName(value = "HealthController 테스트 코드")
     @WithMockUser()
     void healthCheck() throws Exception {
-        System.out.println("test 시작");
         mockMvc.perform(get("/alive")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("i'm test"))
+                .andDo(print());
     }
 }

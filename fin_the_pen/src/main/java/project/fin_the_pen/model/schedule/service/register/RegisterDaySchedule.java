@@ -27,7 +27,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
 
-                int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getValue());
+                int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getRepeatTerm());
                 LocalDate currentDate = formatDate(dto.getStartDate());
 
                 if (dto.getPeriod().isRepeatAgain()) {
@@ -43,7 +43,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                 .isAllDay(dto.isAllDay())
                                 .repeatKind(RepeatKind.DAY.toString())
                                 .repeatOptions(UnitedType.builder()
-                                        .value(dto.getRepeat().getDayTypeVO().getValue())
+                                        .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                         .build())
                                 .isExclude(dto.isExclude())
                                 .importance(dto.getImportance())
@@ -81,7 +81,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                 .endTime(dto.getEndTime())
                                 .isAllDay(dto.isAllDay())
                                 .repeatKind(RepeatKind.DAY.toString())
-                                .repeatOptions(UnitedType.builder().value(dto.getRepeat().getDayTypeVO().getValue()).build())
+                                .repeatOptions(UnitedType.builder().value(dto.getRepeat().getDayTypeVO().getRepeatTerm()).build())
                                 .isExclude(dto.isExclude())
                                 .importance(dto.getImportance())
                                 .amount(dto.getAmount())
@@ -118,7 +118,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                 .endTime(dto.getEndTime())
                                 .isAllDay(dto.isAllDay())
                                 .repeatKind(RepeatKind.DAY.toString())
-                                .repeatOptions(UnitedType.builder().value(dto.getRepeat().getDayTypeVO().getValue()).build())
+                                .repeatOptions(UnitedType.builder().value(dto.getRepeat().getDayTypeVO().getRepeatTerm()).build())
                                 .isExclude(dto.isExclude())
                                 .importance(dto.getImportance())
                                 .amount(dto.getAmount())

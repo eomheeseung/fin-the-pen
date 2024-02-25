@@ -41,11 +41,6 @@ public class ReportController {
         }
     }
 
-
-    /* TODO
-        지출 목표액이 중복되어 저장됨, 1번 저장되고 다시 저장하려고 하면 delete -> create / update query 날려야 함.
-        userId당 하나의 report amount가 있어야 함.
-     */
     @PostMapping("/report/set-amount")
     @Operation(description = "지출 목표액을 설정합니다.", summary = "지출 목표액 설정")
     public ResponseEntity<Object> setAmount(@RequestBody ExpenditureRequestDTO dto, HttpServletRequest request) {

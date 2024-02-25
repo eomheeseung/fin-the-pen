@@ -73,7 +73,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build())
                                     .isExclude(dto.isExclude())
@@ -95,7 +95,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
                             super.getCrudScheduleRepository().save(schedule);
 
-                            currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
+                            currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getRepeatTerm()));
                         }
                     } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
                         int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
@@ -114,7 +114,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
@@ -135,7 +135,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
                             super.getCrudScheduleRepository().save(schedule);
 
-                            currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
+                            currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getRepeatTerm()));
                         }
                     } else if (dto.getPeriod().getRepeatEndLine() != null) {
                         while (!currentDate.isAfter(endLine)) {
@@ -152,7 +152,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build())
                                     .isExclude(dto.isExclude())
@@ -174,7 +174,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
                             super.getCrudScheduleRepository().save(schedule);
 
-                            currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
+                            currentDate = currentDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getRepeatTerm()));
                         }
                     }
                 }
@@ -221,7 +221,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         .isAllDay(dto.isAllDay())
                                         .repeatKind(RepeatKind.YEAR.name())
                                         .repeatOptions(UnitedType.builder()
-                                                .value(dto.getRepeat().getYearTypeVO().getValue())
+                                                .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                                 .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                                 .build()).isExclude(dto.isExclude())
                                         .importance(dto.getImportance())
@@ -242,7 +242,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
                                 super.getCrudScheduleRepository().save(schedule);
                             }
-                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
 
                             LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(currentDate.plusYears(value), parseMonth, dayOfWeek);
 
@@ -261,7 +261,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
@@ -322,7 +322,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         .isAllDay(dto.isAllDay())
                                         .repeatKind(RepeatKind.YEAR.name())
                                         .repeatOptions(UnitedType.builder()
-                                                .value(dto.getRepeat().getYearTypeVO().getValue())
+                                                .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                                 .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                                 .build()).isExclude(dto.isExclude())
                                         .importance(dto.getImportance())
@@ -344,7 +344,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                 super.getCrudScheduleRepository().save(schedule);
                             }
 
-                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
                             LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(currentDate.plusYears(value), parseMonth, dayOfWeek);
                             currentDate = nextDay;
 
@@ -361,7 +361,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
@@ -420,7 +420,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
@@ -444,7 +444,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                         }
 
                         while (!currentDate.isAfter(endLine)) {
-                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
                             LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(currentDate.plusYears(value), parseMonth, dayOfWeek);
                             currentDate = nextDay;
 
@@ -464,7 +464,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
@@ -525,7 +525,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         .isAllDay(dto.isAllDay())
                                         .repeatKind(RepeatKind.YEAR.name())
                                         .repeatOptions(UnitedType.builder()
-                                                .value(dto.getRepeat().getYearTypeVO().getValue())
+                                                .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                                 .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                                 .build()).isExclude(dto.isExclude())
                                         .importance(dto.getImportance())
@@ -547,7 +547,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                 super.getCrudScheduleRepository().save(schedule);
                             }
 
-                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
 
                             LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(currentDate.plusYears(value), parseMonth, dayOfWeek);
 
@@ -571,7 +571,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
@@ -641,7 +641,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                         .isAllDay(dto.isAllDay())
                                         .repeatKind(RepeatKind.YEAR.name())
                                         .repeatOptions(UnitedType.builder()
-                                                .value(dto.getRepeat().getYearTypeVO().getValue())
+                                                .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                                 .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                                 .build()).isExclude(dto.isExclude())
                                         .importance(dto.getImportance())
@@ -663,7 +663,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                 super.getCrudScheduleRepository().save(schedule);
                             }
 
-                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
 
                             LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(currentDate.plusYears(value), parseMonth, dayOfWeek);
 
@@ -693,7 +693,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
@@ -760,7 +760,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())
@@ -783,7 +783,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                         }
 
                         while (!currentDate.isAfter(endLine)) {
-                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                            int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
 
                             LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(currentDate.plusYears(value), parseMonth, dayOfWeek);
 
@@ -818,7 +818,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.YEAR.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getYearTypeVO().getValue())
+                                            .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
                                     .importance(dto.getImportance())

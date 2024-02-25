@@ -11,6 +11,6 @@ public class ReportRequestDemoDTO {
     private String userId;
 
     @JsonProperty(value = "date")
-    @Schema(description = "리포트 화면에서 조회할 날짜 yyyy-MM-dd", example = "2024-10-24")
+    @Schema(description = "리포트 화면에서 조회할 날짜 yyyy-MM-dd", example = "2024-02-02")
     private String date;
 }

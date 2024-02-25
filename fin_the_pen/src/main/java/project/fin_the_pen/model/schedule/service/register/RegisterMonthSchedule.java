@@ -119,7 +119,7 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                     }
                 } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
                     int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
-                    int repeatValue = repeatNumberOfTime * Integer.parseInt(dto.getRepeat().getMonthTypeVO().getRepeatTerm());
+//                    int repeatValue = repeatNumberOfTime * Integer.parseInt(dto.getRepeat().getMonthTypeVO().getRepeatTerm());
 
                     for (int i = 0; i < repeatNumberOfTime; i++) {
                         for (Integer date : dates) {
@@ -261,7 +261,7 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
                                                         return PeriodType.builder()
                                                                 .isRepeatAgain(false)
                                                                 .repeatNumberOfTime(String.valueOf("none"))
-                                                                .repeatEndLine("none")
+                                                                .repeatEndLine(endLine.toString())
                                                                 .build();
                                                     }))
                                                     .priceType(judgmentPriceType(() -> {

@@ -41,7 +41,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                 StringTokenizer tokenizer =
                         new StringTokenizer(dto.getRepeat().getWeekTypeVO().getRepeatDayOfWeek(), ",");
 
-                int intervalWeeks = Integer.parseInt(dto.getRepeat().getWeekTypeVO().getValue());
+                int intervalWeeks = Integer.parseInt(dto.getRepeat().getWeekTypeVO().getRepeatTerm());
                 // 문자열을 LocalDate 객체로 변환
                 LocalDate startDate = formatDate(dto.getStartDate());
                 LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
@@ -67,7 +67,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                             log.info("일자: {}", currentDate);
 
                             weekOptions weekOptions =
-                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getValue(), currentDate.getDayOfWeek().toString());
+                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getRepeatTerm(), currentDate.getDayOfWeek().toString());
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -80,7 +80,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.WEEK.toString())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getDayTypeVO().getValue())
+                                            .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                             .options(currentDate.getDayOfWeek().toString())
                                             .build())
                                     .isExclude(dto.isExclude())
@@ -131,7 +131,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                             log.info("일자: {}", currentDate);
 
                             weekOptions weekOptions =
-                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getValue(), currentDate.getDayOfWeek().toString());
+                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getRepeatTerm(), currentDate.getDayOfWeek().toString());
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -144,7 +144,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.WEEK.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getDayTypeVO().getValue())
+                                            .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                             .options(currentDate.getDayOfWeek().toString())
                                             .build())
                                     .isExclude(dto.isExclude())
@@ -191,7 +191,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                             log.info("일자: {}", currentDate);
 
                             weekOptions weekOptions =
-                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getValue(), currentDate.getDayOfWeek().toString());
+                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getRepeatTerm(), currentDate.getDayOfWeek().toString());
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -204,7 +204,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                     .isAllDay(dto.isAllDay())
                                     .repeatKind(RepeatKind.WEEK.name())
                                     .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getDayTypeVO().getValue())
+                                            .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                             .options(currentDate.getDayOfWeek().toString())
                                             .build())
                                     .isExclude(dto.isExclude())

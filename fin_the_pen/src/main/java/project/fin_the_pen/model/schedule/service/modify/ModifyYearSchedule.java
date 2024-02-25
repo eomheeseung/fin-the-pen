@@ -78,7 +78,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -100,7 +100,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
 
                     getCrudScheduleRepository().save(schedule);
 
-                    criteriaDate = criteriaDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
+                    criteriaDate = criteriaDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getRepeatTerm()));
                 }
             } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
                 int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
@@ -128,7 +128,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -149,7 +149,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
 
                     getCrudScheduleRepository().save(schedule);
 
-                    criteriaDate = criteriaDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
+                    criteriaDate = criteriaDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getRepeatTerm()));
                 }
             } else if (dto.getPeriod().getRepeatEndLine() != null) {
 
@@ -176,7 +176,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -197,7 +197,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
 
                     getCrudScheduleRepository().save(schedule);
 
-                    criteriaDate = criteriaDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getValue()));
+                    criteriaDate = criteriaDate.plusYears(Long.parseLong(dto.getRepeat().getYearTypeVO().getRepeatTerm()));
                 }
             }
         }
@@ -250,7 +250,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                 .isAllDay(dto.isAllDay())
                                 .repeatKind(RepeatKind.YEAR.name())
                                 .repeatOptions(UnitedType.builder()
-                                        .value(dto.getRepeat().getYearTypeVO().getValue())
+                                        .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                         .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                         .build())
                                 .isExclude(dto.isExclude())
@@ -272,7 +272,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
 
                         getCrudScheduleRepository().save(schedule);
                     }
-                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
 
                     LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(criteriaDate.plusYears(value), parseMonth, dayOfWeek);
 
@@ -302,7 +302,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -371,7 +371,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                 .isAllDay(dto.isAllDay())
                                 .repeatKind(RepeatKind.YEAR.name())
                                 .repeatOptions(UnitedType.builder()
-                                        .value(dto.getRepeat().getYearTypeVO().getValue())
+                                        .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                         .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                         .build())
                                 .isExclude(dto.isExclude())
@@ -392,7 +392,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
 
                         getCrudScheduleRepository().save(schedule);
                     }
-                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
                     LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(criteriaDate.plusYears(value), parseMonth, dayOfWeek);
                     criteriaDate = nextDay;
 
@@ -421,7 +421,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -487,7 +487,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -510,7 +510,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 }
 
                 while (!criteriaDate.isAfter(endLine)) {
-                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
                     LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(criteriaDate.plusYears(value), parseMonth, dayOfWeek);
                     criteriaDate = nextDay;
 
@@ -542,7 +542,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -614,7 +614,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                 .isAllDay(dto.isAllDay())
                                 .repeatKind(RepeatKind.YEAR.name())
                                 .repeatOptions(UnitedType.builder()
-                                        .value(dto.getRepeat().getYearTypeVO().getValue())
+                                        .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                         .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                         .build())
                                 .isExclude(dto.isExclude())
@@ -637,7 +637,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                         getCrudScheduleRepository().save(schedule);
                     }
 
-                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
 
                     LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(criteriaDate.plusYears(value), parseMonth, dayOfWeek);
 
@@ -672,7 +672,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -740,7 +740,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                 .isAllDay(dto.isAllDay())
                                 .repeatKind(RepeatKind.YEAR.name())
                                 .repeatOptions(UnitedType.builder()
-                                        .value(dto.getRepeat().getYearTypeVO().getValue())
+                                        .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                         .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                         .build())
                                 .isExclude(dto.isExclude())
@@ -762,7 +762,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                         getCrudScheduleRepository().save(schedule);
                     }
 
-                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
 
                     LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(criteriaDate.plusYears(value), parseMonth, dayOfWeek);
 
@@ -793,7 +793,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -857,7 +857,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -881,7 +881,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 }
 
                 while (!criteriaDate.isAfter(endLine)) {
-                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getValue());
+                    int value = Integer.parseInt(dto.getRepeat().getYearTypeVO().getRepeatTerm());
 
                     LocalDate nextDay = yearScheduleFunc.parseMonthlyLastDate(criteriaDate.plusYears(value), parseMonth, dayOfWeek);
 
@@ -916,7 +916,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.YEAR.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getYearTypeVO().getValue())
+                                    .value(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())

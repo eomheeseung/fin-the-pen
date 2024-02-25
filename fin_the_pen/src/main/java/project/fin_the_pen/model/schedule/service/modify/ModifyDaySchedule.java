@@ -28,7 +28,7 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
                 .dayType(bindingDayType)
                 .build();*/
 
-        int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getValue());
+        int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getRepeatTerm());
         LocalDate criteriaDate = formatDate(dto.getStartDate());
         int endRepeat = 50;
 
@@ -46,7 +46,7 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
                         .isAllDay(dto.isAllDay())
                         .repeatKind(RepeatKind.DAY.toString())
                         .repeatOptions(UnitedType.builder()
-                                .value(dto.getRepeat().getDayTypeVO().getValue())
+                                .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                 .build()
                         )
                         .isExclude(dto.isExclude())
@@ -83,7 +83,7 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
                         .isAllDay(dto.isAllDay())
                         .repeatKind(RepeatKind.DAY.toString())
                         .repeatOptions(UnitedType.builder()
-                                .value(dto.getRepeat().getDayTypeVO().getValue())
+                                .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                 .build())
                         .isExclude(dto.isExclude())
                         .importance(dto.getImportance())
@@ -124,7 +124,7 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
                         .isAllDay(dto.isAllDay())
                         .repeatKind(RepeatKind.DAY.toString())
                         .repeatOptions(UnitedType.builder()
-                                .value(dto.getRepeat().getDayTypeVO().getValue())
+                                .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                 .build())
                         .isExclude(dto.isExclude())
                         .importance(dto.getImportance())

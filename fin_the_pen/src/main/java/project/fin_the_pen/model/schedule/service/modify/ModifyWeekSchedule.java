@@ -30,7 +30,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
         StringTokenizer tokenizer =
                 new StringTokenizer(dto.getRepeat().getWeekTypeVO().getRepeatDayOfWeek(), ",");
 
-        int intervalWeeks = Integer.parseInt(dto.getRepeat().getWeekTypeVO().getValue());
+        int intervalWeeks = Integer.parseInt(dto.getRepeat().getWeekTypeVO().getRepeatTerm());
 
         List<String> days = new ArrayList<>();
 
@@ -79,7 +79,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.WEEK.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getDayTypeVO().getValue())
+                                    .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                     .options(criteriaDate.getDayOfWeek().toString())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -90,7 +90,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                                 return PeriodType.builder()
                                         .isRepeatAgain(true)
                                         .repeatNumberOfTime("0")
-                                        .repeatEndLine(null).build();
+                                        .repeatEndLine("none").build();
                             }))
                             .priceType(judgmentPriceType(() -> {
                                 if (dto.getPriceType().equals(PriceType.Plus)) {
@@ -141,7 +141,6 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .build();*/
 
 
-
                     Schedule schedule = Schedule.builder()
                             .userId(dto.getUserId())
                             .eventName(dto.getEventName())
@@ -153,15 +152,16 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.WEEK.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getDayTypeVO().getValue())
+                                    .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                     .options(criteriaDate.getDayOfWeek().toString())
-                                    .build())                            .isExclude(dto.isExclude())
+                                    .build()).isExclude(dto.isExclude())
                             .importance(dto.getImportance())
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
                                 return PeriodType.builder()
                                         .isRepeatAgain(false)
+                                        .repeatNumberOfTime(dto.getRepeat().getWeekTypeVO().getRepeatTerm())
                                         .repeatEndLine(endLine.toString()).build();
                             }))
                             .priceType(judgmentPriceType(() -> {
@@ -221,7 +221,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .isAllDay(dto.isAllDay())
                             .repeatKind(RepeatKind.WEEK.name())
                             .repeatOptions(UnitedType.builder()
-                                    .value(dto.getRepeat().getDayTypeVO().getValue())
+                                    .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                     .options(criteriaDate.getDayOfWeek().toString())
                                     .build())
                             .isExclude(dto.isExclude())
@@ -231,6 +231,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                             .period(createPeriodType(() -> {
                                 return PeriodType.builder()
                                         .isRepeatAgain(false)
+                                        .repeatNumberOfTime("0")
                                         .repeatEndLine(endLine.toString()).build();
                             }))
                             .priceType(judgmentPriceType(() -> {

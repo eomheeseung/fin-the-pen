@@ -14,7 +14,7 @@ public class YearTypeVO {
 
     @JsonProperty("repeat_term")
     @Schema(example = "2")
-    private String value;
+    private String repeatTerm;
 
     @JsonProperty("year_category")
     @Schema(example = "NthDayOfMonth")

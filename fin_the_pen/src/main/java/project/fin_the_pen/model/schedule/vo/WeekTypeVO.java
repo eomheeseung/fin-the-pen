@@ -14,5 +14,5 @@ public class WeekTypeVO {
 
     @JsonProperty("repeat_term")
     @Schema(example = "2")
-    private String value;
+    private String repeatTerm;
 }

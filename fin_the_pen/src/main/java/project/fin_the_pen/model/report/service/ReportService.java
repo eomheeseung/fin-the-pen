@@ -168,7 +168,7 @@ public class ReportService {
 
             responseMap.put("expenditure_this_month", expenditureMap);
 
-            // 5번
+            // TODO 5번
             List<ConsumeReportResponseDTO> consumeList = consumeReportInquiry(dto.getUserId(), dto.getDate(), responseMap);
             responseMap.put("category_consume_report", consumeList);
 

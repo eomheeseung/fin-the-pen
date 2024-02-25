@@ -30,7 +30,6 @@ public class HomeController {
     @Operation(summary = "홈 화면", description = "홈 화면")
     @PostMapping("/home/month")
     public ResponseEntity<Object> homeMonth(@RequestBody HomeMonthRequestDto dto, HttpServletRequest request) {
-
         try {
             HashMap<Object, Object> responseMap = service.inquiryMonth(dto, request);
             return ResponseEntity.ok().body(responseMap);

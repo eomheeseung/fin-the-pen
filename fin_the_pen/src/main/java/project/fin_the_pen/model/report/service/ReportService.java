@@ -127,21 +127,27 @@ public class ReportService {
                 LocalDate beforeStartDate = parseBeforeDate.withDayOfMonth(1);
                 LocalDate beforeEndDate = parseBeforeDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
 
-                List<String> beforePlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, true, beforeStartDate.toString(), beforeEndDate.toString());
+                List<String> beforePlusFixedAmount =
+                        crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, true, beforeStartDate.toString(), beforeEndDate.toString());
+
                 int beforePlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
                 log.info(String.valueOf(beforePlusSum));
 
-                List<String> beforeMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, true, beforeStartDate.toString(), beforeEndDate.toString());
+                List<String> beforeMinusFixedAmount =
+                        crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, true, beforeStartDate.toString(), beforeEndDate.toString());
+
                 int beforeMinusSum = beforeMinusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
                 log.info(String.valueOf(beforeMinusSum));
 
                 LocalDate currentStartDate = parseCurrentDate.withDayOfMonth(1);
                 LocalDate currentEndDate = parseCurrentDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
 
-                List<String> currentPlusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, true, currentStartDate.toString(), currentEndDate.toString());
+                List<String> currentPlusFixedAmount =
+                        crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, true, currentStartDate.toString(), currentEndDate.toString());
                 int currentPlusSum = currentPlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
 
-                List<String> currentMinusFixedAmount = crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, true, currentStartDate.toString(), currentEndDate.toString());
+                List<String> currentMinusFixedAmount =
+                        crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, true, currentStartDate.toString(), currentEndDate.toString());
                 int currentMinusSum = currentMinusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
 
                 LocalDate previousDate = parseCurrentDate.minusMonths(1);
@@ -188,7 +194,7 @@ public class ReportService {
 
             HashMap<Object, Object> monthReportMap = new HashMap<>();
             monthReportMap.put("second_previous", monthSum(dto.getUserId(), secondPrevious));
-            monthReportMap.put("previous", monthSum(dto.getUserId(),previous));
+            monthReportMap.put("previous", monthSum(dto.getUserId(), previous));
             monthReportMap.put("current", monthSum(dto.getUserId(), currentDate));
 
             responseMap.put("month_report", monthReportMap);

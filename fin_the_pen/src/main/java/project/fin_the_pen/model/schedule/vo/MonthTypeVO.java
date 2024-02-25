@@ -18,5 +18,5 @@ public class MonthTypeVO {
 
     @JsonProperty("repeat_term")
     @Schema(example = "2")
-    private String value;
+    private String repeatTerm;
 }

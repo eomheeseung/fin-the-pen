@@ -23,4 +23,10 @@ public class Reports {
 
     @Column(name = "date")
     private String date;
+
+    public void update(String userId, String amount, String date) {
+        this.userId = userId;
+        this.amount = amount;
+        this.date = date;
+    }
 }

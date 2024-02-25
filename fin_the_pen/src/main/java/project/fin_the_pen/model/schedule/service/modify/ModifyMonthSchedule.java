@@ -100,7 +100,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                     log.info("해당 하는 달의 마지막 날짜:{}", lastDate);
 
                     if (criteriaDate.equals(lastDate)) {
-                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getValue()));
+                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getRepeatTerm()));
                     }
 
                 } else {
@@ -115,13 +115,13 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                     log.info("해당 하는 달의 마지막 날짜:{}", lastDate);
 
                     if (criteriaDate.equals(lastDate)) {
-                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getValue()));
+                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getRepeatTerm()));
                     }
                 }
             }
         } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
             int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
-            int repeatValue = repeatNumberOfTime * Integer.parseInt(dto.getRepeat().getMonthTypeVO().getValue());
+            int repeatValue = repeatNumberOfTime * Integer.parseInt(dto.getRepeat().getMonthTypeVO().getRepeatTerm());
 
             for (int i = 0; i < repeatValue; i++) {
                 int dayOfMonth = criteriaDate.getDayOfMonth();
@@ -179,7 +179,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                     log.info("해당 하는 달의 마지막 날짜:{}", lastDate);
 
                     if (criteriaDate.equals(lastDate)) {
-                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getValue()));
+                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getRepeatTerm()));
                     }
 
                 } else {
@@ -194,7 +194,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                     log.info("해당 하는 달의 마지막 날짜:{}", lastDate);
 
                     if (criteriaDate.equals(lastDate)) {
-                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getValue()));
+                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getRepeatTerm()));
                     }
                 }
             }
@@ -258,7 +258,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                     log.info("해당 하는 달의 마지막 날짜:{}", lastDate);
 
                     if (criteriaDate.equals(lastDate)) {
-                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getValue()));
+                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getRepeatTerm()));
                     }
 
                 } else {
@@ -272,7 +272,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                     log.info("해당 하는 달의 마지막 날짜:{}", lastDate);
 
                     if (criteriaDate.equals(lastDate)) {
-                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getValue()));
+                        criteriaDate = criteriaDate.plusMonths(Long.parseLong(dto.getRepeat().getMonthTypeVO().getRepeatTerm()));
                     }
                 }
             }

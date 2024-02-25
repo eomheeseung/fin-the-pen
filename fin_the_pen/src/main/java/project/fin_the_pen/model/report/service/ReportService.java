@@ -53,6 +53,63 @@ public class ReportService {
 
             List<String> findAmountList = inquiryAmountList(dto);
 
+            if (findAmountList.isEmpty()) {
+                // 1 번
+                String date = dto.getDate();
+                responseMap.put("date", date);
+
+                // 2번
+                responseMap.put("totalSpentToday", "0");
+
+                HashMap<Object, Object> expenditureMap = new HashMap<>();
+                expenditureMap.put("goal_amount", "0");
+
+                responseMap.put("expenseGoalAmount", "0");
+
+                // 4번
+                responseMap.put("availableAmount", "0");
+
+                // 6번
+                expenditureMap.put("goal_amount", "0");
+
+                expenditureMap.put("1st_month_Amount", "0");
+
+                expenditureMap.put("last_month_Amount", "0");
+
+                expenditureMap.put("result_amount", "0");
+
+                responseMap.put("expenditure_this_month", expenditureMap);
+
+                responseMap.put("category_consume_report", "0");
+
+                HashMap<Object, Object> fixedMap = new HashMap<>();
+
+
+                LocalDate parseDate = LocalDate.parse(date);
+                LocalDate previousDate = parseDate.minusMonths(1);
+
+                fixedMap.put("current_month", date);
+                fixedMap.put("previous_month", previousDate.toString());
+                fixedMap.put("fixed_deposit", "0");
+
+                fixedMap.put("previous_diff_plus", "0");
+
+                fixedMap.put("fixed_withdraw", "0");
+
+                fixedMap.put("previous_diff_minus", "0");
+
+                responseMap.put("Nmonth_fixed", fixedMap);
+
+                HashMap<Object, Object> monthReportMap = new HashMap<>();
+                monthReportMap.put("second_previous", "0");
+                monthReportMap.put("previous", "0");
+                monthReportMap.put("current", "0");
+
+                responseMap.put("month_report", monthReportMap);
+
+                return responseMap;
+            }
+
             log.info(String.valueOf(findAmountList.get(2)));
 
             int amountSum = findAmountList
@@ -68,7 +125,7 @@ public class ReportService {
 
             // 3번
             String parsingDate = dto.getDate().substring(0, 7);
-            String goalAmount = reportRepository.findByAmountAndUserIdAndDate(parsingDate, dto.getUserId());
+            String goalAmount = reportRepository.findByAmountAndUserIdAndDate(parsingDate, dto.getUserId()).get();
             log.info(goalAmount);
 
             HashMap<Object, Object> expenditureMap = new HashMap<>();
@@ -206,7 +263,6 @@ public class ReportService {
     }
 
     private int monthSum(String userId, LocalDate date) {
-
         return crudScheduleRepository.findByAmountMonth(userId,
                         PriceType.Minus,
                         date.withDayOfMonth(1).toString(),
@@ -225,13 +281,22 @@ public class ReportService {
                 throw new RuntimeException();
             }
 
-            Reports report = Reports.builder()
-                    .userId(dto.getUserId())
-                    .amount(dto.getAmount())
-                    .date(dto.getDate())
-                    .build();
+            Optional<Reports> findReports = reportRepository.findByUserIdAndDate(dto.getDate(), dto.getUserId());
 
-            reportRepository.save(report);
+            if (findReports.isPresent()) {
+                Reports reports = findReports.get();
+
+                reports.update(dto.getUserId(), dto.getAmount(), dto.getDate());
+                reportRepository.save(reports);
+            } else {
+                Reports report = Reports.builder()
+                        .userId(dto.getUserId())
+                        .amount(dto.getAmount())
+                        .date(dto.getDate())
+                        .build();
+
+                reportRepository.save(report);
+            }
         } catch (RuntimeException e) {
             return false;
         }

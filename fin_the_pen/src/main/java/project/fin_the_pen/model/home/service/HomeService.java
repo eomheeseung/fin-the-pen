@@ -56,7 +56,7 @@ public class HomeService {
         List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
 
         // 지출 목표액
-        Integer goalAmount = Integer.parseInt(reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId()));
+        Integer goalAmount = Integer.parseInt(String.valueOf(reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId())));
 
 
         // TODO

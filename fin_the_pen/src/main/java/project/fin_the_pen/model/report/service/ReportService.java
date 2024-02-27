@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
-import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundException;
 import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.report.dto.ConsumeReportRequestDTO;
 import project.fin_the_pen.model.report.dto.ConsumeReportResponseDTO;
@@ -17,7 +16,6 @@ import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
-import project.fin_the_pen.model.usersToken.entity.UsersToken;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,13 +36,8 @@ public class ReportService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public HashMap<Object, Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {
-        String accessToken = tokenManager.parseBearerToken(request);
 
         try {
-            if (accessToken == null) {
-                throw new RuntimeException();
-            }
-
             if (dto.getDate() == null) {
                 throw new RuntimeException();
             }
@@ -53,7 +46,10 @@ public class ReportService {
 
             List<String> findAmountList = inquiryAmountList(dto);
 
-            if (findAmountList.isEmpty()) {
+            String parsingDate = dto.getDate().substring(0, 7);
+            Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(parsingDate, dto.getUserId());
+
+            if (findAmountList.isEmpty() || optionalGoalAmount.isEmpty()) {
                 // 1 번
                 String date = dto.getDate();
                 responseMap.put("date", date);
@@ -124,51 +120,47 @@ public class ReportService {
             responseMap.put("totalSpentToday", amountSum);
 
             // 3번
-            String parsingDate = dto.getDate().substring(0, 7);
-            String goalAmount = reportRepository.findByAmountAndUserIdAndDate(parsingDate, dto.getUserId()).get();
+            String goalAmount = optionalGoalAmount.get();
+
             log.info(goalAmount);
 
             HashMap<Object, Object> expenditureMap = new HashMap<>();
 
-            if (goalAmount == null) {
-                expenditureMap.put("goal_amount", false);
-            } else {
-                Integer parseGoalAmount = Integer.valueOf(goalAmount);
-                responseMap.put("expenseGoalAmount", parseGoalAmount);
+            Integer parseGoalAmount = Integer.valueOf(goalAmount);
+            responseMap.put("expenseGoalAmount", parseGoalAmount);
 
-                // 4번
-                int availableAmount = Integer.parseInt(goalAmount) - amountSum;
-                responseMap.put("availableAmount", availableAmount);
+            // 4번
+            int availableAmount = Integer.parseInt(goalAmount) - amountSum;
+            responseMap.put("availableAmount", availableAmount);
 
-                // 6번
-                expenditureMap.put("goal_amount", parseGoalAmount);
+            // 6번
+            expenditureMap.put("goal_amount", parseGoalAmount);
 
-                // 6-1 이번 달 1일부터 금일까지 사용한 금액 (보라색) : 사용한 금액
-                String dtoDate = dto.getDate();
-                LocalDate parseStartDate = LocalDate.parse(dtoDate, formatter).withDayOfMonth(1);
+            // 6-1 이번 달 1일부터 금일까지 사용한 금액 (보라색) : 사용한 금액
+            String dtoDate = dto.getDate();
+            LocalDate parseStartDate = LocalDate.parse(dtoDate, formatter).withDayOfMonth(1);
 
-                List<String> byAmount1stMonth = crudScheduleRepository.findByAmountMonth(dto.getUserId(), PriceType.Minus, parseStartDate.toString(), dto.getDate());
-                int amount1stMonthSum = byAmount1stMonth.stream().mapToInt(Integer::parseInt).sum();
-                expenditureMap.put("1st_month_Amount", amount1stMonthSum);
+            List<String> byAmount1stMonth = crudScheduleRepository.findByAmountMonth(dto.getUserId(), PriceType.Minus, parseStartDate.toString(), dto.getDate());
+            int amount1stMonthSum = byAmount1stMonth.stream().mapToInt(Integer::parseInt).sum();
+            expenditureMap.put("1st_month_Amount", amount1stMonthSum);
 
-                // 6-2 이번달 금일 이후, 금월 지출 예정 금액 (핑크색) : 지출 예정
-                LocalDate stDate = LocalDate.parse(dto.getDate(), formatter).plusDays(1);
-                LocalDate endDate = stDate.withDayOfMonth(stDate.lengthOfMonth());
-                log.info(stDate.toString());
+            // 6-2 이번달 금일 이후, 금월 지출 예정 금액 (핑크색) : 지출 예정
+            LocalDate stDate = LocalDate.parse(dto.getDate(), formatter).plusDays(1);
+            LocalDate endDate = stDate.withDayOfMonth(stDate.lengthOfMonth());
+            log.info(stDate.toString());
 
-                List<String> byAmountLastMonth = crudScheduleRepository.findByAmountMonth(dto.getUserId(), PriceType.Minus, stDate.toString(), endDate.toString());
-                int amountLastMonthSum = byAmountLastMonth.stream().mapToInt(Integer::parseInt).sum();
-                expenditureMap.put("last_month_Amount", amountLastMonthSum);
+            List<String> byAmountLastMonth = crudScheduleRepository.findByAmountMonth(dto.getUserId(), PriceType.Minus, stDate.toString(), endDate.toString());
+            int amountLastMonthSum = byAmountLastMonth.stream().mapToInt(Integer::parseInt).sum();
+            expenditureMap.put("last_month_Amount", amountLastMonthSum);
 
-                // 6-3 이번 달 사용 가능 금액 (지출 목표액 - 이번달 금일까지 사용한 총합) (하늘색) : 사용가능 금액
-                int resultSum = Integer.parseInt(goalAmount) - amount1stMonthSum;
+            // 6-3 이번 달 사용 가능 금액 (지출 목표액 - 이번달 금일까지 사용한 총합) (하늘색) : 사용가능 금액
+            int resultSum = Integer.parseInt(goalAmount) - amount1stMonthSum;
 
-                expenditureMap.put("result_amount", resultSum);
-            }
+            expenditureMap.put("result_amount", resultSum);
+
 
             responseMap.put("expenditure_this_month", expenditureMap);
 
-            // TODO 5번
             List<ConsumeReportResponseDTO> consumeList = consumeReportInquiry(dto.getUserId(), dto.getDate(), responseMap);
             responseMap.put("category_consume_report", consumeList);
 
@@ -177,8 +169,7 @@ public class ReportService {
 
             try {
                 // 7번
-                String dtoDate = dto.getDate();
-                LocalDate parseCurrentDate = LocalDate.parse(dtoDate, formatter);
+                LocalDate parseCurrentDate = LocalDate.parse(dto.getDate(), formatter);
 
                 LocalDate parseBeforeDate = parseCurrentDate.minusMonths(1);
                 LocalDate beforeStartDate = parseBeforeDate.withDayOfMonth(1);
@@ -274,59 +265,34 @@ public class ReportService {
 
 
     public Boolean setAmount(ExpenditureRequestDTO dto, HttpServletRequest request) {
-        String accessToken = tokenManager.parseBearerToken(request);
+        Optional<Reports> findReports = reportRepository.findByUserIdAndDate(dto.getDate(), dto.getUserId());
 
-        try {
-            if (accessToken == null) {
-                throw new RuntimeException();
-            }
+        if (findReports.isPresent()) {
+            Reports reports = findReports.get();
 
-            Optional<Reports> findReports = reportRepository.findByUserIdAndDate(dto.getDate(), dto.getUserId());
+            reports.update(dto.getUserId(), dto.getAmount(), dto.getDate());
+            reportRepository.save(reports);
+        } else {
+            Reports report = Reports.builder()
+                    .userId(dto.getUserId())
+                    .amount(dto.getAmount())
+                    .date(dto.getDate())
+                    .build();
 
-            if (findReports.isPresent()) {
-                Reports reports = findReports.get();
-
-                reports.update(dto.getUserId(), dto.getAmount(), dto.getDate());
-                reportRepository.save(reports);
-            } else {
-                Reports report = Reports.builder()
-                        .userId(dto.getUserId())
-                        .amount(dto.getAmount())
-                        .date(dto.getDate())
-                        .build();
-
-                reportRepository.save(report);
-            }
-        } catch (RuntimeException e) {
-            return false;
+            reportRepository.save(report);
         }
-
         return true;
     }
 
 
     public Map<String, Object> inquiryReport(ConsumeReportRequestDTO dto, HttpServletRequest request) {
-        String accessToken = tokenManager.parseBearerToken(request);
         Map<String, Object> responseMap = new HashMap<>();
 
         String userId = dto.getUserId();
         String date = dto.getDate();
 
         try {
-            if (accessToken == null) {
-                throw new RuntimeException();
-            }
-
-            Optional<UsersToken> findToken = Optional
-                    .ofNullable(tokenRepository.findUsersToken(accessToken)
-                            .orElseThrow(() -> new TokenNotFoundException("token not found")));
-
-            // 현재 토큰으로 로그인 된 사용자의 userId와 클라이언트로부터 전달받은 userId값이 일치하지 않은 경우 error!!!
-            if (!findToken.get().getUserId().equals(userId)) {
-                throw new Exception("error");
-            } else {
-                responseMap.put("data", consumeReportInquiry(userId, date, new HashMap<>()));
-            }
+            responseMap.put("data", consumeReportInquiry(userId, date, new HashMap<>()));
         } catch (Exception e) {
             throw new RuntimeException("error");
         }

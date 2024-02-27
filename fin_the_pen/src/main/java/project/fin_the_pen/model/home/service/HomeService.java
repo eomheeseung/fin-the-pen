@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundException;
 import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.home.dto.HomeMonthRequestDto;
 import project.fin_the_pen.model.home.repository.HomeRepository;
@@ -19,6 +18,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @Service
@@ -32,17 +33,18 @@ public class HomeService {
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    public HashMap<Object, Object> inquiryMonth(HomeMonthRequestDto dto, HttpServletRequest request) {
-        String accessToken = tokenManager.parseBearerToken(request);
-        HashMap<Object, Object> responseMap = new HashMap<>();
 
+    public HashMap<Object, Object> inquiryMonth(HomeMonthRequestDto dto, HttpServletRequest request) {
+        /*String accessToken = tokenManager.parseBearerToken(request);
 
         if (accessToken == null) {
             throw new TokenNotFoundException("token Not Found");
-        }
+        }*/
+
+        HashMap<Object, Object> responseMap = new HashMap<>();
 
         // 이제 입력받은 날짜의 월의 첫날과 마지막 날을 구해야 함...
-        LocalDate parseDate = LocalDate.parse(dto.getMainDate(), formatter);
+        LocalDate parseDate = LocalDate.parse(dto.getCalenderDate());
         LocalDate startDate = parseDate.withDayOfMonth(1);
         LocalDate endDate = parseDate.withDayOfMonth(parseDate.lengthOfMonth());
 
@@ -50,13 +52,19 @@ public class HomeService {
         List<String> incomeList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Plus, startDate.toString(), endDate.toString());
 
         // 지출
-        List<String> expenseList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, startDate.toString(), dto.getMainDate());
+        List<String> expenseList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, startDate.toString(), dto.getCalenderDate());
 
         // 지출 예정 금액
         List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
 
         // 지출 목표액
-        Integer goalAmount = Integer.parseInt(String.valueOf(reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId())));
+        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId());
+
+        int goalAmount = 0;
+
+        if (optionalS.isPresent()) {
+            goalAmount = Integer.parseInt(optionalS.get());
+        }
 
 
         // TODO
@@ -84,22 +92,37 @@ public class HomeService {
 
         Supplier<String> supplier = () -> {
             if (availableSum < 0) {
-                return "-" + availableSum + "원";
-            } else return "+" + availableSum + "원";
+                return "-" +  Math.abs(availableSum) + "원";
+            } else return "+" + Math.abs(availableSum) + "원";
         };
 
 
-        responseMap.put("available", supplier.get() + "원");
+        responseMap.put("available", supplier.get());
 
 
         // 4번 캘린더의 리스트를 보여주는 것은 controller의 findMonthSchedule에서 처리
-        responseMap.put("calender", calenderView(dto.getCalenderDate(), dto.getUserId()));
+//        responseMap.put("calender", calenderView(dto.getCalenderDate(), dto.getUserId()));
 
-        // TODO home 화면 -> 5번
+        List<Schedule> byStartDate = scheduleRepository.findByStartDate(dto.getUserId(), dto.getCalenderDate());
+        responseMap.put("today_schedule", byStartDate);
 
         return responseMap;
     }
 
+    // TODO 홈 - 일정 리스트
+    public Map<Object, Object> findScheduleList() {
+        HashMap<Object, Object> responseMap = new HashMap<>();
+
+
+        return responseMap;
+    }
+
+    /**
+     * 추후에 구현
+     * @param date
+     * @param userId
+     * @return
+     */
     private HashMap<Object, Object> calenderView(String date, String userId) {
         HashMap<Object, Object> calenderMap = new HashMap<>();
 

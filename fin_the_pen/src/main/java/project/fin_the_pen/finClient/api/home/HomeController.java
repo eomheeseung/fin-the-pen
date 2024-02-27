@@ -23,7 +23,7 @@ import java.util.Map;
 @Slf4j
 @Tag(name = "v2 홈 화면", description = "홈 화면 (로그인 후 이용가능!)")
 public class HomeController {
-    private final HomeService service;
+    private final HomeService homeService;
     private final ScheduleService scheduleService;
     private final ConvertResponse convertResponse;
 
@@ -31,7 +31,7 @@ public class HomeController {
     @PostMapping("/home/month")
     public ResponseEntity<Object> homeMonth(@RequestBody HomeMonthRequestDto dto, HttpServletRequest request) {
         try {
-            HashMap<Object, Object> responseMap = service.inquiryMonth(dto, request);
+            HashMap<Object, Object> responseMap = homeService.inquiryMonth(dto, request);
             return ResponseEntity.ok().body(responseMap);
 
         } catch (RuntimeException e) {
@@ -39,6 +39,12 @@ public class HomeController {
         }
     }
 
+    /**
+     * 임시로 넣어둠.
+     * @param findCertainMonthVO
+     * @param request
+     * @return
+     */
     @PostMapping("/home/getMonthSchedules")
     @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.", summary = "월별 조회 (O)")
     public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {

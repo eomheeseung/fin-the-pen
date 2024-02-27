@@ -16,9 +16,7 @@ import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.time.LocalDate;
 
 @Slf4j
 @RestController
@@ -26,20 +24,6 @@ import java.time.LocalDate;
 @Tag(name = "API 테스트 / 로그인")
 public class LoginController {
     private final LoginService loginService;
-    private UserResponseDTO currentUser;
-
-    /*@PostConstruct
-    public void init() {
-        loginService.init();
-    }*/
-
-    //    @PostMapping("/join")
-    public UserRequestDTO join(@RequestBody UserRequestDTO userRequestDTO) {
-        userRequestDTO.setRegisterDate(LocalDate.now());
-        loginService.signUp(userRequestDTO);
-        log.info("user: " + userRequestDTO.getName() + " 등록");
-        return userRequestDTO;
-    }
 
     /**
      * 회원 가입
@@ -81,12 +65,5 @@ public class LoginController {
             return ResponseEntity.ok().body("로그아웃 되었습니다.");
         }
         return ResponseEntity.badRequest().body("로그아웃 오류");
-    }
-
-
-    private void grantSession(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        session.setAttribute("session", currentUser.getUserId());
-        log.info((String) session.getAttribute("session"));
     }
 }

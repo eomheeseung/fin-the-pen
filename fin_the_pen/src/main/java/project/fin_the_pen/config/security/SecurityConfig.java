@@ -19,8 +19,7 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;    // JwtAuthenticationFilter 주입
-    private final String[] allowedUrls = {"/", "/swagger-ui/**", "/v3/**", "/fin-the-pen-web/sign-up", "/fin-the-pen-web/sign-in", "/alive", "/fin-the-pen-web/getMonthSchedules"};
-//    private final String[] allowedUrls = {"/", "/swagger-ui/**", "/v3/**", "/fin-the-pen-web/sign-up", "/fin-the-pen-web/sign-in","/alive"};
+    private final String[] allowedUrls = {"/", "/swagger-ui/**", "/v3/**", "/sign-up", "/sign-in", "/alive", "/fin-the-pen-web/getMonthSchedules"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -30,7 +29,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                                 authorizeRequests
                                         .requestMatchers(new AntPathRequestMatcher(Arrays.toString(allowedUrls))).permitAll() // Use AntPathRequestMatcher for specific paths
-//                                .requestMatchers(PathRequest.toH2Console()).permitAll()
                                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement ->

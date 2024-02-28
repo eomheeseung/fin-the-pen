@@ -76,4 +76,7 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :priceType and s.isFixAmount = :fixed and s.startDate between :startDate and :endDate")
     List<String> findByFixedAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("fixed") boolean fixed, @Param("startDate") String startDate, @Param("endDate") String endDate);
+
+    @Query("select s from Schedule s where s.userId = :userId and s.startDate between :startDate and :endDate")
+    List<Schedule> findByStartDateAndeEndDate(@Param("userId") String userId, @Param("startDate") String startDate, @Param("endDate") String endDate);
 }

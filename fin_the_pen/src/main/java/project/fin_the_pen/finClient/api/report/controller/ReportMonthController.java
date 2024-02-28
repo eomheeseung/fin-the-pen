@@ -27,11 +27,27 @@ public class ReportMonthController {
     private final ReportService reportService;
     private final ConvertResponse convertResponse;
 
-    @GetMapping
+    /*@PostMapping
     @Operation(description = "리포트 메인 화면입니다.", summary = "리포트 메인 화면")
-    public ResponseEntity<Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {
+    public ResponseEntity<Object> reportHome(@RequestBody ReportRequestDemoDTO dto, HttpServletRequest request) {
         try {
             log.info(dto.getDate());
+            HashMap<Object, Object> map = reportService.reportHome(dto, request);
+
+            return ResponseEntity.ok().body(map);
+        } catch (NotFoundDataException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }*/
+
+    @GetMapping
+    @Operation(description = "리포트 메인 화면입니다.", summary = "리포트 메인 화면")
+    public ResponseEntity<Object> reportHome(@RequestParam("date") String date, @RequestParam("user_id") String userId, HttpServletRequest request) {
+        try {
+//            log.info(dto.getDate());
+            ReportRequestDemoDTO dto = new ReportRequestDemoDTO();
+            dto.setDate(date);
+            dto.setUserId(userId);
             HashMap<Object, Object> map = reportService.reportHome(dto, request);
 
             return ResponseEntity.ok().body(map);

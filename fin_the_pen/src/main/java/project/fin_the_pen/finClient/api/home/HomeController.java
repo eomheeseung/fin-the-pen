@@ -39,7 +39,23 @@ public class HomeController {
         }
     }
 
+    @Operation(summary = "홈 화면", description = "홈 화면")
+    @PostMapping("/home/week")
+    public ResponseEntity<Object> homeWeek(@RequestBody HomeMonthRequestDto dto, HttpServletRequest request) {
+        try {
+            HashMap<Object, Object> responseMap = homeService.inquiryWeek(dto, request);
+            return ResponseEntity.ok().body(responseMap);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+
+
     /**
+     * TODO
+     *   홈화면에서 리스트볼 때
      * 임시로 넣어둠.
      * @param findCertainMonthVO
      * @param request

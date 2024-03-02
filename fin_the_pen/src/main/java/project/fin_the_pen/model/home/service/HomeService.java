@@ -240,7 +240,7 @@ public class HomeService {
             responseMap.put("income", "+" + dayIncome);
             responseMap.put("dayExpense", "-" + dayExpense);
             responseMap.put("expect", "-" + expenseExpect);
-            responseMap.put("available", "-" + available);
+            responseMap.put("available", available);
 
         } else {
             responseMap.put("income", 0);

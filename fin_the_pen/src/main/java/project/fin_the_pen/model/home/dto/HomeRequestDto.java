@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class HomeMonthRequestDto {
+public class HomeRequestDto {
     @JsonProperty(value = "user_id")
     @Schema(description = "현재 접속해 있는 schedule의 id", example = "test1234")
     private String userId;

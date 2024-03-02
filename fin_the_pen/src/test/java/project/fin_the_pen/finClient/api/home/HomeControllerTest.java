@@ -13,7 +13,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import project.fin_the_pen.config.security.JwtAuthenticationFilter;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
-import project.fin_the_pen.model.home.dto.HomeMonthRequestDto;
+import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.service.HomeService;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
 
@@ -60,7 +60,7 @@ class HomeControllerTest {
             put("test", "test");
         }});
 
-        HomeMonthRequestDto dto = new HomeMonthRequestDto();
+        HomeRequestDto dto = new HomeRequestDto();
         dto.setUserId("test");
         dto.setMainDate("2024-02");
         dto.setCalenderDate("2024-02-12");

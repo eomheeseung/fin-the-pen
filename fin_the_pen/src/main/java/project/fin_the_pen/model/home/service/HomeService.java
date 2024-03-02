@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.util.TokenManager;
-import project.fin_the_pen.model.home.dto.HomeMonthRequestDto;
+import project.fin_the_pen.model.home.dto.HomeDayResponseDto;
+import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.dto.HomeWeekResponseDto;
 import project.fin_the_pen.model.home.repository.HomeRepository;
 import project.fin_the_pen.model.report.repository.ReportRepository;
@@ -16,6 +17,8 @@ import project.fin_the_pen.model.schedule.type.PriceType;
 import javax.servlet.http.HttpServletRequest;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -33,7 +36,7 @@ public class HomeService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
-    public HashMap<Object, Object> inquiryMonth(HomeMonthRequestDto dto, HttpServletRequest request) {
+    public HashMap<Object, Object> inquiryMonth(HomeRequestDto dto, HttpServletRequest request) {
 
         HashMap<Object, Object> responseMap = new HashMap<>();
 
@@ -103,7 +106,7 @@ public class HomeService {
         return responseMap;
     }
 
-    public HashMap<Object, Object> inquiryWeek(HomeMonthRequestDto dto, HttpServletRequest request) {
+    public HashMap<Object, Object> inquiryWeek(HomeRequestDto dto, HttpServletRequest request) {
         HashMap<Object, Object> responseMap = new HashMap<>();
 
         // 이제 입력받은 날짜의 월의 첫날과 마지막 날을 구해야 함...
@@ -193,6 +196,79 @@ public class HomeService {
             responseDto.setPlus(plusSum);
             responseDto.setMinus(minusSum);
             responseMap.put(String.valueOf(week), responseDto);
+        }
+
+        return responseMap;
+    }
+
+
+    public HashMap<Object, Object> inquiryDay(HomeRequestDto dto, HttpServletRequest request) {
+        HashMap<Object, Object> responseMap = new HashMap<>();
+
+
+        List<Schedule> findList = scheduleRepository.findByStartDate(dto.getUserId(), dto.getCalenderDate());
+        LocalDateTime nowDateTime = LocalDateTime.now();
+
+        // 시간에 따라서 분리
+        int dayIncome = 0; // 수입
+        int dayExpense = 0; // 지출
+        int expenseExpect = 0; // 지출 예정
+        int available = 0;
+
+        Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId());
+
+        if (!findList.isEmpty()) {
+            for (Schedule schedule : findList) {
+                if (schedule.getPriceType() == PriceType.Plus) {
+                    dayIncome += Integer.parseInt(schedule.getAmount());
+                } else {
+                    LocalTime localTime = LocalTime.parse(schedule.getStartTime());
+                    LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(dto.getCalenderDate()), localTime);
+
+                    if (localDateTime.isBefore(nowDateTime)) {
+                        dayExpense += Integer.parseInt(schedule.getAmount());
+                    } else {
+                        expenseExpect += dayExpense += Integer.parseInt(schedule.getAmount());
+                    }
+
+                }
+            }
+            if (optionalGoalAmount.isPresent()) {
+                available = Integer.parseInt(optionalGoalAmount.get()) - dayExpense - expenseExpect;
+            }
+
+            responseMap.put("income", "+" + dayIncome);
+            responseMap.put("dayExpense", "-" + dayExpense);
+            responseMap.put("expect", "-" + expenseExpect);
+            responseMap.put("available", "-" + available);
+
+        } else {
+            responseMap.put("income", 0);
+            responseMap.put("dayExpense", 0);
+        }
+
+
+        if (!findList.isEmpty()) {
+            responseMap.put("schedule_count", findList.size());
+
+            int keyNumber = 1;
+
+            for (Schedule schedule : findList) {
+                HomeDayResponseDto responseDto = new HomeDayResponseDto();
+
+                responseDto.setEventName(schedule.getEventName());
+                responseDto.setStartTime(schedule.getStartTime());
+                responseDto.setEndTime(schedule.getEndTime());
+
+                if (schedule.getPriceType() == PriceType.Plus) {
+                    responseDto.setAmount("+" + schedule.getAmount());
+                } else {
+                    responseDto.setAmount("-" + schedule.getAmount());
+                }
+
+                responseMap.put(String.valueOf(keyNumber), responseDto);
+                keyNumber++;
+            }
         }
 
         return responseMap;

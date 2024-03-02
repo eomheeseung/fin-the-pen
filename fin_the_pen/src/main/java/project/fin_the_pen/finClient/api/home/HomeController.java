@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
-import project.fin_the_pen.model.home.dto.HomeMonthRequestDto;
+import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.service.HomeService;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
 import project.fin_the_pen.model.schedule.vo.FindCertainMonthVO;
@@ -29,7 +29,7 @@ public class HomeController {
 
     @Operation(summary = "홈 화면", description = "홈 화면")
     @PostMapping("/home/month")
-    public ResponseEntity<Object> homeMonth(@RequestBody HomeMonthRequestDto dto, HttpServletRequest request) {
+    public ResponseEntity<Object> homeMonth(@RequestBody HomeRequestDto dto, HttpServletRequest request) {
         try {
             HashMap<Object, Object> responseMap = homeService.inquiryMonth(dto, request);
             return ResponseEntity.ok().body(responseMap);
@@ -39,13 +39,24 @@ public class HomeController {
         }
     }
 
-    @Operation(summary = "홈 화면", description = "홈 화면")
+    @Operation(summary = "홈 화면", description = "홈 화면 - week")
     @PostMapping("/home/week")
-    public ResponseEntity<Object> homeWeek(@RequestBody HomeMonthRequestDto dto, HttpServletRequest request) {
+    public ResponseEntity<Object> homeWeek(@RequestBody HomeRequestDto dto, HttpServletRequest request) {
         try {
             HashMap<Object, Object> responseMap = homeService.inquiryWeek(dto, request);
             return ResponseEntity.ok().body(responseMap);
 
+        } catch (RuntimeException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "홈 화면", description = "홈 화면 - day")
+    @PostMapping("/home/day")
+    public ResponseEntity<Object> homeDay(@RequestBody HomeRequestDto dto, HttpServletRequest request) {
+        try {
+            HashMap<Object, Object> responseMap = homeService.inquiryDay(dto, request);
+            return ResponseEntity.ok().body(responseMap);
         } catch (RuntimeException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

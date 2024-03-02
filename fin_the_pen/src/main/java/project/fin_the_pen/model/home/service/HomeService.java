@@ -205,7 +205,6 @@ public class HomeService {
     public HashMap<Object, Object> inquiryDay(HomeRequestDto dto, HttpServletRequest request) {
         HashMap<Object, Object> responseMap = new HashMap<>();
 
-
         List<Schedule> findList = scheduleRepository.findByStartDate(dto.getUserId(), dto.getCalenderDate());
         LocalDateTime nowDateTime = LocalDateTime.now();
 
@@ -218,21 +217,33 @@ public class HomeService {
         Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId());
 
         if (!findList.isEmpty()) {
-            for (Schedule schedule : findList) {
-                if (schedule.getPriceType() == PriceType.Plus) {
-                    dayIncome += Integer.parseInt(schedule.getAmount());
-                } else {
-                    LocalTime localTime = LocalTime.parse(schedule.getStartTime());
-                    LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(dto.getCalenderDate()), localTime);
+            dayIncome = findList.stream()
+                    .filter(schedule -> schedule.getPriceType() == PriceType.Plus)
+                    .mapToInt(schedule -> Integer.parseInt(schedule.getAmount()))
+                    .sum();
 
-                    if (localDateTime.isBefore(nowDateTime)) {
-                        dayExpense += Integer.parseInt(schedule.getAmount());
-                    } else {
-                        expenseExpect += dayExpense += Integer.parseInt(schedule.getAmount());
-                    }
+            dayExpense = findList.stream()
+                    .filter(schedule -> schedule.getPriceType() != PriceType.Plus)
+                    .map(schedule -> {
+                        LocalTime localTime = LocalTime.parse(schedule.getStartTime());
+                        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(dto.getCalenderDate()), localTime);
+                        return new AbstractMap.SimpleEntry<>(localDateTime, Integer.parseInt(schedule.getAmount()));
+                    })
+                    .filter(entry -> entry.getKey().isBefore(nowDateTime))
+                    .mapToInt(Map.Entry::getValue)
+                    .sum();
 
-                }
-            }
+            expenseExpect = findList.stream()
+                    .filter(schedule -> schedule.getPriceType() != PriceType.Plus)
+                    .map(schedule -> {
+                        LocalTime localTime = LocalTime.parse(schedule.getStartTime());
+                        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(dto.getCalenderDate()), localTime);
+                        return new AbstractMap.SimpleEntry<>(localDateTime, Integer.parseInt(schedule.getAmount()));
+                    })
+                    .filter(entry -> entry.getKey().isAfter(nowDateTime) || entry.getKey().isEqual(nowDateTime))
+                    .mapToInt(Map.Entry::getValue)
+                    .sum();
+
             if (optionalGoalAmount.isPresent()) {
                 available = Integer.parseInt(optionalGoalAmount.get()) - dayExpense - expenseExpect;
             }

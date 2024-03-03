@@ -117,7 +117,7 @@ public class ReportService {
             responseMap.put("date", dto.getDate());
 
             // 2번
-            responseMap.put("totalSpentToday", amountSum);
+            responseMap.put("totalSpentToday", String.valueOf(amountSum));
 
             // 3번
             String goalAmount = optionalGoalAmount.get();
@@ -127,7 +127,7 @@ public class ReportService {
             HashMap<Object, Object> expenditureMap = new HashMap<>();
 
             Integer parseGoalAmount = Integer.valueOf(goalAmount);
-            responseMap.put("expenseGoalAmount", parseGoalAmount);
+            responseMap.put("expenseGoalAmount", String.valueOf(parseGoalAmount));
 
             // 4번
             int availableAmount = Integer.parseInt(goalAmount) - amountSum;

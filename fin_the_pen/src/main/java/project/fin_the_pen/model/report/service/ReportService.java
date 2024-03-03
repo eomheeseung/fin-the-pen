@@ -131,10 +131,10 @@ public class ReportService {
 
             // 4번
             int availableAmount = Integer.parseInt(goalAmount) - amountSum;
-            responseMap.put("availableAmount", availableAmount);
+            responseMap.put("availableAmount", String.valueOf(availableAmount));
 
             // 6번
-            expenditureMap.put("goal_amount", parseGoalAmount);
+            expenditureMap.put("goal_amount", String.valueOf(parseGoalAmount));
 
             // 6-1 이번 달 1일부터 금일까지 사용한 금액 (보라색) : 사용한 금액
             String dtoDate = dto.getDate();
@@ -156,10 +156,10 @@ public class ReportService {
             // 6-3 이번 달 사용 가능 금액 (지출 목표액 - 이번달 금일까지 사용한 총합) (하늘색) : 사용가능 금액
             int resultSum = Integer.parseInt(goalAmount) - amount1stMonthSum;
 
-            expenditureMap.put("result_amount", resultSum);
+            expenditureMap.put("result_amount", String.valueOf(resultSum));
 
 
-            responseMap.put("expenditure_this_month", expenditureMap);
+            responseMap.put("expenditure_this_month", String.valueOf(expenditureMap));
 
             List<ConsumeReportResponseDTO> consumeList = consumeReportInquiry(dto.getUserId(), dto.getDate(), responseMap);
             responseMap.put("category_consume_report", consumeList);
@@ -202,7 +202,7 @@ public class ReportService {
 
                 fixedMap.put("current_month", dtoDate);
                 fixedMap.put("previous_month", previousDate.toString());
-                fixedMap.put("fixed_deposit", currentPlusSum);
+                fixedMap.put("fixed_deposit", String.valueOf(currentPlusSum));
 
                 BiFunction<Integer, Integer, String> depositBiFunc = (current, previous) -> {
                     int diff = current - previous;

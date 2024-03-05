@@ -159,7 +159,7 @@ public class ReportService {
             expenditureMap.put("result_amount", String.valueOf(resultSum));
 
 
-            responseMap.put("expenditure_this_month", String.valueOf(expenditureMap));
+            responseMap.put("expenditure_this_month", expenditureMap);
 
             List<ConsumeReportResponseDTO> consumeList = consumeReportInquiry(dto.getUserId(), dto.getDate(), responseMap);
             responseMap.put("category_consume_report", consumeList);

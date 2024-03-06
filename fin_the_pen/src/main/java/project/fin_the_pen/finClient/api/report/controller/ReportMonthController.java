@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
+import project.fin_the_pen.model.report.dto.ConsumeReportDetailRequestDto;
 import project.fin_the_pen.model.report.dto.ConsumeReportRequestDTO;
 import project.fin_the_pen.model.report.dto.ExpenditureRequestDTO;
 import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
@@ -63,12 +64,20 @@ public class ReportMonthController {
     }
 
 
-    @PostMapping("/detail")
+    /*
+    TODO 2024-02-01같이 day까지 받아야 하는지...
+     */
+    @PostMapping("/basic")
     @Operation(description = "입력된 월의 소비 리포트를 조회합니다.", summary = "소비 리포트 조회")
     public ResponseEntity<Object> consumeReport(@RequestBody ConsumeReportRequestDTO dto, HttpServletRequest request) {
-        Map<String, Object> responseMap =
-                reportService.inquiryReport(dto, request);
 
-        return convertResponse.getResponseEntity(responseMap);
+        return convertResponse.getResponseEntity(reportService.inquiryReport(dto, request));
+    }
+
+    @PostMapping("/detail")
+    @Operation(description = "입력된 월의 소비 리포트를 조회합니다.", summary = "소비 리포트 조회")
+    public ResponseEntity<Object> consumeDetailReport(@RequestBody ConsumeReportDetailRequestDto dto, HttpServletRequest request) {
+        Map<Object, Object> objectObjectMap = reportService.inquiryCategoryDetail(dto, request);
+        return ResponseEntity.ok().body(objectObjectMap);
     }
 }

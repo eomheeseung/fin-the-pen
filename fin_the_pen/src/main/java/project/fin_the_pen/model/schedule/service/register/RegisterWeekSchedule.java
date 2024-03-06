@@ -12,6 +12,7 @@ import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -66,9 +67,6 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                             log.info("이동하는 요일: {}", targetDay);
                             log.info("일자: {}", currentDate);
 
-                            weekOptions weekOptions =
-                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getRepeatTerm(), currentDate.getDayOfWeek().toString());
-
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
                                     .eventName(dto.getEventName())
@@ -119,79 +117,113 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                     }
                 } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
                     int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
-                    int repeatValue = repeatNumberOfTime * intervalWeeks;
+                    LocalDate localDate = formatDate(dto.getStartDate());
 
-                    for (int i = 0; i < repeatValue; i++) {
-                        String targetDay = currentDate.getDayOfWeek().toString();
+                    log.info("요일 list size:{}", days.size());
 
-                        log.info("반복 횟수:{}", i);
-                        // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
-                        if (days.contains(targetDay)) {
-                            log.info("이동하는 요일: {}", targetDay);
-                            log.info("일자: {}", currentDate);
+                    for (int i = 0; i < repeatNumberOfTime; i++) {
+                        for (String day : days) {
+                            try {
+                                LocalDate parseDate = localDate.with(DayOfWeek.valueOf(day)).plusWeeks(i * intervalWeeks);
 
-                            weekOptions weekOptions =
-                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getRepeatTerm(), currentDate.getDayOfWeek().toString());
+                                if (parseDate.isBefore(localDate)) {
+                                    continue;
+                                }
 
-                            Schedule schedule = Schedule.builder()
-                                    .userId(dto.getUserId())
-                                    .eventName(dto.getEventName())
-                                    .category(dto.getCategory())
-                                    .startDate(currentDate.toString())
-                                    .endDate(currentDate.toString())
-                                    .startTime(dto.getStartTime())
-                                    .endTime(dto.getEndTime())
-                                    .isAllDay(dto.isAllDay())
-                                    .repeatKind(RepeatKind.WEEK.name())
-                                    .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
-                                            .options(currentDate.getDayOfWeek().toString())
-                                            .build())
-                                    .isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
-                                    .amount(dto.getAmount())
-                                    .isFixAmount(dto.isFixAmount())
-                                    .period(createPeriodType(() -> {
-                                        return PeriodType.builder()
-                                                .isRepeatAgain(false)
-                                                .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
-                                                .repeatEndLine(endLine.toString()).build();
-                                    }))
-                                    .priceType(judgmentPriceType(() -> {
-                                        if (dto.getPriceType().equals(PriceType.Plus)) {
-                                            return PriceType.Plus;
-                                        } else return PriceType.Minus;
-                                    }))
-                                    .build();
-
-                            super.getCrudScheduleRepository().save(schedule);
-
-                            // java에서 한주의 끝은 SUN, 한주의 시작은 MON
-                            if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                                currentDate = currentDate.plusWeeks(intervalWeeks);
-                                currentDate = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-
-                            } else currentDate = currentDate.plusDays(1);
-                            // TODO (수정) 일요일부터 시작하는 경우를 수정해야 함...
-                        } else {
-                            i--;
-                            if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                                currentDate = currentDate.plusWeeks(intervalWeeks);
-                                currentDate = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                            } else currentDate = currentDate.plusDays(1);
+                                getCrudScheduleRepository().save(
+                                        Schedule.builder()
+                                                .userId(dto.getUserId())
+                                                .eventName(dto.getEventName())
+                                                .category(dto.getCategory())
+                                                .startDate(parseDate.toString())
+                                                .endDate(parseDate.toString())
+                                                .startTime(dto.getStartTime())
+                                                .endTime(dto.getEndTime())
+                                                .isAllDay(dto.isAllDay())
+                                                .repeatKind(RepeatKind.WEEK.name())
+                                                .repeatOptions(UnitedType.builder()
+                                                        .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
+                                                        .options(parseDate.getDayOfWeek().toString())
+                                                        .build())
+                                                .isExclude(dto.isExclude())
+                                                .importance(dto.getImportance())
+                                                .amount(dto.getAmount())
+                                                .isFixAmount(dto.isFixAmount())
+                                                .period(createPeriodType(() -> {
+                                                    return PeriodType.builder()
+                                                            .isRepeatAgain(false)
+                                                            .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
+                                                            .repeatEndLine(endLine.toString())
+                                                            .build();
+                                                }))
+                                                .priceType(judgmentPriceType(() -> {
+                                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                                        return PriceType.Plus;
+                                                    } else return PriceType.Minus;
+                                                }))
+                                                .build());
+                            } catch (DateTimeException e) {
+                                log.info("유효하지 않은 날짜입니다.");
+                            }
                         }
                     }
                 } else if (dto.getPeriod().getRepeatEndLine() != null) {
+                    LocalDate localDate = formatDate(dto.getStartDate());
+
                     while (!currentDate.isAfter(endLine)) {
-                        String targetDay = currentDate.getDayOfWeek().toString();
+                        for (String day : days) {
+                            try {
+                                LocalDate parseDate = currentDate.with(DayOfWeek.valueOf(day)).plusWeeks(intervalWeeks);
+
+                                if (parseDate.isBefore(localDate)) {
+                                    continue;
+                                }
+
+                                getCrudScheduleRepository().save(
+                                        Schedule.builder()
+                                                .userId(dto.getUserId())
+                                                .eventName(dto.getEventName())
+                                                .category(dto.getCategory())
+                                                .startDate(parseDate.toString())
+                                                .endDate(parseDate.toString())
+                                                .startTime(dto.getStartTime())
+                                                .endTime(dto.getEndTime())
+                                                .isAllDay(dto.isAllDay())
+                                                .repeatKind(RepeatKind.WEEK.name())
+                                                .repeatOptions(UnitedType.builder()
+                                                        .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
+                                                        .options(parseDate.getDayOfWeek().toString())
+                                                        .build())
+                                                .isExclude(dto.isExclude())
+                                                .importance(dto.getImportance())
+                                                .amount(dto.getAmount())
+                                                .isFixAmount(dto.isFixAmount())
+                                                .period(createPeriodType(() -> {
+                                                    return PeriodType.builder()
+                                                            .isRepeatAgain(false)
+                                                            .repeatNumberOfTime(String.valueOf("none"))
+                                                            .repeatEndLine(endLine.toString())
+                                                            .build();
+                                                }))
+                                                .priceType(judgmentPriceType(() -> {
+                                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                                        return PriceType.Plus;
+                                                    } else return PriceType.Minus;
+                                                }))
+                                                .build());
+                                currentDate = parseDate;
+                            } catch (DateTimeException e) {
+                                log.info("유효하지 않은 날짜입니다.");
+                            }
+                        }
+
+                        /*String targetDay = currentDate.getDayOfWeek().toString();
 
                         // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
                         if (days.contains(targetDay)) {
                             log.info("이동하는 요일: {}", targetDay);
                             log.info("일자: {}", currentDate);
 
-                            weekOptions weekOptions =
-                                    new weekOptions(dto.getRepeat().getWeekTypeVO().getRepeatTerm(), currentDate.getDayOfWeek().toString());
 
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
@@ -238,25 +270,15 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                 currentDate = currentDate.plusWeeks(intervalWeeks);
                                 currentDate = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
                             } else currentDate = currentDate.plusDays(1);
-                        }
+                        }*/
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             return null;
         }
         return true;
-    }
-
-
-    private class weekOptions {
-        private String value;
-        private String dayOfWeek;
-
-        public weekOptions(String value, String dayOfWeek) {
-            this.value = value;
-            this.dayOfWeek = dayOfWeek;
-        }
     }
 
 }

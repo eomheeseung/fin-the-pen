@@ -79,7 +79,7 @@ public class HomeController {
             return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
         }
 
-        Map<String, Object> responseMap =
+        Map<Object, Object> responseMap =
                 scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
 
         return convertResponse.getResponseEntity(responseMap);

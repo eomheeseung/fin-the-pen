@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.util.TokenManager;
-import project.fin_the_pen.model.home.dto.HomeDayResponseDto;
 import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.dto.HomeWeekResponseDto;
 import project.fin_the_pen.model.home.repository.HomeRepository;
@@ -161,6 +160,7 @@ public class HomeService {
 
         responseMap.put("available", supplier.get());
 
+        List<HomeWeekResponseDto> weekResponseDtoList = new ArrayList<>();
 
         // 홈화면 주별에서 4번
         // 주차 구하기
@@ -195,8 +195,10 @@ public class HomeService {
 
             responseDto.setPlus(plusSum);
             responseDto.setMinus(minusSum);
-            responseMap.put(String.valueOf(week), responseDto);
+            weekResponseDtoList.add(responseDto);
         }
+
+        responseMap.put("week_schedule", weekResponseDtoList);
 
         return responseMap;
     }
@@ -259,7 +261,7 @@ public class HomeService {
         }
 
 
-        if (!findList.isEmpty()) {
+        /*if (!findList.isEmpty()) {
             responseMap.put("schedule_count", findList.size());
 
             int keyNumber = 1;
@@ -280,7 +282,7 @@ public class HomeService {
                 responseMap.put(String.valueOf(keyNumber), responseDto);
                 keyNumber++;
             }
-        }
+        }*/
 
         return responseMap;
     }

@@ -135,8 +135,8 @@ public class ScheduleService {
      * @param request
      * @return
      */
-    public Map<String, Object> findAllSchedule(String userId, HttpServletRequest request) {
-        Map<String, Object> responseMap = new HashMap<>();
+    public Map<Object, Object> findAllSchedule(String userId, HttpServletRequest request) {
+        Map<Object, Object> responseMap = new HashMap<>();
 
         try {
             String accessToken = tokenManager.parseBearerToken(request);
@@ -331,9 +331,9 @@ public class ScheduleService {
         return true;
     }
 
-    public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+    public Map<Object, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         List<Schedule> responseArray = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
-        Map<String, Object> responseMap = new HashMap<>();
+        Map<Object, Object> responseMap = new HashMap<>();
 
 
         if (responseArray.isEmpty()) {
@@ -362,9 +362,9 @@ public class ScheduleService {
      * @param request
      * @return
      */
-    public Map<String, Object> findMonthSchedule(String date, String userId, HttpServletRequest request) {
+    public Map<Object, Object> findMonthSchedule(String date, String userId, HttpServletRequest request) {
         String accessToken = tokenManager.parseBearerToken(request);
-        Map<String, Object> responseMap = new HashMap<>();
+        Map<Object, Object> responseMap = new HashMap<>();
 
         try {
             if (accessToken == null) {
@@ -431,10 +431,10 @@ public class ScheduleService {
                 .build();
     }
 
-    public Map<String, Object> findMonthSectionSchedule(String startDate, String endDate, String userId) {
+    public Map<Object, Object> findMonthSectionSchedule(String startDate, String endDate, String userId) {
         List<Schedule> responseArray = scheduleRepository.findMonthSectionSchedule(startDate, endDate, userId);
 
-        HashMap<String, Object> responseMap = new HashMap<>();
+        HashMap<Object, Object> responseMap = new HashMap<>();
 
         if (responseArray.isEmpty())
             responseMap.put("data", "error");
@@ -462,10 +462,10 @@ public class ScheduleService {
 //        return scheduleRepository.findOneSchedule(uuid);
 //    }
 
-    public Map<String, Object> findByContainsName(String name) {
+    public Map<Object, Object> findByContainsName(String name) {
         List<Schedule> responseArray = scheduleRepository.findByContainsName(name);
 
-        HashMap<String, Object> responseMap = new HashMap<>();
+        HashMap<Object, Object> responseMap = new HashMap<>();
 
         if (responseArray.isEmpty()) {
             responseMap.put("data", "error");

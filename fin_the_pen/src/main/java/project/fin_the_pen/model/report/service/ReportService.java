@@ -6,10 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.TokenManager;
-import project.fin_the_pen.model.report.dto.ConsumeReportRequestDTO;
-import project.fin_the_pen.model.report.dto.ConsumeReportResponseDTO;
-import project.fin_the_pen.model.report.dto.ExpenditureRequestDTO;
-import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
+import project.fin_the_pen.model.report.dto.*;
 import project.fin_the_pen.model.report.entity.Reports;
 import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
@@ -20,6 +17,8 @@ import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -34,6 +33,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
     public HashMap<Object, Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {
 
@@ -161,8 +161,11 @@ public class ReportService {
 
             responseMap.put("expenditure_this_month", expenditureMap);
 
-            List<ConsumeReportResponseDTO> consumeList = consumeReportInquiry(dto.getUserId(), dto.getDate(), responseMap);
-            responseMap.put("category_consume_report", consumeList);
+            List<Map.Entry<Object, Object>> consumeList = new ArrayList<>(consumeReportInquiry(dto.getUserId(), dto.getDate()).entrySet());
+
+            for (Map.Entry<Object, Object> entry : consumeList) {
+                responseMap.put("category_consume_report", entry.getValue());
+            }
 
 
             HashMap<Object, Object> fixedMap = new HashMap<>();
@@ -285,17 +288,109 @@ public class ReportService {
     }
 
 
-    public Map<String, Object> inquiryReport(ConsumeReportRequestDTO dto, HttpServletRequest request) {
-        Map<String, Object> responseMap = new HashMap<>();
-
+    // request dto date : 2024-02-01
+    public Map<Object, Object> inquiryReport(ConsumeReportRequestDTO dto, HttpServletRequest request) {
         String userId = dto.getUserId();
         String date = dto.getDate();
+        log.info(date);
+
+//        LocalDateTime nowDateTime = LocalDateTime.now();
+        LocalDateTime nowDateTime = LocalDateTime.of(2024, 2, 1, 23, 0);
 
         try {
-            responseMap.put("data", consumeReportInquiry(userId, date, new HashMap<>()));
+            Map<Object, Object> responseMap = consumeReportInquiry(userId, date);
+            Optional<String> optionalAmount = reportRepository.findByContainAmountAndUserIdAndDate(date, userId);
+
+            List<Schedule> findList = crudScheduleRepository.findByStartDate(userId, date);
+
+            responseMap.put("month", date);
+
+            if (optionalAmount.isPresent()) {
+                responseMap.put("goal_amount", optionalAmount.get());
+                int dayExpense = 0;
+
+                if (!findList.isEmpty()) {
+                    dayExpense = findList.stream()
+                            .filter(schedule -> schedule.getPriceType() != PriceType.Plus)
+                            .map(schedule -> {
+                                LocalTime localTime = LocalTime.parse(schedule.getStartTime());
+                                LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(date), localTime);
+                                return new AbstractMap.SimpleEntry<>(localDateTime, Integer.parseInt(schedule.getAmount()));
+                            })
+                            .filter(entry -> entry.getKey().isBefore(nowDateTime))
+                            .mapToInt(Map.Entry::getValue)
+                            .sum();
+                } else {
+                    responseMap.put("expense", "?");
+                }
+
+                responseMap.put("expense", String.valueOf(dayExpense));
+            } else {
+                responseMap.put("month_amount", "?");
+            }
+
+            return responseMap;
         } catch (Exception e) {
             throw new RuntimeException("error");
         }
+    }
+
+    /**
+     * TODO
+     *  카테고리 소비 목표 금액은 설정 => 자산 페이지에서
+     *
+     * @param dto
+     * @param request
+     * @return
+     */
+    public Map<Object, Object> inquiryCategoryDetail(ConsumeReportDetailRequestDto dto, HttpServletRequest request) {
+        String date = dto.getDate();
+        String userId = dto.getUserId();
+        String category = dto.getCategory();
+
+        HashMap<Object, Object> responseMap = new HashMap<>();
+
+
+//        실제로 사용할 값
+//        LocalDateTime localDateTime = LocalDateTime.now();
+
+        // 현재 시간 값 (가정)
+        LocalDateTime localDateTime = LocalDateTime.of(2024, 2, 13, 14, 0);
+
+        List<Schedule> categoryList = crudScheduleRepository.findByCategoryBetweenDate(userId, category, date);
+
+        log.info("find list size:{}", categoryList.size());
+
+        int categoryExpense = 0;
+        int categoryExpect = 0;
+        int categoryBalance = 0;
+
+        List<Schedule> responseList = new ArrayList<>();
+
+        for (Schedule schedule : categoryList) {
+            if (schedule.getPriceType() == PriceType.Minus) {
+                // DB에 저장되어 있는 일정을 parsing -> 위의 localDateTime와 비교해서 예정 값 끌어오려고
+                LocalDate parseDate = LocalDate.parse(schedule.getStartDate());
+                LocalTime parseTime  = LocalTime.parse(schedule.getStartTime(), timeFormatter);
+
+                LocalDateTime parseDateTime = LocalDateTime.of(parseDate.getYear(), parseDate.getMonth(), parseDate.getDayOfMonth(), parseTime.getHour(), parseTime.getMinute());
+
+                if (parseDateTime.isBefore(localDateTime)) {
+                    categoryExpense += Integer.parseInt(schedule.getAmount());
+                } else {
+                    categoryExpect += Integer.parseInt(schedule.getAmount());
+                    responseList.add(schedule);
+                }
+            }
+        }
+
+        responseMap.put("current_date", dto.getDate());
+        responseMap.put("category", dto.getCategory());
+        responseMap.put("category_expense", String.valueOf(categoryExpense));
+        responseMap.put("category_expect", String.valueOf(categoryExpect));
+        responseMap.put("month_schedule", responseList);
+
+
         return responseMap;
     }
 
@@ -304,12 +399,14 @@ public class ReportService {
     }
 
     @NotNull
-    private List<ConsumeReportResponseDTO> consumeReportInquiry(String userId, String date, HashMap<Object, Object> responseMap) {
+    private Map<Object, Object> consumeReportInquiry(String userId, String date) throws RuntimeException {
         Map<String, Integer> map = new HashMap<>();
         List<Schedule> responseArray = crudScheduleRepository.findByScheduleFromStartDate(userId, date);
 
         if (responseArray.isEmpty()) {
+            HashMap<Object, Object> responseMap = new HashMap<>();
             responseMap.put("data", "error");
+            return responseMap;
         } else {
 
             responseArray.forEach(schedule -> {
@@ -338,6 +435,10 @@ public class ReportService {
             int percentage = (int) ((entry.getValue() * 100.0) / sum);
             consumeList.add(new ConsumeReportResponseDTO(entry.getKey(), entry.getValue(), String.valueOf(percentage)));
         }
-        return consumeList;
+
+        HashMap<Object, Object> responseMap = new HashMap<>();
+        responseMap.put("data", consumeList);
+
+        return responseMap;
     }
 }

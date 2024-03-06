@@ -72,7 +72,7 @@ public class ScheduleController {
     @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.", summary = "모든 일정 조회 (O)")
     public ResponseEntity<Object> findAllSchedule(@RequestBody FindAllScheduleVO findAllScheduleVO, HttpServletRequest request) {
         try {
-            Map<String, Object> responseMap = scheduleService.findAllSchedule(findAllScheduleVO.getUserId(), request);
+            Map<Object, Object> responseMap = scheduleService.findAllSchedule(findAllScheduleVO.getUserId(), request);
             log.info(responseMap.get("data").toString());
             return convertResponse.getResponseEntity(responseMap);
         } catch (Exception e) {
@@ -95,7 +95,7 @@ public class ScheduleController {
     @PostMapping("/getMonthSchedules/section")
     public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
-        Map<String, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"), map.get("endDate"), map.get("user_id"));
+        Map<Object, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"), map.get("endDate"), map.get("user_id"));
 
         return convertResponse.getResponseEntity(responseMap);
     }
@@ -103,7 +103,7 @@ public class ScheduleController {
     @PostMapping("/findCategory")
     @Operation(description = "카테고리로 모든 일정을 조회합니다.", summary = "카테고리 조회")
     public ResponseEntity<Object> findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
-        Map<String, Object> responseMap = scheduleService.findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
+        Map<Object, Object> responseMap = scheduleService.findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
 
         return convertResponse.getResponseEntity(responseMap);
     }
@@ -111,7 +111,7 @@ public class ScheduleController {
     @PostMapping("/find/contains/name")
     @Operation(description = "일정의 이름에 해당하는 단어(키워드)를 넣으면 match된 모든 일정을 조회합니다.", summary = "일정을 이름으로 검색")
     public ResponseEntity<Object> findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
-        Map<String, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
+        Map<Object, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
 
         return convertResponse.getResponseEntity(responseMap);
     }

@@ -41,7 +41,10 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
 
 
     @Query("select s from Schedule s where s.userId = :userId and s.category LIKE CONCAT('%', :categoryName, '%')")
-    List<Schedule> findScheduleByCategory(@Param("userId") String userSessionId, @Param("categoryName") String categoryName);
+    List<Schedule> findScheduleByCategory(@Param("userId") String userId, @Param("categoryName") String categoryName);
+
+    @Query("select s from Schedule s where s.userId = :userId and s.category LIKE CONCAT('%', :category, '%') and substring(s.startDate, 1, 7) = :date")
+    List<Schedule> findByCategoryBetweenDate(@Param("userId") String userId, @Param("category") String category, @Param("date") String date);
 
     @Query("select s from Schedule s where s.userId = :userId and s.id = :scheduleId")
     Optional<Schedule> findByIdAndUserId(@Param("userId") String userId, @Param("scheduleId") Long scheduleId);

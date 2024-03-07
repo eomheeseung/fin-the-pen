@@ -1,16 +1,6 @@
 package project.fin_the_pen.model.schedule.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.stereotype.Service;
-import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
-
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicInteger;
-
-@Slf4j
+/*@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AssetsService {
@@ -71,4 +61,4 @@ public class AssetsService {
         return responseJson;
     }
 
-}
+}*/

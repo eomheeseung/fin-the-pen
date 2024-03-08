@@ -1,4 +1,4 @@
-package project.fin_the_pen.model.assets.dto.targetAmount;
+package project.fin_the_pen.model.assets.periodic.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,12 +7,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TargetAmountRequestDto {
+public class PeriodAmountDeleteRequestDto {
     @JsonProperty(value = "user_id")
     @Schema(example = "test1234", description = "현재 로그인 된 사용자 id")
     private String userId;
 
-    @JsonProperty(value = "years_goal_amount")
-    @Schema(example = "10000000",description = "한 해 동안의 저축 목표액 설정")
-    private String yearsGoalAmount;
+    @JsonProperty(value = "id")
+    @Schema(example = "1", description = "삭제하기 위해 선택된 정기 입출금액 id")
+    private Long id;
+
+
 }

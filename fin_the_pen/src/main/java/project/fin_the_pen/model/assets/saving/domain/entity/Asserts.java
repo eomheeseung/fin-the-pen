@@ -1,4 +1,4 @@
-package project.fin_the_pen.model.assets.domain.entity;
+package project.fin_the_pen.model.assets.saving.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

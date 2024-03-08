@@ -1,4 +1,4 @@
-package project.fin_the_pen.model.assets.dto.targetAmount;
+package project.fin_the_pen.model.assets.saving.dto.targetAmount;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

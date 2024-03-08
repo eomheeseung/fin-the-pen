@@ -6,11 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.fin_the_pen.model.assets.dto.personal.PersonalRequestDto;
-import project.fin_the_pen.model.assets.dto.personal.PersonalResponseDto;
-import project.fin_the_pen.model.assets.dto.targetAmount.TargetAmountRequestDto;
-import project.fin_the_pen.model.assets.dto.targetAmount.TargetAmountResponseDto;
+import project.fin_the_pen.model.assets.periodic.dto.PeriodAmountDeleteRequestDto;
+import project.fin_the_pen.model.assets.periodic.dto.PeriodicAmountRequestDto;
+import project.fin_the_pen.model.assets.saving.dto.personal.PersonalRequestDto;
+import project.fin_the_pen.model.assets.saving.dto.personal.PersonalResponseDto;
+import project.fin_the_pen.model.assets.saving.dto.targetAmount.TargetAmountRequestDto;
+import project.fin_the_pen.model.assets.saving.dto.targetAmount.TargetAmountResponseDto;
 import project.fin_the_pen.model.assets.service.AssetsService;
+import project.fin_the_pen.model.assets.service.PeriodicService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import java.util.HashMap;
 @Tag(name = "자산관리 및 설정", description = "저축 목표 금액, 정기 입출 금, 카테고리별 자산 설정, 로그인 후 이용가능")
 public class AssetsController {
     private final AssetsService assetsService;
+    private final PeriodicService periodicService;
 
 
     @Operation(summary = "자산 관리 홈", description = "자산관리 홈화면")
@@ -29,7 +33,6 @@ public class AssetsController {
     public ResponseEntity<Object> assetsHome() {
         return ResponseEntity.ok().build();
     }
-
 
 
     /*
@@ -49,7 +52,6 @@ public class AssetsController {
 
         return ResponseEntity.ok().body(responseMap);
     }
-
 
 
     /**
@@ -79,6 +81,30 @@ public class AssetsController {
     @DeleteMapping("/target-amount/set")
     public ResponseEntity<Object> initTargetAmount(@RequestParam("userId") String userId, HttpServletRequest request) {
         boolean flag = assetsService.initTargetAmount(userId, request);
+
+        return ResponseEntity.ok().body(flag);
+    }
+
+    @Operation(summary = "정기 입출금액 설정 view,", description = "정기 입출금액 설정")
+    @GetMapping("/period-amount")
+    public ResponseEntity<Object> viewPeriodicAmount(@RequestParam("userId") String userId, HttpServletRequest request) {
+        HashMap<Object, Object> responseMap = periodicService.viewPeriodAmount(userId, request);
+
+        return ResponseEntity.ok().body(responseMap);
+    }
+
+    @Operation(summary = "정기 입출금액 설정 page,", description = "정기 입출금액 설정 및 수정")
+    @PostMapping("/period-amount/set")
+    public ResponseEntity<Object> setPeriodicAmount(@RequestBody PeriodicAmountRequestDto dto, HttpServletRequest request) {
+        boolean flag = periodicService.setPeriodicAmount(dto, request);
+
+        return ResponseEntity.ok().body(flag);
+    }
+
+    @Operation(summary = "정기 입출금액 삭제", description = "정기 입출 금액 삭제")
+    @DeleteMapping("/periond-amount/delete")
+    public ResponseEntity<Object> deletePeriodAmount(@RequestBody PeriodAmountDeleteRequestDto dto, HttpServletRequest request) {
+        boolean flag = periodicService.deletePeriodAmount(dto, request);
 
         return ResponseEntity.ok().body(flag);
     }

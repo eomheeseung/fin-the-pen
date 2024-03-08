@@ -1,10 +1,10 @@
-package project.fin_the_pen.model.assets.domain.entity;
+package project.fin_the_pen.model.assets.saving.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.fin_the_pen.model.assets.domain.type.PersonalCriteria;
+import project.fin_the_pen.model.assets.saving.domain.type.PersonalCriteria;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

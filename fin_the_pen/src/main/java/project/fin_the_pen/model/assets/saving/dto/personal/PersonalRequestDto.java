@@ -1,4 +1,4 @@
-package project.fin_the_pen.model.assets.dto.personal;
+package project.fin_the_pen.model.assets.saving.dto.personal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

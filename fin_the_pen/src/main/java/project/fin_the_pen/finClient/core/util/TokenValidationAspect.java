@@ -40,6 +40,7 @@ public class TokenValidationAspect {
             "execution(public * project.fin_the_pen.model.home.service.HomeService.inquiryWeek(..))) || " +
             "execution(public * project.fin_the_pen.model.home.service.HomeService.inquiryDay(..))) || " +
             "execution(public * project.fin_the_pen.model.assets.service.AssetsService.*.*(..))) || " +
+            "execution(public * project.fin_the_pen.model.assets.service.PeriodService.*.*(..))) || " +
             "excution(public * project.fin_the_pen.model.report.service.ReportService.*.*(..))")
     public void beforeMethodExecution(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();

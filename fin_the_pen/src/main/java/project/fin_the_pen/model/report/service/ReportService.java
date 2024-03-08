@@ -371,16 +371,20 @@ public class ReportService {
             if (schedule.getPriceType() == PriceType.Minus) {
                 // DB에 저장되어 있는 일정을 parsing -> 위의 localDateTime와 비교해서 예정 값 끌어오려고
                 LocalDate parseDate = LocalDate.parse(schedule.getStartDate());
-                LocalTime parseTime  = LocalTime.parse(schedule.getStartTime(), timeFormatter);
+                LocalTime parseTime = LocalTime.parse(schedule.getStartTime(), timeFormatter);
 
-                LocalDateTime parseDateTime = LocalDateTime.of(parseDate.getYear(), parseDate.getMonth(), parseDate.getDayOfMonth(), parseTime.getHour(), parseTime.getMinute());
+                LocalDateTime parseDateTime = LocalDateTime.of(parseDate.getYear(),
+                        parseDate.getMonth(),
+                        parseDate.getDayOfMonth(),
+                        parseTime.getHour(),
+                        parseTime.getMinute());
 
                 if (parseDateTime.isBefore(localDateTime)) {
                     categoryExpense += Integer.parseInt(schedule.getAmount());
                 } else {
                     categoryExpect += Integer.parseInt(schedule.getAmount());
-                    responseList.add(schedule);
                 }
+                responseList.add(schedule);
             }
         }
 
@@ -389,6 +393,7 @@ public class ReportService {
         responseMap.put("category_expense", String.valueOf(categoryExpense));
         responseMap.put("category_expect", String.valueOf(categoryExpect));
         responseMap.put("month_schedule", responseList);
+        responseMap.put("schedule_count", responseList.size());
 
 
         return responseMap;

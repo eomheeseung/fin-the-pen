@@ -1,4 +1,4 @@
-package project.fin_the_pen.model.assets.domain.type;
+package project.fin_the_pen.model.assets.saving.domain.type;
 
 
 import lombok.Getter;

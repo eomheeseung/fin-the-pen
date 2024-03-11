@@ -6,8 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.TokenManager;
-import project.fin_the_pen.model.report.dto.*;
-import project.fin_the_pen.model.report.entity.Reports;
+import project.fin_the_pen.model.report.dto.ConsumeReportDetailRequestDto;
+import project.fin_the_pen.model.report.dto.ConsumeReportRequestDTO;
+import project.fin_the_pen.model.report.dto.ConsumeReportResponseDTO;
+import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
@@ -264,27 +266,6 @@ public class ReportService {
                 .stream()
                 .mapToInt(Integer::parseInt)
                 .sum();
-    }
-
-
-    public Boolean setAmount(ExpenditureRequestDTO dto, HttpServletRequest request) {
-        Optional<Reports> findReports = reportRepository.findByUserIdAndDate(dto.getDate(), dto.getUserId());
-
-        if (findReports.isPresent()) {
-            Reports reports = findReports.get();
-
-            reports.update(dto.getUserId(), dto.getAmount(), dto.getDate());
-            reportRepository.save(reports);
-        } else {
-            Reports report = Reports.builder()
-                    .userId(dto.getUserId())
-                    .amount(dto.getAmount())
-                    .date(dto.getDate())
-                    .build();
-
-            reportRepository.save(report);
-        }
-        return true;
     }
 
 

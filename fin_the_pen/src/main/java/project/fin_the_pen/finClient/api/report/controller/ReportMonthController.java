@@ -11,7 +11,6 @@ import project.fin_the_pen.finClient.core.error.customException.NotFoundDataExce
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.report.dto.ConsumeReportDetailRequestDto;
 import project.fin_the_pen.model.report.dto.ConsumeReportRequestDTO;
-import project.fin_the_pen.model.report.dto.ExpenditureRequestDTO;
 import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.service.ReportService;
 
@@ -57,11 +56,11 @@ public class ReportMonthController {
         }
     }
 
-    @PostMapping
+    /*@PostMapping
     @Operation(description = "지출 목표액을 설정합니다.", summary = "지출 목표액 설정")
     public ResponseEntity<Object> setAmount(@RequestBody ExpenditureRequestDTO dto, HttpServletRequest request) {
         return ResponseEntity.ok().body(reportService.setAmount(dto, request));
-    }
+    }*/
 
 
     /*

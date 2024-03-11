@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ExpenditureRequestDTO {
     @JsonProperty(value = "expenditure_amount")
-    @Schema(example = "100000", description = "지출목표액")
+    @Schema(example = "1000000", description = "지출목표액")
     private String amount;
 
     @JsonProperty(value = "user_id")
@@ -15,6 +15,6 @@ public class ExpenditureRequestDTO {
     private String userId;
 
     @JsonProperty(value = "date")
-    @Schema(example = "2024-10", description = "지출 목표액이 설정된 달")
+    @Schema(example = "2024-02", description = "지출 목표액이 설정된 달")
     private String date;
 }

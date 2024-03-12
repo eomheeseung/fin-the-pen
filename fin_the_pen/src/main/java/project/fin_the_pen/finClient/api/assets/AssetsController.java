@@ -128,6 +128,7 @@ public class AssetsController {
 
     /**
      * 카테고리별 자산 설정
+     * TODO response 만들고 test
      * @param userId
      * @param request
      * @return
@@ -146,7 +147,7 @@ public class AssetsController {
         return ResponseEntity.ok().body(flag);
     }
 
-    @Operation(summary = "카테고릴별 자산 설 -> 자산 세부 설정", description = "자산 세부 설정")
+    @Operation(summary = "카테고릴별 자산 설정 -> 자산 세부 설정", description = "자산 세부 설정")
     @PostMapping("/category-amount/detail")
     public ResponseEntity<Object> setDetailCategory(@RequestBody DetailCategoryRequestDto dto, HttpServletRequest request) {
         categoryService.setCategory(dto, request);

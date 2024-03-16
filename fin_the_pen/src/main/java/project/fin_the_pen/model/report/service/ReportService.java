@@ -333,10 +333,11 @@ public class ReportService {
 
 
 //        실제로 사용할 값
-//        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime localDateTime = LocalDateTime.now();
+        LocalDateTime startDateTime = localDateTime.withDayOfMonth(1);
 
         // 현재 시간 값 (가정)
-        LocalDateTime localDateTime = LocalDateTime.of(2024, 2, 13, 14, 0);
+//        LocalDateTime localDateTime = LocalDateTime.of(2024, 2, 13, 14, 0);
 
         List<Schedule> categoryList = crudScheduleRepository.findByCategoryBetweenDate(userId, category, date);
 

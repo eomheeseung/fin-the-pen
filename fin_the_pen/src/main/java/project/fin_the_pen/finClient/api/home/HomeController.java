@@ -12,7 +12,6 @@ import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.service.HomeService;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
-import project.fin_the_pen.model.schedule.vo.FindCertainMonthVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -27,7 +26,7 @@ public class HomeController {
     private final ScheduleService scheduleService;
     private final ConvertResponse convertResponse;
 
-    @Operation(summary = "홈 화면", description = "홈 화면")
+    /*@Operation(summary = "홈 화면", description = "홈 화면")
     @PostMapping("/home/month")
     public ResponseEntity<Object> homeMonth(@RequestBody HomeRequestDto dto, HttpServletRequest request) {
         try {
@@ -37,6 +36,18 @@ public class HomeController {
         } catch (RuntimeException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
+    }*/
+
+    @Operation(summary = "홈 화면", description = "홈 화면")
+    @PostMapping("/home/month")
+    public ResponseEntity<Object> homeMonth(@RequestBody HomeRequestDto dto, HttpServletRequest request) {
+        if (dto.getDate() == null) {
+            return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
+        }
+        Map<Object, Object> responseMap =
+                homeService.inquiryMonth(dto, request);
+
+        return convertResponse.getResponseEntity(responseMap);
     }
 
     @Operation(summary = "홈 화면", description = "홈 화면 - week")
@@ -63,7 +74,6 @@ public class HomeController {
     }
 
 
-
     /**
      * TODO
      *   홈화면에서 리스트볼 때
@@ -72,16 +82,15 @@ public class HomeController {
      * @param request
      * @return
      */
-    @PostMapping("/home/getMonthSchedules")
+    /*@PostMapping("/home/getMonthSchedules")
     @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.", summary = "월별 조회 (O)")
     public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
         if (findCertainMonthVO.getDate() == null) {
             return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
         }
-
         Map<Object, Object> responseMap =
                 scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
 
         return convertResponse.getResponseEntity(responseMap);
-    }
+    }*/
 }

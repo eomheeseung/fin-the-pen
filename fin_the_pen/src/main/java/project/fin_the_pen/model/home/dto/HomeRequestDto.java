@@ -12,7 +12,7 @@ public class HomeRequestDto {
 
     @JsonProperty(value = "main_month")
     @Schema(description = "입력받는 월(month)", example = "2024-02")
-    private String mainDate;
+    private String date;
 
     @JsonProperty(value = "calendar_date")
     @Schema(description = "캘린더에서 입력받는 일자", example = "2024-02-12")

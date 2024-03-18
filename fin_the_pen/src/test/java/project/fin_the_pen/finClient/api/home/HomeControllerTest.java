@@ -22,7 +22,6 @@ import java.util.HashMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,10 +29,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(controllers = HomeController.class,
-excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
-                classes = {JwtAuthenticationFilter.class})
-})
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,
+                        classes = {JwtAuthenticationFilter.class})
+        })
 class HomeControllerTest {
 
     @Autowired
@@ -56,13 +55,13 @@ class HomeControllerTest {
     @DisplayName(value = "홈 화면 controoler 테스트")
     void homeMonth() throws Exception {
 
-        given(homeService.inquiryMonth(any(), any())).willReturn(new HashMap<Object, Object>(){{
+        given(homeService.inquiryMonth(any(), any())).willReturn(new HashMap<Object, Object>() {{
             put("test", "test");
         }});
 
         HomeRequestDto dto = new HomeRequestDto();
         dto.setUserId("test");
-        dto.setMainDate("2024-02");
+        dto.setDate("2024-02");
         dto.setCalenderDate("2024-02-12");
 
         mockMvc.perform(post("/home/month")
@@ -72,8 +71,5 @@ class HomeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.test").value("test"))
                 .andDo(print());
-
-
     }
-
 }

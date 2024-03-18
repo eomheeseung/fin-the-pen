@@ -1,5 +1,6 @@
 package project.fin_the_pen.model.home.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +10,7 @@ import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.dto.HomeWeekResponseDto;
 import project.fin_the_pen.model.home.repository.HomeRepository;
 import project.fin_the_pen.model.report.repository.ReportRepository;
+import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -22,6 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,6 +34,7 @@ public class HomeService {
     private final TokenManager tokenManager;
     private final ReportRepository reportRepository;
     private final CrudScheduleRepository scheduleRepository;
+    private final ObjectMapper objectMapper;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -44,6 +48,10 @@ public class HomeService {
         LocalDate startDate = parseDate.withDayOfMonth(1);
         LocalDate endDate = parseDate.withDayOfMonth(parseDate.lengthOfMonth());
 
+        String userId = dto.getUserId();
+        String calenderDate = dto.getCalenderDate();
+        String date = dto.getDate();
+
         // 수입
         List<String> incomeList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Plus, startDate.toString(), endDate.toString());
 
@@ -54,7 +62,7 @@ public class HomeService {
         List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
 
         // 지출 목표액
-        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId());
+        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), dto.getUserId());
 
         int goalAmount = 0;
 
@@ -99,8 +107,30 @@ public class HomeService {
         // 4번 캘린더의 리스트를 보여주는 것은 controller의 findMonthSchedule에서 처리
 //        responseMap.put("calender", calenderView(dto.getCalenderDate(), dto.getUserId()));
 
-        List<Schedule> byStartDate = scheduleRepository.findByStartDate(dto.getUserId(), dto.getCalenderDate());
-        responseMap.put("today_schedule", byStartDate);
+
+        List<Schedule> responseArray = scheduleRepository.findByMonthSchedule(date, userId);
+        LocalDate parseCalenderDate = LocalDate.parse(calenderDate);
+
+        List<Schedule> termSchedule = responseArray.stream()
+                .filter(schedule ->
+                        (LocalDate.parse(schedule.getStartDate()).isBefore(parseCalenderDate) &&
+                                LocalDate.parse(schedule.getEndDate()).isAfter(parseCalenderDate)) ||
+                                LocalDate.parse(schedule.getStartDate()).isEqual(parseCalenderDate))
+                .collect(Collectors.toList());
+
+        if (termSchedule.isEmpty()) {
+            responseMap.put("today_schedule", "none");
+        } else {
+            responseMap.put("today_schedule", termSchedule);
+        }
+
+
+        List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
+                .map(this::createScheduleResponseDTO)
+                .collect(Collectors.toList());
+
+        responseMap.put("data", responseDTOList);
+        responseMap.put("count", responseDTOList.size());
 
         return responseMap;
     }
@@ -123,7 +153,7 @@ public class HomeService {
         List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
 
         // 지출 목표액
-        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId());
+        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), dto.getUserId());
 
         int goalAmount = 0;
 
@@ -216,7 +246,7 @@ public class HomeService {
         int expenseExpect = 0; // 지출 예정
         int available = 0;
 
-        Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(dto.getMainDate(), dto.getUserId());
+        Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), dto.getUserId());
 
         if (!findList.isEmpty()) {
             dayIncome = findList.stream()
@@ -259,30 +289,6 @@ public class HomeService {
             responseMap.put("income", 0);
             responseMap.put("dayExpense", 0);
         }
-
-
-        /*if (!findList.isEmpty()) {
-            responseMap.put("schedule_count", findList.size());
-
-            int keyNumber = 1;
-
-            for (Schedule schedule : findList) {
-                HomeDayResponseDto responseDto = new HomeDayResponseDto();
-
-                responseDto.setEventName(schedule.getEventName());
-                responseDto.setStartTime(schedule.getStartTime());
-                responseDto.setEndTime(schedule.getEndTime());
-
-                if (schedule.getPriceType() == PriceType.Plus) {
-                    responseDto.setAmount("+" + schedule.getAmount());
-                } else {
-                    responseDto.setAmount("-" + schedule.getAmount());
-                }
-
-                responseMap.put(String.valueOf(keyNumber), responseDto);
-                keyNumber++;
-            }
-        }*/
 
         return responseMap;
     }
@@ -357,5 +363,26 @@ public class HomeService {
             }
             return value;
         };
+    }
+
+    private ScheduleResponseDTO createScheduleResponseDTO(Schedule schedule) {
+        return ScheduleResponseDTO.builder()
+                .scheduleId(schedule.getId())
+                .userId(schedule.getUserId())
+                .eventName(schedule.getEventName())
+                .category(schedule.getCategory())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .startTime(schedule.getStartTime())
+                .endTime(schedule.getEndTime())
+                .allDay(schedule.isAllDay())
+                .repeatOptions(schedule.getRepeatOptions())
+                .period(schedule.getPeriod())
+                .priceType(schedule.getPriceType())
+                .isExclude(schedule.isExclude())
+                .importance(schedule.getImportance())
+                .amount(schedule.getAmount())
+                .isFixAmount(schedule.isFixAmount())
+                .build();
     }
 }

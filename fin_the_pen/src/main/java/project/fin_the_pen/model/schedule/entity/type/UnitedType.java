@@ -15,8 +15,9 @@ import javax.persistence.Embeddable;
 @Builder
 public class UnitedType {
     @ColumnDefault("'0'")
-    private String value;
+    private String term;
 
+    // 특수한 경우
     @ColumnDefault("'none'")
     private String options;
 }

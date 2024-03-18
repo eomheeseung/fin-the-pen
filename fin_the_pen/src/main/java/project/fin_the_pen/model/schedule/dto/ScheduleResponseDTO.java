@@ -1,5 +1,7 @@
 package project.fin_the_pen.model.schedule.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
@@ -7,6 +9,7 @@ import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Data
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ScheduleResponseDTO {
     // schedule의 기본키
     private Long scheduleId;

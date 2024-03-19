@@ -374,6 +374,7 @@ public class HomeService {
                 .startDate(schedule.getStartDate())
                 .endDate(schedule.getEndDate())
                 .startTime(schedule.getStartTime())
+                .repeatKind(schedule.getRepeatKind())
                 .endTime(schedule.getEndTime())
                 .allDay(schedule.isAllDay())
                 .repeatOptions(schedule.getRepeatOptions())
@@ -385,4 +386,5 @@ public class HomeService {
                 .isFixAmount(schedule.isFixAmount())
                 .build();
     }
+
 }

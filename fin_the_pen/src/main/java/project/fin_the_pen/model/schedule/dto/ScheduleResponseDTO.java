@@ -28,9 +28,14 @@ public class ScheduleResponseDTO {
     private String importance;
     private String amount;
     private boolean isFixAmount;
+    private String repeatKind;
 
     @Builder
-    public ScheduleResponseDTO(Long scheduleId, String userId, String eventName, String category, String startDate, String endDate, String startTime, String endTime, boolean allDay, UnitedType repeatOptions, PeriodType period, PriceType priceType, boolean isExclude, String importance, String amount, boolean isFixAmount) {
+    public ScheduleResponseDTO(Long scheduleId, String userId, String eventName, String category,
+                               String startDate, String endDate, String startTime, String endTime, boolean allDay,
+                               UnitedType repeatOptions, PeriodType period, PriceType priceType,
+                               boolean isExclude, String importance, String amount, boolean isFixAmount,
+                               String repeatKind) {
         this.scheduleId = scheduleId;
         this.userId = userId;
         this.eventName = eventName;
@@ -47,5 +52,6 @@ public class ScheduleResponseDTO {
         this.importance = importance;
         this.amount = amount;
         this.isFixAmount = isFixAmount;
+        this.repeatKind = repeatKind;
     }
 }

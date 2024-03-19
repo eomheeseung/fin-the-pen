@@ -82,7 +82,7 @@ public class AssetsController {
 
     @Operation(summary = "개인 목표 설정 및 수정", description = "개인 목표 설정")
     @PostMapping("/personal-goal")
-    public ResponseEntity<Object> personalGaolSet(@RequestBody PersonalRequestDto dto, HttpServletRequest request) {
+    public ResponseEntity<Object> personalGoalSet(@RequestBody PersonalRequestDto dto, HttpServletRequest request) {
         boolean flag = assetsService.personalGoalSet(dto, request);
 
         return ResponseEntity.ok().body(flag);

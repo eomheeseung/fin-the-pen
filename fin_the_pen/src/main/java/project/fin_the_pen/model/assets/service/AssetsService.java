@@ -116,7 +116,6 @@ public class AssetsService {
                 personalGoal = findPersonalGoal.get();
                 personalGoal.update(userId, goalName, period, criteria, requiredAmount, remittance, popOn);
 
-
             } else {
                 personalGoal = PersonalGoal.builder()
                         .userId(userId)

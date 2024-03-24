@@ -109,9 +109,9 @@ public class HomeService {
 
 
         List<Schedule> responseArray = scheduleRepository.findByMonthSchedule(date, userId);
-        LocalDate parseCalenderDate = LocalDate.parse(calenderDate);
+//        LocalDate parseCalenderDate = LocalDate.parse(calenderDate);
 
-        List<Schedule> termSchedule = responseArray.stream()
+        /*List<Schedule> termSchedule = responseArray.stream()
                 .filter(schedule ->
                         (LocalDate.parse(schedule.getStartDate()).isBefore(parseCalenderDate) &&
                                 LocalDate.parse(schedule.getEndDate()).isAfter(parseCalenderDate)) ||
@@ -122,7 +122,7 @@ public class HomeService {
             responseMap.put("today_schedule", "none");
         } else {
             responseMap.put("today_schedule", termSchedule);
-        }
+        }*/
 
 
         List<ScheduleResponseDTO> responseDTOList = responseArray.stream()

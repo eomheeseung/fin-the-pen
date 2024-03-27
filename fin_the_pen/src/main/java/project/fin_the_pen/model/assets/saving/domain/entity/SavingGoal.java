@@ -7,12 +7,15 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * 저축 목표
+ */
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class Asserts {
+public class SavingGoal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -17,11 +17,5 @@ public class PersonalResponseDto {
 
     private String period;
 
-    private String criteria;
-
-    private String requiredAmount;
-
-    private String isRemittance;
-
-    private String isPopOn;
+    private String monthAmount;
 }

@@ -24,19 +24,7 @@ public class PersonalRequestDto {
     @Schema(example = "2024-04-01", description = "기간 설정")
     private String period;
 
-    @JsonProperty(value = "criteria")
-    @Schema(example = "month", description = "day or month")
-    private String criteria;
-
-    @JsonProperty(value = "required_amount")
+    @JsonProperty(value = "month_amount")
     @Schema(example = "200000", description = "필요한 적금액")
-    private String requiredAmount;
-
-    @JsonProperty(value = "is_remittance")
-    @Schema(example = "true", description = "적금액 송금 설정 true or false")
-    private boolean isRemittance;
-
-    @JsonProperty(value = "pop_on")
-    @Schema(example = "true", description = "팝업창 설정 true or false")
-    private boolean isPopOn;
+    private String monthAmount;
 }

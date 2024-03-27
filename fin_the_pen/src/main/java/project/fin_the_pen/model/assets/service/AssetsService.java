@@ -4,13 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
-import project.fin_the_pen.model.assets.saving.domain.entity.Asserts;
+import project.fin_the_pen.model.assets.saving.domain.entity.SavingGoal;
 import project.fin_the_pen.model.assets.saving.domain.entity.PersonalGoal;
-import project.fin_the_pen.model.assets.saving.domain.type.PersonalCriteria;
 import project.fin_the_pen.model.assets.saving.dto.personal.PersonalRequestDto;
 import project.fin_the_pen.model.assets.saving.dto.personal.PersonalResponseDto;
-import project.fin_the_pen.model.assets.saving.dto.targetAmount.TargetAmountRequestDto;
-import project.fin_the_pen.model.assets.saving.dto.targetAmount.TargetAmountResponseDto;
+import project.fin_the_pen.model.assets.saving.dto.savingGoal.TargetAmountRequestDto;
+import project.fin_the_pen.model.assets.saving.dto.savingGoal.TargetAmountResponseDto;
 import project.fin_the_pen.model.assets.saving.repository.AssertsRepository;
 import project.fin_the_pen.model.assets.saving.repository.PersonalGoalRepository;
 
@@ -25,27 +24,35 @@ public class AssetsService {
     private final PersonalGoalRepository personalGoalRepository;
 
 
+    //TODO token validation이 안되는 것 같음
+    /**
+     * 저축 목표액 설정 -> SavingGoal table
+     *
+     * @param dto
+     * @param request
+     * @return
+     */
     public boolean setTargetAmount(TargetAmountRequestDto dto, HttpServletRequest request) {
         String userId = dto.getUserId();
         String yearsGoalAmount = dto.getYearsGoalAmount();
 
         try {
-            Optional<Asserts> findAsserts = assertsRepository.findByUserId(userId);
+            Optional<SavingGoal> findAsserts = assertsRepository.findByUserId(userId);
 
-            Asserts asserts;
+            SavingGoal savingGoal;
 
             if (findAsserts.isPresent()) {
-                asserts = findAsserts.get();
-                asserts.update(userId, yearsGoalAmount, String.valueOf(Integer.parseInt(yearsGoalAmount) / 12));
+                savingGoal = findAsserts.get();
+                savingGoal.update(userId, yearsGoalAmount, String.valueOf(Integer.parseInt(yearsGoalAmount) / 12));
             } else {
-                asserts = Asserts.builder()
+                savingGoal = SavingGoal.builder()
                         .userId(userId)
                         .yearsGoalAmount(yearsGoalAmount)
                         .monthGoalAmount(String.valueOf(Integer.parseInt(yearsGoalAmount) / 12))
                         .build();
             }
 
-            assertsRepository.save(asserts);
+            assertsRepository.save(savingGoal);
         } catch (RuntimeException e) {
             return false;
         }
@@ -65,14 +72,14 @@ public class AssetsService {
         responseDto.setUserId(userId);
 
         try {
-            Optional<Asserts> findAsserts = assertsRepository.findByUserId(userId);
+            Optional<SavingGoal> findAsserts = assertsRepository.findByUserId(userId);
 
             if (findAsserts.isPresent()) {
-                Asserts asserts = findAsserts.get();
+                SavingGoal savingGoal = findAsserts.get();
 
-                responseDto.setKeyId(String.valueOf(asserts.getId()));
-                responseDto.setYearsGoalAmount(asserts.getYearsGoalAmount());
-                responseDto.setMonthsGoalAmount(asserts.getMonthGoalAmount());
+                responseDto.setKeyId(String.valueOf(savingGoal.getId()));
+                responseDto.setYearsGoalAmount(savingGoal.getYearsGoalAmount());
+                responseDto.setMonthsGoalAmount(savingGoal.getMonthGoalAmount());
 
             } else {
                 throw new NotFoundDataException("no data");
@@ -94,18 +101,10 @@ public class AssetsService {
     public boolean personalGoalSet(PersonalRequestDto dto, HttpServletRequest request) {
         String userId = dto.getUserId();
         String goalName = dto.getGoalName();
-        PersonalCriteria criteria;
-
-        if (dto.getCriteria().equals(PersonalCriteria.MONTH.getName())) {
-            criteria = PersonalCriteria.MONTH;
-        } else {
-            criteria = PersonalCriteria.DAY;
-        }
-
         String period = dto.getPeriod();
-        String requiredAmount = dto.getRequiredAmount();
-        boolean remittance = dto.isRemittance();
-        boolean popOn = dto.isPopOn();
+        String monthAmount = dto.getMonthAmount();
+        String goalAmount = dto.getGoalAmount();
+
 
         try {
             Optional<PersonalGoal> findPersonalGoal = personalGoalRepository.findByUserId(userId);
@@ -114,17 +113,15 @@ public class AssetsService {
 
             if (findPersonalGoal.isPresent()) {
                 personalGoal = findPersonalGoal.get();
-                personalGoal.update(userId, goalName, period, criteria, requiredAmount, remittance, popOn);
+                personalGoal.update(userId, goalName, period, goalAmount, monthAmount);
 
             } else {
                 personalGoal = PersonalGoal.builder()
                         .userId(userId)
                         .goalName(goalName)
                         .period(period)
-                        .requiredAmount(requiredAmount)
-                        .isPopOn(popOn)
-                        .criteria(criteria)
-                        .isRemittance(remittance).build();
+                        .goalAmount(goalAmount)
+                        .monthAmount(monthAmount).build();
             }
 
             personalGoalRepository.save(personalGoal);
@@ -138,28 +135,21 @@ public class AssetsService {
         Optional<PersonalGoal> optional = personalGoalRepository.findByUserId(userId);
 
         PersonalResponseDto responseDto = new PersonalResponseDto();
+        responseDto.setUserId(userId);
 
         if (optional.isPresent()) {
             PersonalGoal findPersonalGoal = optional.get();
 
-            responseDto.setUserId(findPersonalGoal.getUserId());
             responseDto.setGoalName(findPersonalGoal.getGoalName());
-            responseDto.setCriteria(findPersonalGoal.getCriteria().getName());
             responseDto.setPeriod(findPersonalGoal.getPeriod());
-            responseDto.setGoalAmount(findPersonalGoal.getRequiredAmount());
-            responseDto.setIsPopOn(String.valueOf(findPersonalGoal.getIsPopOn()));
-            responseDto.setIsRemittance(String.valueOf(findPersonalGoal.getIsRemittance()));
-            responseDto.setRequiredAmount(findPersonalGoal.getRequiredAmount());
+            responseDto.setGoalAmount(findPersonalGoal.getGoalAmount());
+            responseDto.setMonthAmount(findPersonalGoal.getMonthAmount());
 
         } else {
-            responseDto.setUserId("?");
             responseDto.setGoalName("?");
-            responseDto.setCriteria("?");
             responseDto.setPeriod("?");
             responseDto.setGoalAmount("?");
-            responseDto.setIsRemittance("?");
-            responseDto.setIsPopOn("?");
-            responseDto.setRequiredAmount("?");
+            responseDto.setMonthAmount("?");
         }
         return responseDto;
     }
@@ -173,7 +163,7 @@ public class AssetsService {
      */
     public boolean initTargetAmount(String userId, HttpServletRequest request) {
         try {
-            Optional<Asserts> findAsserts = assertsRepository.findByUserId(userId);
+            Optional<SavingGoal> findAsserts = assertsRepository.findByUserId(userId);
 
             findAsserts.ifPresent(assertsRepository::delete);
             return true;

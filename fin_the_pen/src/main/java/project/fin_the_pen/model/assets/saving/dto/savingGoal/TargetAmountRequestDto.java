@@ -1,4 +1,4 @@
-package project.fin_the_pen.model.assets.saving.dto.targetAmount;
+package project.fin_the_pen.model.assets.saving.dto.savingGoal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

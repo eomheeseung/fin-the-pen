@@ -42,7 +42,7 @@ public class ReportMonthController {
 
     @GetMapping
     @Operation(description = "리포트 메인 화면입니다.", summary = "리포트 메인 화면")
-    public ResponseEntity<Object> reportHome(@RequestParam("date") String date, @RequestParam("user_id") String userId, HttpServletRequest request) {
+    public ResponseEntity<Object> reportHome(@RequestParam("date") String date, @RequestParam("userId") String userId, HttpServletRequest request) {
         try {
 //            log.info(dto.getDate());
             ReportRequestDemoDTO dto = new ReportRequestDemoDTO();
@@ -69,7 +69,6 @@ public class ReportMonthController {
     @PostMapping("/basic")
     @Operation(description = "입력된 월의 소비 리포트를 조회합니다.", summary = "소비 리포트 조회")
     public ResponseEntity<Object> consumeReport(@RequestBody ConsumeReportRequestDTO dto, HttpServletRequest request) {
-
         return convertResponse.getResponseEntity(reportService.inquiryReport(dto, request));
     }
 

@@ -30,7 +30,6 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
             } else {
-
                 Schedule schedule = Schedule.builder()
                         .userId(dto.getUserId())
                         .eventName(dto.getEventName())

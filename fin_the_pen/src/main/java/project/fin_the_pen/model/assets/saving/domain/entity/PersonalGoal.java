@@ -4,13 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.fin_the_pen.model.assets.saving.domain.type.PersonalCriteria;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * 개인 목표
+ */
 @Getter
 @Builder
 @NoArgsConstructor
@@ -27,31 +29,20 @@ public class PersonalGoal {
 
     private String period;
 
-    private PersonalCriteria criteria;
+    private String goalAmount;
 
-    private String requiredAmount;
+    private String monthAmount;
 
-    private Boolean isRemittance;
-
-    private Boolean isPopOn;
-
-    public boolean update(String userId, String goalName, String period, PersonalCriteria criteria,
-                          String requiredAmount, Boolean isRemittance, Boolean isPopOn) {
-
-        if (userId != null && goalName != null && period != null && criteria != null
-                && requiredAmount != null && isRemittance != null && isPopOn != null) {
-
-            this.userId = userId;
-            this.goalName = goalName;
-            this.period = period;
-            this.criteria = criteria;
-            this.requiredAmount = requiredAmount;
-            this.isRemittance = isRemittance;
-            this.isPopOn = isPopOn;
-
-            return true;
+    public boolean update(String userId, String goalName, String period, String goalAmount, String monthAmount) {
+        if (userId == null || goalName == null || period == null || goalAmount == null || monthAmount == null) {
+            return false;
         }
-        return false;
 
+        this.userId = userId;
+        this.goalName = goalName;
+        this.monthAmount = monthAmount;
+        this.period = period;
+        this.goalAmount = goalAmount;
+        return true;
     }
 }

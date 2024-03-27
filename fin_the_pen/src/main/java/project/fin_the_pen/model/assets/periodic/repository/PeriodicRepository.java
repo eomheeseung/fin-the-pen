@@ -9,6 +9,9 @@ import project.fin_the_pen.model.assets.periodic.entity.PeriodicAmount;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 정기 입/출금
+ */
 @Repository
 public interface PeriodicRepository extends JpaRepository<PeriodicAmount, Long> {
 

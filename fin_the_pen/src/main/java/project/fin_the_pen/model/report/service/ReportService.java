@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.TokenManager;
+import project.fin_the_pen.model.assets.spend.entity.SpendAmount;
+import project.fin_the_pen.model.assets.spend.repository.SpendAmountRepository;
 import project.fin_the_pen.model.report.dto.ConsumeReportDetailRequestDto;
 import project.fin_the_pen.model.report.dto.ConsumeReportRequestDTO;
 import project.fin_the_pen.model.report.dto.ConsumeReportResponseDTO;
@@ -36,8 +38,11 @@ public class ReportService {
     private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    private final SpendAmountRepository spendAmountRepository;
 
     public HashMap<Object, Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {
+        String userId = dto.getUserId();
+        String date = dto.getDate();
 
         try {
             if (dto.getDate() == null) {
@@ -49,11 +54,15 @@ public class ReportService {
             List<String> findAmountList = inquiryAmountList(dto);
 
             String parsingDate = dto.getDate().substring(0, 7);
-            Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(parsingDate, dto.getUserId());
+//            Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(parsingDate, dto.getUserId());
+            Optional<SpendAmount> optionalSpendAmount = spendAmountRepository.findByUserIdAndStartDate(userId, parsingDate);
 
-            if (findAmountList.isEmpty() || optionalGoalAmount.isEmpty()) {
+            log.info("size:{}", findAmountList.size());
+            log.info("실제:{}", optionalSpendAmount.isEmpty());
+
+            // TODO!!!! 이 부분 로직 다시 검토
+            if (findAmountList.isEmpty() || optionalSpendAmount.isEmpty()) {
                 // 1 번
-                String date = dto.getDate();
                 responseMap.put("date", date);
 
                 // 2번
@@ -122,9 +131,9 @@ public class ReportService {
             responseMap.put("totalSpentToday", String.valueOf(amountSum));
 
             // 3번
-            String goalAmount = optionalGoalAmount.get();
+            String goalAmount = optionalSpendAmount.get().getSpendGoalAmount();
 
-            log.info(goalAmount);
+            log.info("3번 goalAmount:{}", goalAmount);
 
             HashMap<Object, Object> expenditureMap = new HashMap<>();
 

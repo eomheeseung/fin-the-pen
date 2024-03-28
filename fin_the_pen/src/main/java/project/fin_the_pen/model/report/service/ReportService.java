@@ -14,6 +14,7 @@ import project.fin_the_pen.model.report.dto.ConsumeReportResponseDTO;
 import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
+import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
@@ -40,226 +41,95 @@ public class ReportService {
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private final SpendAmountRepository spendAmountRepository;
 
+    private String userId;
+    private String currentDate;
+
+    private void init(ReportRequestDemoDTO dto) {
+        userId = dto.getUserId();
+        currentDate = dto.getDate();
+    }
+
     public HashMap<Object, Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {
-        String userId = dto.getUserId();
-        String date = dto.getDate();
+        init(dto);
 
         try {
-            if (dto.getDate() == null) {
-                throw new RuntimeException();
+            if (currentDate == null) {
+                throw new NotFoundDataException("no date");
             }
 
             HashMap<Object, Object> responseMap = new HashMap<>();
 
-            List<String> findAmountList = inquiryAmountList(dto);
+            // yyyy-MM 까지만 추출
+            String subCurrentDate = currentDate.substring(0, 7);
 
-            String parsingDate = dto.getDate().substring(0, 7);
-//            Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(parsingDate, dto.getUserId());
-            Optional<SpendAmount> optionalSpendAmount = spendAmountRepository.findByUserIdAndStartDate(userId, parsingDate);
+            // 지출 목표액 가져옴
+            Optional<SpendAmount> optionalSpendAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate);
 
-            log.info("size:{}", findAmountList.size());
-            log.info("실제:{}", optionalSpendAmount.isEmpty());
+            // 현재:03-27 /  03-01 ~ 03-27까지 minus 금액들
+            LocalDate firstMonthDate = LocalDate.parse(currentDate, formatter).withDayOfMonth(1);
+            List<String> firstMonthMinusList = crudScheduleRepository.findByAmountMonth(userId, PriceType.Minus, firstMonthDate.toString(), currentDate);
 
-            // TODO!!!! 이 부분 로직 다시 검토
-            if (findAmountList.isEmpty() || optionalSpendAmount.isEmpty()) {
-                // 1 번
-                responseMap.put("date", date);
+            // 03-28 ~ 03-31까지의 minus 금액들
+            LocalDate localFirstDate = LocalDate.parse(currentDate, formatter).plusDays(1);
+            LocalDate localLastDate = localFirstDate.withDayOfMonth(localFirstDate.lengthOfMonth());
+            List<String> lastMonthMinusList = crudScheduleRepository.findByAmountMonth(userId, PriceType.Minus, localFirstDate.toString(), localLastDate.toString());
 
-                // 2번
-                responseMap.put("totalSpentToday", "0");
-
-                HashMap<Object, Object> expenditureMap = new HashMap<>();
-                expenditureMap.put("goal_amount", "0");
-
-                responseMap.put("expenseGoalAmount", "0");
-
-                // 4번
-                responseMap.put("availableAmount", "0");
-
-                // 6번
-                expenditureMap.put("goal_amount", "0");
-
-                expenditureMap.put("1st_month_Amount", "0");
-
-                expenditureMap.put("last_month_Amount", "0");
-
-                expenditureMap.put("result_amount", "0");
-
-                responseMap.put("expenditure_this_month", expenditureMap);
-
-                responseMap.put("category_consume_report", "0");
-
-                HashMap<Object, Object> fixedMap = new HashMap<>();
+            // 2024-03의 모든 일정의 minus 금액들
+            List<Schedule> allMonthPlusList = crudScheduleRepository.findByStartDateAndeAndEndDatePriceType(userId, PriceType.Plus, firstMonthDate.toString(), localLastDate.toString());
+            List<Schedule> allMonthMinusList = crudScheduleRepository.findByStartDateAndeAndEndDatePriceType(userId, PriceType.Minus, firstMonthDate.toString(), localLastDate.toString());
 
 
-                LocalDate parseDate = LocalDate.parse(date);
-                LocalDate previousDate = parseDate.minusMonths(1);
-
-                fixedMap.put("current_month", date);
-                fixedMap.put("previous_month", previousDate.toString());
-                fixedMap.put("fixed_deposit", "0");
-
-                fixedMap.put("previous_diff_plus", "0");
-
-                fixedMap.put("fixed_withdraw", "0");
-
-                fixedMap.put("previous_diff_minus", "0");
-
-                responseMap.put("Nmonth_fixed", fixedMap);
-
-                HashMap<Object, Object> monthReportMap = new HashMap<>();
-                monthReportMap.put("second_previous", "0");
-                monthReportMap.put("previous", "0");
-                monthReportMap.put("current", "0");
-
-                responseMap.put("month_report", monthReportMap);
-
-                return responseMap;
-            }
-
-            log.info(String.valueOf(findAmountList.get(2)));
-
-            int amountSum = findAmountList
-                    .stream()
-                    .mapToInt(Integer::parseInt)
-                    .sum();
-
-            // 1 번
-            responseMap.put("date", dto.getDate());
+            // 1번
+            responseMap.put("current_date", subCurrentDate);
 
             // 2번
-            responseMap.put("totalSpentToday", String.valueOf(amountSum));
+            if (!firstMonthMinusList.isEmpty()) {
+                int firstMonthAmount = firstMonthMinusList.stream().mapToInt(Integer::parseInt).sum();
+                log.info("2번 오늘까지 소비한 값 : {}", firstMonthAmount);
+                responseMap.put("first_month_amount", firstMonthAmount);
+            } else {
+                responseMap.put("first_month_amount", "0");
+            }
 
             // 3번
-            String goalAmount = optionalSpendAmount.get().getSpendGoalAmount();
-
-            log.info("3번 goalAmount:{}", goalAmount);
-
-            HashMap<Object, Object> expenditureMap = new HashMap<>();
-
-            Integer parseGoalAmount = Integer.valueOf(goalAmount);
-            responseMap.put("expenseGoalAmount", String.valueOf(parseGoalAmount));
+            if (optionalSpendAmount.isPresent()) {
+                SpendAmount spendAmount = optionalSpendAmount.get();
+                responseMap.put("spend_amount", spendAmount.getSpendGoalAmount());
+            } else {
+                responseMap.put("spend_amount", "0");
+            }
 
             // 4번
-            int availableAmount = Integer.parseInt(goalAmount) - amountSum;
-            responseMap.put("availableAmount", String.valueOf(availableAmount));
+            getAvailableAmount(firstMonthMinusList, lastMonthMinusList, optionalSpendAmount, responseMap);
+
+            // 5번
+            getCategoryConsumeList(userId, firstMonthDate, currentDate, responseMap);
 
             // 6번
-            expenditureMap.put("goal_amount", String.valueOf(parseGoalAmount));
+            getConsumeForecast(optionalSpendAmount, responseMap, firstMonthMinusList, lastMonthMinusList);
 
-            // 6-1 이번 달 1일부터 금일까지 사용한 금액 (보라색) : 사용한 금액
-            String dtoDate = dto.getDate();
-            LocalDate parseStartDate = LocalDate.parse(dtoDate, formatter).withDayOfMonth(1);
+            // 7번
+            LocalDate previousStartDate = firstMonthDate.minusMonths(1);
+            LocalDate previousEndDate = previousStartDate.withDayOfMonth(previousStartDate.lengthOfMonth());
 
-            List<String> byAmount1stMonth = crudScheduleRepository.findByAmountMonth(dto.getUserId(), PriceType.Minus, parseStartDate.toString(), dto.getDate());
-            int amount1stMonthSum = byAmount1stMonth.stream().mapToInt(Integer::parseInt).sum();
-            expenditureMap.put("1st_month_Amount", amount1stMonthSum);
+            List<Schedule> allPreviousMonthPlusList =
+                    crudScheduleRepository.findByStartDateAndeAndEndDatePriceType(userId, PriceType.Plus, previousStartDate.toString(), previousEndDate.toString());
 
-            // 6-2 이번달 금일 이후, 금월 지출 예정 금액 (핑크색) : 지출 예정
-            LocalDate stDate = LocalDate.parse(dto.getDate(), formatter).plusDays(1);
-            LocalDate endDate = stDate.withDayOfMonth(stDate.lengthOfMonth());
-            log.info(stDate.toString());
+            List<Schedule> allPreviousMonthMinusList =
+                    crudScheduleRepository.findByStartDateAndeAndEndDatePriceType(userId, PriceType.Minus, previousStartDate.toString(), previousEndDate.toString());
 
-            List<String> byAmountLastMonth = crudScheduleRepository.findByAmountMonth(dto.getUserId(), PriceType.Minus, stDate.toString(), endDate.toString());
-            int amountLastMonthSum = byAmountLastMonth.stream().mapToInt(Integer::parseInt).sum();
-            expenditureMap.put("last_month_Amount", amountLastMonthSum);
-
-            // 6-3 이번 달 사용 가능 금액 (지출 목표액 - 이번달 금일까지 사용한 총합) (하늘색) : 사용가능 금액
-            int resultSum = Integer.parseInt(goalAmount) - amount1stMonthSum;
-
-            expenditureMap.put("result_amount", String.valueOf(resultSum));
+            getFixedPlusMinusAmount(previousStartDate, allMonthPlusList, allMonthMinusList, allPreviousMonthPlusList, allPreviousMonthMinusList, responseMap);
 
 
-            responseMap.put("expenditure_this_month", expenditureMap);
+            // 8번
+            LocalDate secondStartDate = previousStartDate.minusMonths(1);
+            LocalDate secondEndDate = secondStartDate.withDayOfMonth(secondStartDate.lengthOfMonth());
 
-            List<Map.Entry<Object, Object>> consumeList = new ArrayList<>(consumeReportInquiry(dto.getUserId(), dto.getDate()).entrySet());
+            List<Schedule> allSecondMonthMinusList =
+                    crudScheduleRepository.findByStartDateAndeAndEndDatePriceType(userId, PriceType.Minus, secondStartDate.toString(), secondEndDate.toString());
 
-            for (Map.Entry<Object, Object> entry : consumeList) {
-                responseMap.put("category_consume_report", entry.getValue());
-            }
+            getMonthlyReport(allMonthMinusList, allPreviousMonthMinusList, allSecondMonthMinusList, responseMap);
 
-
-            HashMap<Object, Object> fixedMap = new HashMap<>();
-
-            try {
-                // 7번
-                LocalDate parseCurrentDate = LocalDate.parse(dto.getDate(), formatter);
-
-                LocalDate parseBeforeDate = parseCurrentDate.minusMonths(1);
-                LocalDate beforeStartDate = parseBeforeDate.withDayOfMonth(1);
-                LocalDate beforeEndDate = parseBeforeDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
-
-                List<String> beforePlusFixedAmount =
-                        crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, true, beforeStartDate.toString(), beforeEndDate.toString());
-
-                int beforePlusSum = beforePlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-                log.info(String.valueOf(beforePlusSum));
-
-                List<String> beforeMinusFixedAmount =
-                        crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, true, beforeStartDate.toString(), beforeEndDate.toString());
-
-                int beforeMinusSum = beforeMinusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-                log.info(String.valueOf(beforeMinusSum));
-
-                LocalDate currentStartDate = parseCurrentDate.withDayOfMonth(1);
-                LocalDate currentEndDate = parseCurrentDate.withDayOfMonth(parseCurrentDate.lengthOfMonth());
-
-                List<String> currentPlusFixedAmount =
-                        crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Plus, true, currentStartDate.toString(), currentEndDate.toString());
-                int currentPlusSum = currentPlusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-
-                List<String> currentMinusFixedAmount =
-                        crudScheduleRepository.findByFixedAmountMonth(dto.getUserId(), PriceType.Minus, true, currentStartDate.toString(), currentEndDate.toString());
-                int currentMinusSum = currentMinusFixedAmount.stream().mapToInt(Integer::parseInt).sum();
-
-                LocalDate previousDate = parseCurrentDate.minusMonths(1);
-
-                fixedMap.put("current_month", dtoDate);
-                fixedMap.put("previous_month", previousDate.toString());
-                fixedMap.put("fixed_deposit", String.valueOf(currentPlusSum));
-
-                BiFunction<Integer, Integer, String> depositBiFunc = (current, previous) -> {
-                    int diff = current - previous;
-
-                    if (diff < 0) {
-                        return "-" + diff;
-                    } else {
-                        return "+" + diff;
-                    }
-                };
-                fixedMap.put("previous_diff_plus", depositBiFunc.apply(currentPlusSum, beforePlusSum));
-
-                fixedMap.put("fixed_withdraw", currentMinusSum);
-
-                BiFunction<Integer, Integer, String> withDrawBiFunc = (current, previous) -> {
-                    int diff = current - previous;
-
-                    if (diff < 0) {
-                        return "+" + diff;
-                    } else {
-                        return "-" + diff;
-                    }
-                };
-
-                fixedMap.put("previous_diff_minus", withDrawBiFunc.apply(currentMinusSum, beforeMinusSum));
-
-                responseMap.put("Nmonth_fixed", fixedMap);
-            } catch (NullPointerException e) {
-                fixedMap.put("data", "error");
-            }
-
-
-            //8번
-            LocalDate currentDate = LocalDate.parse(dto.getDate(), formatter);
-            LocalDate previous = currentDate.minusMonths(1);
-            LocalDate secondPrevious = previous.minusMonths(1);
-
-            HashMap<Object, Object> monthReportMap = new HashMap<>();
-            monthReportMap.put("second_previous", monthSum(dto.getUserId(), secondPrevious));
-            monthReportMap.put("previous", monthSum(dto.getUserId(), previous));
-            monthReportMap.put("current", monthSum(dto.getUserId(), currentDate));
-
-            responseMap.put("month_report", monthReportMap);
 
             return responseMap;
         } catch (RuntimeException e) {
@@ -267,14 +137,201 @@ public class ReportService {
         }
     }
 
-    private int monthSum(String userId, LocalDate date) {
-        return crudScheduleRepository.findByAmountMonth(userId,
-                        PriceType.Minus,
-                        date.withDayOfMonth(1).toString(),
-                        date.toString())
-                .stream()
-                .mapToInt(Integer::parseInt)
-                .sum();
+    private void getAvailableAmount(List<String> firstMonthMinusList, List<String> lastMonthMinusList, Optional<SpendAmount> optionalSpendAmount, HashMap<Object, Object> responseMap) {
+        int firstMonthAmount = 0;
+        int lastMonthAmount = 0;
+        int availableAmount = 0;
+
+        if (!firstMonthMinusList.isEmpty()) {
+            firstMonthAmount = firstMonthMinusList.stream().mapToInt(Integer::parseInt).sum();
+        }
+        if (!lastMonthMinusList.isEmpty()) {
+            lastMonthAmount = lastMonthMinusList.stream().mapToInt(Integer::parseInt).sum();
+        }
+
+        if (optionalSpendAmount.isPresent()) {
+            availableAmount = Integer.parseInt(optionalSpendAmount.get().getSpendGoalAmount()) - firstMonthAmount - lastMonthAmount;
+        }
+
+        responseMap.put("available_amount", availableAmount);
+    }
+
+    // 8번
+    private void getMonthlyReport(List<Schedule> allMonthMinusList, List<Schedule> allPreviousMonthMinusList, List<Schedule> allSecondMonthMinusList, HashMap<Object, Object> responseMap) {
+        int currentMinusSum = 0;
+        int previousMinusSum = 0;
+        int secondMinusSum = 0;
+
+        if (!allMonthMinusList.isEmpty()) {
+            currentMinusSum = allMonthMinusList.stream().map(Schedule::getAmount).mapToInt(Integer::parseInt).sum();
+        }
+
+        if (!allPreviousMonthMinusList.isEmpty()) {
+            previousMinusSum = allPreviousMonthMinusList.stream().map(Schedule::getAmount).mapToInt(Integer::parseInt).sum();
+        }
+
+        if (!allSecondMonthMinusList.isEmpty()) {
+            secondMinusSum = allSecondMonthMinusList.stream().map(Schedule::getAmount).mapToInt(Integer::parseInt).sum();
+        }
+
+        HashMap<Object, Object> monthlyMap = new HashMap<>();
+        monthlyMap.put("current_amount", currentMinusSum);
+        monthlyMap.put("previous_amount", previousMinusSum);
+        monthlyMap.put("second_amount", secondMinusSum);
+
+        responseMap.put("monthly_report", monthlyMap);
+    }
+
+    // 7번
+    private void getFixedPlusMinusAmount(LocalDate previousStartDate, List<Schedule> allMonthPlusList, List<Schedule> allMonthMinusList,
+                                         List<Schedule> allPreviousMonthPlusList, List<Schedule> allPreviousMonthMinusList,
+                                         HashMap<Object, Object> responseMap) {
+        int currentFixedPlusSum = 0;
+        int currentFixedMinusSum = 0;
+        int previousFixedPlusSum = 0;
+        int previousFixedMinusSum = 0;
+
+        HashMap<Object, Object> fixedMap = new HashMap<>();
+
+        if (!allMonthPlusList.isEmpty()) {
+            currentFixedPlusSum = allMonthPlusList.stream()
+                    .filter(schedule -> !schedule.getRepeatKind().equals(RepeatKind.NONE.toString()))
+                    .map(Schedule::getAmount)
+                    .mapToInt(Integer::parseInt)
+                    .sum();
+        }
+        if (!allMonthMinusList.isEmpty()) {
+            currentFixedMinusSum = allMonthMinusList.stream()
+                    .filter(schedule -> !schedule.getRepeatKind().equals(RepeatKind.NONE.toString()))
+                    .map(Schedule::getAmount)
+                    .mapToInt(Integer::parseInt)
+                    .sum();
+        }
+        if (!allPreviousMonthPlusList.isEmpty()) {
+            previousFixedPlusSum = allPreviousMonthPlusList.stream()
+                    .filter(schedule -> !schedule.getRepeatKind().equals(RepeatKind.NONE.toString()))
+                    .map(Schedule::getAmount)
+                    .mapToInt(Integer::parseInt)
+                    .sum();
+        }
+
+        if (!allPreviousMonthMinusList.isEmpty()) {
+            previousFixedMinusSum = allPreviousMonthMinusList.stream()
+                    .filter(schedule -> !schedule.getRepeatKind().equals(RepeatKind.NONE.toString()))
+                    .map(Schedule::getAmount)
+                    .mapToInt(Integer::parseInt)
+                    .sum();
+        }
+
+        fixedMap.put("current_fixed_plus", currentFixedPlusSum);
+        fixedMap.put("previous_date", previousStartDate.toString().substring(0, 7));
+        fixedMap.put("current_fixed_Minus", currentFixedMinusSum);
+
+        BiFunction<Integer, Integer, String> biPlusFunction = (current, previous) -> {
+            String value;
+            if (current > previous) {
+                value = "+" + (current - previous);
+
+            } else if (current < previous) {
+                value = "-" + (current - previous);
+            } else {
+                value = "0";
+            }
+            return value;
+        };
+
+        BiFunction<Integer, Integer, String> biMinusFunction = (current, previous) -> {
+            String value;
+
+            if (current < previous) {
+                value = "+" + (current - previous);
+
+            } else if (current > previous) {
+                value = "-" + (current - previous);
+            } else {
+                value = "0";
+            }
+            return value;
+        };
+
+
+        fixedMap.put("diff_plus", biPlusFunction.apply(currentFixedPlusSum, previousFixedPlusSum));
+        fixedMap.put("diff_minus", biMinusFunction.apply(currentFixedMinusSum, previousFixedMinusSum));
+
+        responseMap.put("Nmonth_fixed", fixedMap);
+    }
+
+    // 6번
+    private void getConsumeForecast(Optional<SpendAmount> optionalSpendAmount, HashMap<Object, Object> responseMap, List<String> firstMonthMinusList, List<String> lastMonthMinusList) {
+        HashMap<Object, Object> expenditureMap = new HashMap<>();
+
+        if (optionalSpendAmount.isEmpty()) {
+            expenditureMap.put("spend_amount", "0");
+            expenditureMap.put("first_Nmonth_Amount", "0");
+            expenditureMap.put("last_Nmonth_Amount", "0");
+            expenditureMap.put("available_Nmonth_amount", "0");
+            responseMap.put("expenditure_data", expenditureMap);
+        } else {
+            SpendAmount spendAmount = optionalSpendAmount.get();
+            expenditureMap.put("spend_amount", spendAmount.getSpendGoalAmount());
+
+            int firstNMonthAmount = 0;
+            int lastNMonthAmount = 0;
+            int availableNMonthAmount = 0;
+
+
+            if (!firstMonthMinusList.isEmpty()) {
+                firstNMonthAmount = firstMonthMinusList.stream().mapToInt(Integer::parseInt).sum();
+                expenditureMap.put("first_Nmonth_Amount", String.valueOf(firstNMonthAmount));
+            }
+            if (!lastMonthMinusList.isEmpty()) {
+                lastNMonthAmount = lastMonthMinusList.stream().mapToInt(Integer::parseInt).sum();
+                expenditureMap.put("first_Nmonth_Amount", String.valueOf(lastNMonthAmount));
+            }
+
+            availableNMonthAmount = Integer.parseInt(spendAmount.getSpendGoalAmount()) - firstNMonthAmount - lastNMonthAmount;
+            expenditureMap.put("available_Nmonth_amount", String.valueOf(availableNMonthAmount));
+
+            responseMap.put("expenditure_data", expenditureMap);
+        }
+    }
+
+
+    // 5번
+    private void getCategoryConsumeList(String userId, LocalDate firstMonthDate, String currentDate, HashMap<Object, Object> responseMap) {
+        List<Schedule> byAmountMonth = crudScheduleRepository.findByStartDateAndeAndEndDatePriceType(userId, PriceType.Minus, firstMonthDate.toString(), currentDate);
+        Map<String, Integer> map = new HashMap<>();
+
+        if (byAmountMonth.isEmpty()) {
+            responseMap.put("category_consume_list", "?");
+        } else {
+            byAmountMonth.forEach(schedule -> {
+                String category = schedule.getCategory();
+                Integer amount = Integer.parseInt(schedule.getAmount());
+
+                if (schedule.getPriceType().equals(PriceType.Minus)) {
+                    map.compute(category, (key, value) -> (value == null) ? amount : value + amount);
+                }
+            });
+
+            // Map의 entry를 List로 변환
+            List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
+
+            // Comparator를 사용하여 value를 기준으로 내림차순 정렬
+            entryList.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
+
+            List<Map.Entry<String, Integer>> topEntries = entryList.subList(0, Math.min(5, entryList.size()));
+            int sum = topEntries.stream().mapToInt(Map.Entry::getValue).sum();
+
+            List<ConsumeReportResponseDTO> consumeList = new ArrayList<>();
+
+            for (Map.Entry<String, Integer> entry : topEntries) {
+                int percentage = (int) ((entry.getValue() * 100.0) / sum);
+                consumeList.add(new ConsumeReportResponseDTO(entry.getKey(), entry.getValue(), String.valueOf(percentage)));
+            }
+
+            responseMap.put("category_consume_list", consumeList);
+        }
     }
 
 
@@ -284,8 +341,8 @@ public class ReportService {
         String date = dto.getDate();
         log.info(date);
 
-//        LocalDateTime nowDateTime = LocalDateTime.now();
-        LocalDateTime nowDateTime = LocalDateTime.of(2024, 2, 1, 23, 0);
+        LocalDateTime nowDateTime = LocalDateTime.now();
+//        LocalDateTime nowDateTime = LocalDateTime.of(2024, 2, 1, 23, 0);
 
         try {
             Map<Object, Object> responseMap = consumeReportInquiry(userId, date);

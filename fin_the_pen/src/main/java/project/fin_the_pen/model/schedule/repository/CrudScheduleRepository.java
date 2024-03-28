@@ -36,7 +36,7 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findScheduleByDateContains(@Param("startDate") String startDate, @Param("endDate") String endDate,
                                               @Param("userId") String userId);
 
-    @Query("select s from Schedule  s where s.userId = :userId and :date between  s.startDate and s.endDate")
+    @Query("select s from Schedule  s where s.userId = :userId and :date between s.startDate and s.endDate")
     List<Schedule> findSchedulesByStartDateBetweenEndDate(@Param("userId") String userId, @Param("date") String date);
 
     @Query("select s from Schedule s where s.userId = :userId and s.startDate = :startDate")
@@ -68,7 +68,7 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
      * TODO
      *   h2 => parsedatetime() 사용
      */
-    @Query("select s.amount from Schedule s where  parsedatetime(s.startDate,'yyyy-MM-dd') >= parsedatetime(:targetDate,'yyyy-MM-dd')  and s.userId = :userId and s.priceType = :priceType")
+    @Query("select s.amount from Schedule s where parsedatetime(s.startDate,'yyyy-MM-dd') >= parsedatetime(:targetDate,'yyyy-MM-dd')  and s.userId = :userId and s.priceType = :priceType")
     List<String> findByAmount(@Param("targetDate") String targetDate, @Param("userId") String userId, @Param("priceType") PriceType priceType);
 
     @Query("select s from Schedule s where PARSEDATETIME(s.startDate,'yyyy-MM-dd') >= PARSEDATETIME(:targetDate,'yyyy-MM-dd')  and s.userId = :userId and s.priceType = :priceType")
@@ -76,6 +76,10 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("select s.amount from Schedule s where s.userId = :userId and s.priceType = :priceType and s.startDate between :startDate and :endDate")
     List<String> findByAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("startDate") String startDate, @Param("endDate") String endDate);
+
+
+    @Query("select s from Schedule s where s.userId = :userId and s.priceType = :priceType and s.startDate between :startDate and :endDate")
+    List<Schedule> findByStartDateAndeAndEndDatePriceType(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
     @Query("select s from Schedule s where s.userId = :userId and parsedatetime(s.startDate,'yyyy-MM-dd') >= parsedatetime(:targetDate,'yyyy-MM-dd')")
     List<Schedule> findByScheduleFromStartDate(@Param("userId") String userId, @Param("targetDate") String targetDate);

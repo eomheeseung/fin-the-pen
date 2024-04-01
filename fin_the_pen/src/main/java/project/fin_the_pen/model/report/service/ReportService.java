@@ -61,17 +61,23 @@ public class ReportService {
 
             // yyyy-MM 까지만 추출
             String subCurrentDate = currentDate.substring(0, 7);
+            log.info(subCurrentDate);
 
             // 지출 목표액 가져옴
             Optional<SpendAmount> optionalSpendAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate);
+            log.info(String.valueOf(optionalSpendAmount.isEmpty()));
 
             // 현재:03-27 /  03-01 ~ 03-27까지 minus 금액들
             LocalDate firstMonthDate = LocalDate.parse(currentDate, formatter).withDayOfMonth(1);
+            log.info("1일:{}", firstMonthDate);
+            log.info("현재:{}", currentDate);
             List<String> firstMonthMinusList = crudScheduleRepository.findByAmountMonth(userId, PriceType.Minus, firstMonthDate.toString(), currentDate);
 
             // 03-28 ~ 03-31까지의 minus 금액들
             LocalDate localFirstDate = LocalDate.parse(currentDate, formatter).plusDays(1);
+            log.info("현재 +1:{}", localFirstDate);
             LocalDate localLastDate = localFirstDate.withDayOfMonth(localFirstDate.lengthOfMonth());
+            log.info("달의 마지막 날:{}", localLastDate);
             List<String> lastMonthMinusList = crudScheduleRepository.findByAmountMonth(userId, PriceType.Minus, localFirstDate.toString(), localLastDate.toString());
 
             // 2024-03의 모든 일정의 minus 금액들

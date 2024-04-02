@@ -42,7 +42,7 @@ public class ReportMonthController {
 
     @GetMapping
     @Operation(description = "리포트 메인 화면입니다.", summary = "리포트 메인 화면")
-    public ResponseEntity<Object> reportHome(@RequestParam("date") String date, @RequestParam("userId") String userId, HttpServletRequest request) {
+    public ResponseEntity<Object> reportHome(@RequestParam("date") String date, @RequestParam("user_id") String userId, HttpServletRequest request) {
         try {
 //            log.info(dto.getDate());
             ReportRequestDemoDTO dto = new ReportRequestDemoDTO();

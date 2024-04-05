@@ -8,8 +8,11 @@ import project.fin_the_pen.model.assets.spend.dto.SpendAmountResponseDto;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmount;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmountRegular;
 import project.fin_the_pen.model.assets.spend.repository.SpendAmountRepository;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
+import project.fin_the_pen.model.schedule.type.PriceType;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -19,14 +22,26 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SpendGoalAmountService {
     private final SpendAmountRepository spendAmountRepository;
+    private final CrudScheduleRepository scheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
 
+    // TODO 현재 일자가 2024-03인데 넘겨서 2024-04인 경우 지출액을 어떻게 보여줄 것인가
     public Map<String, SpendAmountResponseDto> viewSpendGoalAmount(String userId, String date, HttpServletRequest request) {
         List<SpendAmount> spendAmountList = spendAmountRepository.findByUserIdAndStartDateToList(userId, date);
+
+        LocalDate now = LocalDate.now();
+        LocalDate firstMonthDate = now.withDayOfMonth(1);
+        List<String> firstMonthMinusList = scheduleRepository.findByAmountMonth(userId, PriceType.Minus, firstMonthDate.toString(), now.toString());
 
         HashMap<String, SpendAmountResponseDto> responseMap = new HashMap<>();
 
         log.info(String.valueOf(spendAmountList.size()));
+
+        int first_month_amount = 0;
+
+        if (!firstMonthMinusList.isEmpty()) {
+            first_month_amount = firstMonthMinusList.stream().mapToInt(Integer::parseInt).sum();
+        }
 
         if (!spendAmountList.isEmpty()) {
             Optional<SpendAmount> OnAmount = spendAmountList.stream()
@@ -46,7 +61,7 @@ public class SpendGoalAmountService {
                         .startDate(OffSpendAmount.getStartDate())
                         .endDate(OffSpendAmount.getEndDate())
                         .date(date)
-                        .spendAmount("0")
+                        .spendAmount(String.valueOf(first_month_amount))
                         .build();
 
                 responseMap.put("offSpendAmount", responseDto);
@@ -60,7 +75,7 @@ public class SpendGoalAmountService {
                         .startDate(OnSpendAmount.getStartDate())
                         .endDate(OnSpendAmount.getEndDate())
                         .date(date)
-                        .spendAmount("0")
+                        .spendAmount(String.valueOf(first_month_amount))
                         .build();
 
                 responseMap.put("OnSpendAmount", responseDto);
@@ -72,8 +87,7 @@ public class SpendGoalAmountService {
                         .startDate("?")
                         .endDate("?")
                         .date(date)
-                        // 나중에 schedule에서 끌어와야 함...
-                        .spendAmount("0")
+                        .spendAmount(String.valueOf(first_month_amount))
                         .build();
                 responseMap.put("data", responseDto);
             }

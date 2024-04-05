@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmount;
+import project.fin_the_pen.model.assets.spend.entity.SpendAmountRegular;
 import project.fin_the_pen.model.assets.spend.repository.SpendAmountRepository;
 import project.fin_the_pen.model.report.dto.ConsumeReportDetailRequestDto;
 import project.fin_the_pen.model.report.dto.ConsumeReportRequestDTO;
@@ -64,8 +65,20 @@ public class ReportService {
             log.info(subCurrentDate);
 
             // 지출 목표액 가져옴
-            Optional<SpendAmount> optionalSpendAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate);
-            log.info(String.valueOf(optionalSpendAmount.isEmpty()));
+            Optional<SpendAmount> optionalSpendOffAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate)
+                    .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.OFF));
+            Optional<SpendAmount> optionalSpendOnAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate)
+                    .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.ON));
+
+            Optional<SpendAmount> optionalSpendAmount = Optional.empty();
+
+            if (optionalSpendOffAmount.isPresent()) {
+                optionalSpendAmount = optionalSpendOffAmount;
+            } else {
+                if (optionalSpendOnAmount.isPresent()) {
+                    optionalSpendAmount = optionalSpendOnAmount;
+                }
+            }
 
             // 현재:03-27 /  03-01 ~ 03-27까지 minus 금액들
             LocalDate firstMonthDate = LocalDate.parse(currentDate, formatter).withDayOfMonth(1);

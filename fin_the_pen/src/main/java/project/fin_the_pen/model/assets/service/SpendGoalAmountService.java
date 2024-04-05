@@ -12,7 +12,7 @@ import project.fin_the_pen.model.assets.spend.repository.SpendAmountRepository;
 import javax.servlet.http.HttpServletRequest;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -21,39 +21,64 @@ public class SpendGoalAmountService {
     private final SpendAmountRepository spendAmountRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
 
-    public SpendAmountResponseDto viewSpendGoalAmount(String userId, String date, HttpServletRequest request) {
-        Optional<SpendAmount> spendAmountOptional = spendAmountRepository.findByUserIdAndStartDate(userId, date);
+    public Map<String, SpendAmountResponseDto> viewSpendGoalAmount(String userId, String date, HttpServletRequest request) {
+        List<SpendAmount> spendAmountList = spendAmountRepository.findByUserIdAndStartDateToList(userId, date);
 
-        log.info(String.valueOf(spendAmountOptional.isPresent()));
+        HashMap<String, SpendAmountResponseDto> responseMap = new HashMap<>();
 
-        if (spendAmountOptional.isPresent()) {
-            SpendAmount spendAmount = spendAmountOptional.get();
+        log.info(String.valueOf(spendAmountList.size()));
 
-            log.info(spendAmount.getSpendGoalAmount());
+        if (!spendAmountList.isEmpty()) {
+            Optional<SpendAmount> OnAmount = spendAmountList.stream()
+                    .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.ON))
+                    .findAny();
 
-            SpendAmountResponseDto responseDto = SpendAmountResponseDto.builder()
-                    .userId(spendAmount.getUserId())
-                    .spendGoalAmount(spendAmount.getSpendGoalAmount())
-                    .startDate(spendAmount.getStartDate())
-                    .endDate(spendAmount.getEndDate())
-                    .date(date)
-                    // 나중에 schedule에서 끌어와야 함...
-                    .spendAmount("0")
-                    .build();
-            return responseDto;
+            Optional<SpendAmount> OffAmount = spendAmountList.stream()
+                    .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.OFF))
+                    .findAny();
 
-        } else {
-            SpendAmountResponseDto responseDto = SpendAmountResponseDto.builder()
-                    .userId(userId)
-                    .spendGoalAmount("0")
-                    .startDate("?")
-                    .endDate("?")
-                    .date(date)
-                    // 나중에 schedule에서 끌어와야 함...
-                    .spendAmount("0")
-                    .build();
-            return responseDto;
+            if (OffAmount.isPresent()) {
+                SpendAmount OffSpendAmount = OffAmount.get();
+
+                SpendAmountResponseDto responseDto = SpendAmountResponseDto.builder()
+                        .spendGoalAmount(OffSpendAmount.getSpendGoalAmount())
+                        .userId(OffSpendAmount.getUserId())
+                        .startDate(OffSpendAmount.getStartDate())
+                        .endDate(OffSpendAmount.getEndDate())
+                        .date(date)
+                        .spendAmount("0")
+                        .build();
+
+                responseMap.put("offSpendAmount", responseDto);
+            }
+            if (OnAmount.isPresent()) {
+                SpendAmount OnSpendAmount = OnAmount.get();
+
+                SpendAmountResponseDto responseDto = SpendAmountResponseDto.builder()
+                        .spendGoalAmount(OnSpendAmount.getSpendGoalAmount())
+                        .userId(OnSpendAmount.getUserId())
+                        .startDate(OnSpendAmount.getStartDate())
+                        .endDate(OnSpendAmount.getEndDate())
+                        .date(date)
+                        .spendAmount("0")
+                        .build();
+
+                responseMap.put("OnSpendAmount", responseDto);
+            }
+            if (spendAmountList.isEmpty()) {
+                SpendAmountResponseDto responseDto = SpendAmountResponseDto.builder()
+                        .userId(userId)
+                        .spendGoalAmount("0")
+                        .startDate("?")
+                        .endDate("?")
+                        .date(date)
+                        // 나중에 schedule에서 끌어와야 함...
+                        .spendAmount("0")
+                        .build();
+                responseMap.put("data", responseDto);
+            }
         }
+        return responseMap;
     }
 
 
@@ -76,15 +101,15 @@ public class SpendGoalAmountService {
         YearMonth parseEndDate = YearMonth.parse(endDate, formatter);
 
         try {
+            // 정기가 아닌 경우
             if (regular.equals(SpendAmountRegular.OFF.toString())) {
                 Optional<SpendAmount> optionalSpendAmount = spendAmountRepository.findByUserIdAndStartDate(userId, startDate);
 
                 SpendAmount spendAmount;
 
-                if (optionalSpendAmount.isPresent() && !isBatch) {
+                if (optionalSpendAmount.isPresent()) {
                     spendAmount = optionalSpendAmount.get();
                     spendAmount.update(userId, spendGoalAmount, startDate, endDate, SpendAmountRegular.OFF);
-
                 } else {
                     spendAmount = SpendAmount.builder()
                             .spendGoalAmount(spendGoalAmount)

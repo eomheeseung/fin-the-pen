@@ -64,7 +64,7 @@ public class ReportService {
             String subCurrentDate = currentDate.substring(0, 7);
             log.info(subCurrentDate);
 
-            // 지출 목표액 가져옴
+            // 지출 목표액 가져옴 (04-05, 지출 목표액이 일괄처리가 아닌 경우 OFF가 우선순위가 높음.)
             Optional<SpendAmount> optionalSpendOffAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate)
                     .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.OFF));
             Optional<SpendAmount> optionalSpendOnAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate)

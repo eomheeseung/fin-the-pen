@@ -3,15 +3,15 @@ package project.fin_the_pen.model.assets.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.model.assets.category.dto.DetailCategoryMapping;
-import project.fin_the_pen.model.assets.category.dto.DetailCategoryRequestDto;
+import project.fin_the_pen.model.assets.category.dto.CategoryGoalRequestDto;
+import project.fin_the_pen.model.assets.category.dto.CategoryGoalResponseDto;
+import project.fin_the_pen.model.assets.category.dto.SmallCategoryResponseDto;
 import project.fin_the_pen.model.assets.category.entity.Category;
-import project.fin_the_pen.model.assets.category.entity.CategoryDetail;
-import project.fin_the_pen.model.assets.category.repository.CategoryDetailRepository;
+import project.fin_the_pen.model.assets.category.entity.SmallCategory;
 import project.fin_the_pen.model.assets.category.repository.CategoryRepository;
-import project.fin_the_pen.model.report.dto.ExpenditureRequestDTO;
-import project.fin_the_pen.model.report.entity.Reports;
-import project.fin_the_pen.model.report.repository.ReportRepository;
+import project.fin_the_pen.model.assets.spend.entity.SpendAmount;
+import project.fin_the_pen.model.assets.spend.entity.SpendAmountRegular;
+import project.fin_the_pen.model.assets.spend.repository.SpendAmountRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -20,116 +20,180 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-    private final ReportRepository reportRepository;
-
+    private final SpendAmountRepository spendAmountRepository;
     private final CategoryRepository categoryRepository;
-    private final CategoryDetailRepository detailRepository;
 
-    public boolean setAmount(ExpenditureRequestDTO dto, HttpServletRequest request) {
-        Optional<Reports> findReports = reportRepository.findByUserIdAndDate(dto.getDate(), dto.getUserId());
+    public Map<Object, Object> viewAmount(String userId, String date, HttpServletRequest request) {
+        List<SpendAmount> spendAmountList = spendAmountRepository.findByUserIdAndStartDateToList(userId, date);
 
-        if (findReports.isPresent()) {
-            Reports reports = findReports.get();
+        Map<Object, Object> responseMap = new HashMap<>();
+        ArrayList<CategoryGoalResponseDto> responseList = new ArrayList<>();
 
-            reports.update(dto.getUserId(), dto.getAmount(), dto.getDate());
-            reportRepository.save(reports);
+        Optional<SpendAmount> offSpendAmount = spendAmountList.stream()
+                .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.OFF))
+                .findAny();
+
+        // OFF 값이 없는 경우 ON 값으로 필터링
+        Optional<SpendAmount> onSpendAmount = offSpendAmount.or(() ->
+                spendAmountList.stream()
+                        .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.ON))
+                        .findAny()
+        );
+
+        if (offSpendAmount.isPresent()) {
+            SpendAmount spendAmount = offSpendAmount.get();
+            responseMap.put("spend_goal_amount", spendAmount.getSpendGoalAmount());
+            responseMap.put("date", spendAmount.getStartDate());
+
+            List<Category> categoryList = categoryRepository.findByUserIdAndDate(userId, date);
+
+            int monthTotalValue = 0;
+            monthTotalValue = categoryList.stream().mapToInt(category -> Integer.parseInt(category.getMediumValue())).sum();
+
+
+            for (Category category : categoryList) {
+                CategoryGoalResponseDto responseDto = new CategoryGoalResponseDto();
+
+                List<SmallCategory> smallCategoryList = category.getCategoryList();
+
+                for (SmallCategory smallCategory : smallCategoryList) {
+                    SmallCategoryResponseDto smallResponseDto = new SmallCategoryResponseDto();
+                    smallResponseDto.setName(smallCategory.getSmallName());
+                    smallResponseDto.setValue(smallCategory.getSmallValue());
+
+                    responseDto.addList(smallResponseDto);
+                }
+
+                responseDto.setCategoryTotal(category.getMediumValue());
+                responseDto.setCategoryName(category.getMediumName());
+
+                responseList.add(responseDto);
+            }
+
+            responseMap.put("category_list", responseList);
+            int spendGoalAmount = Integer.parseInt(spendAmount.getSpendGoalAmount());
+            int ratio = (monthTotalValue * 100) / spendGoalAmount;
+            log.info("비율:{}", ratio);
+            responseMap.put("ratio", ratio + "%");
+            responseMap.put("category_total", String.valueOf(monthTotalValue));
+
+            log.info("카테고리 합산 값:{}", monthTotalValue);
+
+
+        } else if (onSpendAmount.isPresent()) {
+            SpendAmount spendAmount = onSpendAmount.get();
+            responseMap.put("spend_goal_amount", spendAmount.getSpendGoalAmount());
+            responseMap.put("date", spendAmount.getStartDate());
+
+            List<Category> categoryList = categoryRepository.findByUserIdAndDate(userId, date);
+
+            int monthTotalValue = 0;
+            monthTotalValue = categoryList.stream().mapToInt(category -> Integer.parseInt(category.getMediumValue())).sum();
+
+            for (Category category : categoryList) {
+                CategoryGoalResponseDto responseDto = new CategoryGoalResponseDto();
+
+                List<SmallCategory> smallCategoryList = category.getCategoryList();
+
+                for (SmallCategory smallCategory : smallCategoryList) {
+                    SmallCategoryResponseDto smallResponseDto = new SmallCategoryResponseDto();
+                    smallResponseDto.setName(smallCategory.getSmallName());
+                    smallResponseDto.setValue(smallCategory.getSmallValue());
+                    responseDto.addList(smallResponseDto);
+                }
+
+                responseDto.setCategoryTotal(category.getMediumValue());
+                responseDto.setCategoryName(category.getMediumName());
+
+                responseList.add(responseDto);
+            }
+
+            responseMap.put("category_list", responseList);
+            int spendGoalAmount = Integer.parseInt(spendAmount.getSpendGoalAmount());
+            int ratio = (monthTotalValue * 100) / spendGoalAmount;
+
+            log.info("비율:{}", ratio);
+            responseMap.put("ratio", ratio + "%");
+            log.info("카테고리 합산 값:{}", monthTotalValue);
+            responseMap.put("category_total", String.valueOf(monthTotalValue));
         } else {
-            Reports report = Reports.builder()
-                    .userId(dto.getUserId())
-                    .amount(dto.getAmount())
-                    .date(dto.getDate())
-                    .build();
-
-            reportRepository.save(report);
+            responseMap.put("data", "no data");
         }
-        return true;
+
+        return responseMap;
     }
 
-    public boolean setCategory(DetailCategoryRequestDto dto, HttpServletRequest request) {
+    public boolean setAmount(CategoryGoalRequestDto dto, HttpServletRequest request) {
         String userId = dto.getUserId();
-        String dtoDate = dto.getDate();
-        DetailCategoryMapping details = dto.getDetails();
-        String categoryName = details.getCategoryName();
-        Map<String, String> detailsMap = details.getDetails();
-        List<CategoryDetail> list = new ArrayList<>();
+        String date = dto.getDate();
+        String mediumValue = dto.getMediumValue();
+        String mediumName = dto.getMediumName();
+        Map<String, String> smallMap = dto.getSmallMap();
 
+        Optional<Category> optionalCategory =
+                categoryRepository.findByUserIdAndDateAndMediumName(userId, date, mediumName);
 
-        Optional<Category> optionalCategory = categoryRepository.findByUserIdAnAndCategoryName(userId, categoryName);
+        try {
+            if (optionalCategory.isPresent()) {
+                Category category = optionalCategory.get();
+                category.deleteList();
 
-
-        /*
-        저장 logic
-         */
-        Category category = Category.builder()
-                .userId(userId)
-                .categoryName(categoryName)
-                .date(dtoDate)
-                .build();
-
-        //TODO cascade를 사용 test
-//        categoryRepository.save(category);
-
-        for (String key : detailsMap.keySet()) {
-            CategoryDetail categoryDetail = CategoryDetail.builder()
-                    .detailName(key)
-                    .build();
-            category.addCategoryDetail(categoryDetail);
-//            detailRepository.save(categoryDetail);
-        }
-
-        categoryRepository.save(category);
-
-
-
-
-        // 수정
-       /* if (optionalCategory.isPresent()) {
-            Category findCategory = optionalCategory.get();
-
-
-            if (detailsMap != null) {
-                Set<String> keySet = detailsMap.keySet();
+                Set<String> keySet = smallMap.keySet();
 
                 for (String key : keySet) {
-                    CategoryDetail categoryDetail = new CategoryDetail();
-                    categoryDetail.update(detailsMap.get(key), dtoDate);
-                    categoryDetail.getCategory().update(categoryName);
-                    list.add(categoryDetail);
+                    SmallCategory smallCategory = SmallCategory
+                            .builder()
+                            .smallName(key)
+                            .smallValue(smallMap.get(key))
+                            .build();
+
+                    category.addSmallCategory(smallCategory);
                 }
-                findCategory.update(categoryName);
 
-                categoryRepository.save(findCategory);
+                category.update(userId, mediumName, mediumValue);
 
+                categoryRepository.save(category);
+                return true;
             }
 
-            List<CategoryDetail> categoryDetails = findCategory.getCategoryDetails();
-
-            for (CategoryDetail categoryDetail : categoryDetails) {
-                categoryDetails.remove(categoryDetail);
-            }
-
-            findCategory.update(categoryName, list);
-
-            categoryRepository.save(findCategory);
-
-        } else {
-            if (detailsMap != null) {
-                Set<String> keySet = detailsMap.keySet();
-
-                for (String key : keySet) {
-
-                }
-            }
+            Set<String> keySet = smallMap.keySet();
 
             Category category = Category.builder()
-                    .categoryDetails(list)
-                    .categoryName(categoryName)
+                    .mediumName(mediumName)
                     .userId(userId)
+                    .date(date)
+                    .mediumValue(mediumValue)
                     .build();
 
-            categoryRepository.save(category);
-        }*/
+            for (String key : keySet) {
+                SmallCategory smallCategory = SmallCategory
+                        .builder()
+                        .smallName(key)
+                        .smallValue(smallMap.get(key))
+                        .build();
 
-        return true;
+                category.addSmallCategory(smallCategory);
+            }
+
+            categoryRepository.save(category);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    public boolean deleteAmount(String userId, String date, HttpServletRequest request) {
+        List<Category> categoryList = categoryRepository.findByUserIdAndDate(userId, date);
+
+        try {
+            if (categoryList.isEmpty()) {
+                return true;
+            }
+
+            categoryRepository.deleteAll(categoryList);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 }

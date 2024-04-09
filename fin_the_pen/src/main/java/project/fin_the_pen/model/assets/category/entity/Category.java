@@ -16,28 +16,40 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String userId;
-
-    private String categoryName;
+    private String mediumName;
     private String date;
+    private String mediumValue;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CategoryDetail> categoryDetails;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<SmallCategory> categoryList;
 
     @Builder
-    public Category(String userId, String categoryName, String date) {
+    public Category(String userId, String mediumName, String date, String mediumValue) {
         this.userId = userId;
-        this.categoryName = categoryName;
+        this.mediumName = mediumName;
         this.date = date;
+        this.mediumValue = mediumValue;
     }
 
-    // CategoryDetail을 추가하는 메서드
-    public void addCategoryDetail(CategoryDetail categoryDetail) {
-        if (this.categoryDetails == null) {
-            categoryDetails = new ArrayList<>();
+    public void addSmallCategory(SmallCategory smallCategory) {
+        if (categoryList == null) {
+            categoryList = new ArrayList<>();
         }
-        this.categoryDetails.add(categoryDetail);
-        categoryDetail.setCategory(this);
+        categoryList.add(smallCategory);
+    }
+
+    public void update(String userId, String mediumName, String mediumValue) {
+        if (userId != null && mediumName != null && mediumValue != null) {
+            this.userId = userId;
+            this.mediumName = mediumName;
+            this.mediumValue = mediumValue;
+        }
+    }
+
+    public void deleteList() {
+        if (!categoryList.isEmpty()) {
+            categoryList.clear();
+        }
     }
 }

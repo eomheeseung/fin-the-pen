@@ -6,17 +6,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
-import project.fin_the_pen.model.report.dto.ConsumeReportDetailRequestDto;
-import project.fin_the_pen.model.report.dto.ConsumeReportRequestDTO;
 import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.service.ReportService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -66,7 +66,7 @@ public class ReportMonthController {
     /*
     TODO 2024-02-01같이 day까지 받아야 하는지...
      */
-    @PostMapping("/basic")
+    /*@PostMapping("/basic")
     @Operation(description = "입력된 월의 소비 리포트를 조회합니다.", summary = "소비 리포트 조회")
     public ResponseEntity<Object> consumeReport(@RequestBody ConsumeReportRequestDTO dto, HttpServletRequest request) {
         return convertResponse.getResponseEntity(reportService.inquiryReport(dto, request));
@@ -77,5 +77,5 @@ public class ReportMonthController {
     public ResponseEntity<Object> consumeDetailReport(@RequestBody ConsumeReportDetailRequestDto dto, HttpServletRequest request) {
         Map<Object, Object> objectObjectMap = reportService.inquiryCategoryDetail(dto, request);
         return ResponseEntity.ok().body(objectObjectMap);
-    }
+    }*/
 }

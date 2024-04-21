@@ -7,6 +7,7 @@ import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
+import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
@@ -35,6 +36,18 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
     public Boolean registerSchedule(ScheduleRequestDTO dto) {
         try {
             boolean isDifferent = isDuplicatedSaveSchedule(dto);
+
+            String dtoPaymentType = dto.getPaymentType();
+
+            PaymentType paymentType;
+
+            if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
+                paymentType = PaymentType.ACCOUNT;
+            } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
+                paymentType = PaymentType.CASH;
+            } else {
+                paymentType = PaymentType.CARD;
+            }
 
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
@@ -82,7 +95,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                             .options(currentDate.getDayOfWeek().toString())
                                             .build())
                                     .isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -146,7 +159,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                                         .options(parseDate.getDayOfWeek().toString())
                                                         .build())
                                                 .isExclude(dto.isExclude())
-                                                .importance(dto.getImportance())
+                                                .paymentType(paymentType)
                                                 .amount(dto.getAmount())
                                                 .isFixAmount(dto.isFixAmount())
                                                 .period(createPeriodType(() -> {
@@ -195,7 +208,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                                         .options(parseDate.getDayOfWeek().toString())
                                                         .build())
                                                 .isExclude(dto.isExclude())
-                                                .importance(dto.getImportance())
+                                                .paymentType(paymentType)
                                                 .amount(dto.getAmount())
                                                 .isFixAmount(dto.isFixAmount())
                                                 .period(createPeriodType(() -> {
@@ -216,66 +229,10 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                 log.info("유효하지 않은 날짜입니다.");
                             }
                         }
-
-                        /*String targetDay = currentDate.getDayOfWeek().toString();
-
-                        // 현재 날짜의 요일과 targetDay가 일치하면 스케줄 생성
-                        if (days.contains(targetDay)) {
-                            log.info("이동하는 요일: {}", targetDay);
-                            log.info("일자: {}", currentDate);
-
-
-                            Schedule schedule = Schedule.builder()
-                                    .userId(dto.getUserId())
-                                    .eventName(dto.getEventName())
-                                    .category(dto.getCategory())
-                                    .startDate(currentDate.toString())
-                                    .endDate(currentDate.toString())
-                                    .startTime(dto.getStartTime())
-                                    .endTime(dto.getEndTime())
-                                    .isAllDay(dto.isAllDay())
-                                    .repeatKind(RepeatKind.WEEK.name())
-                                    .repeatOptions(UnitedType.builder()
-                                            .value(dto.getRepeat().getDayTypeVO().getRepeatTerm())
-                                            .options(currentDate.getDayOfWeek().toString())
-                                            .build())
-                                    .isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
-                                    .amount(dto.getAmount())
-                                    .isFixAmount(dto.isFixAmount())
-                                    .period(createPeriodType(() -> {
-                                        return PeriodType.builder()
-                                                .isRepeatAgain(false)
-                                                .repeatNumberOfTime("none")
-                                                .repeatEndLine(endLine.toString()).build();
-                                    }))
-                                    .priceType(judgmentPriceType(() -> {
-                                        if (dto.getPriceType().equals(PriceType.Plus)) {
-                                            return PriceType.Plus;
-                                        } else return PriceType.Minus;
-                                    }))
-                                    .build();
-
-                            super.getCrudScheduleRepository().save(schedule);
-
-                            // java에서 한주의 끝은 SUN, 한주의 시작은 MON
-                            if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                                currentDate = currentDate.plusWeeks(intervalWeeks);
-                                currentDate = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-
-                            } else currentDate = currentDate.plusDays(1);
-                            // TODO (수정) 일요일부터 시작하는 경우를 수정해야 함...
-                        } else {
-                            if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
-                                currentDate = currentDate.plusWeeks(intervalWeeks);
-                                currentDate = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                            } else currentDate = currentDate.plusDays(1);
-                        }*/
                     }
                 }
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             return null;
         }
         return true;

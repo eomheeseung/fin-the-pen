@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
+import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.entity.type.year.YearCategory;
@@ -37,6 +38,17 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
         LocalDate criteriaDate = formatDate(dto.getStartDate());
         LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
 
+        String dtoPaymentType = dto.getPaymentType();
+        PaymentType paymentType;
+
+        if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
+            paymentType = PaymentType.ACCOUNT;
+        } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
+            paymentType = PaymentType.CASH;
+        } else{
+            paymentType = PaymentType.CARD;
+        }
+
         if (yearCategory.equals(YearCategory.MonthAndDay.toString())) {
             // 현재 연도를 가져와서 연도 정보를 추가하여 LocalDate로 변환
 
@@ -56,14 +68,6 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 int endRepeat = 50;
 
                 for (int i = 0; i < endRepeat; i++) {
-                    /*YearType bindingYearType = new YearType();
-                    bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
-                    bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory());
-
-                    TypeManage typeManage = TypeManage
-                            .builder()
-                            .yearType(bindingYearType)
-                            .build();*/
 
                     log.info("저장되는 date: {}", criteriaDate);
 
@@ -82,7 +86,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -132,7 +136,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -180,7 +184,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -254,7 +258,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                         .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                         .build())
                                 .isExclude(dto.isExclude())
-                                .importance(dto.getImportance())
+                                .paymentType(paymentType)
                                 .amount(dto.getAmount())
                                 .isFixAmount(dto.isFixAmount())
                                 .period(createPeriodType(() -> {
@@ -306,7 +310,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -375,7 +379,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                         .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                         .build())
                                 .isExclude(dto.isExclude())
-                                .importance(dto.getImportance())
+                                .paymentType(paymentType)
                                 .amount(dto.getAmount())
                                 .isFixAmount(dto.isFixAmount())
                                 .period(createPeriodType(() -> {
@@ -425,7 +429,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -491,7 +495,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -546,7 +550,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -618,7 +622,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                         .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                         .build())
                                 .isExclude(dto.isExclude())
-                                .importance(dto.getImportance())
+                                .paymentType(paymentType)
                                 .amount(dto.getAmount())
                                 .isFixAmount(dto.isFixAmount())
                                 .period(createPeriodType(() -> {
@@ -676,7 +680,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -744,7 +748,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                         .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                         .build())
                                 .isExclude(dto.isExclude())
-                                .importance(dto.getImportance())
+                                .paymentType(paymentType)
                                 .amount(dto.getAmount())
                                 .isFixAmount(dto.isFixAmount())
                                 .period(createPeriodType(() -> {
@@ -797,7 +801,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -861,7 +865,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -920,7 +924,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
+import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
@@ -78,7 +79,8 @@ public class Schedule {
 
     // 중요도
     @Column(name = "importance")
-    private String importance;
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     // 자산 설정
     @Column(name = "amount")

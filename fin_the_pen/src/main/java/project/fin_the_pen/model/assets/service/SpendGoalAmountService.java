@@ -98,6 +98,8 @@ public class SpendGoalAmountService {
 
     /**
      * 지출 목표액 설정
+     * <p>
+     * TODO 수정할때 2개가 다 안보여짐
      *
      * @param dto
      * @param request
@@ -116,8 +118,10 @@ public class SpendGoalAmountService {
 
         try {
             // 정기가 아닌 경우
+            // OFF -> 정기
             if (regular.equals(SpendAmountRegular.OFF.toString())) {
-                Optional<SpendAmount> optionalSpendAmount = spendAmountRepository.findByUserIdAndStartDate(userId, startDate);
+                Optional<SpendAmount> optionalSpendAmount =
+                        spendAmountRepository.findByUserIdAndStartDate(userId, startDate);
 
                 SpendAmount spendAmount;
 
@@ -135,13 +139,14 @@ public class SpendGoalAmountService {
                 }
                 spendAmountRepository.save(spendAmount);
 
-
+            // ON -> 정기
             } else if (regular.equals(SpendAmountRegular.ON.toString())) {
                 if (isBatch) {
                     Optional<SpendAmount> optionalSpendAmount = spendAmountRepository.findByUserIdAndStartDate(userId, startDate);
 
                     optionalSpendAmount.ifPresent(spendAmountRepository::delete);
                 }
+
                 regularOn(parseStartDate, parseEndDate, spendGoalAmount, userId);
             }
         } catch (RuntimeException e) {
@@ -151,11 +156,9 @@ public class SpendGoalAmountService {
         return true;
     }
 
+    // 정기일때 등록하는 메소드
     private void regularOn(YearMonth parseStartDate, YearMonth parseEndDate, String spendGoalAmount, String userId) {
         while (!parseStartDate.isAfter(parseEndDate)) {
-
-            /*log.info("날짜:{}", parseStartDate);
-            log.info("날짜:{}", parseEndDate);*/
 
             SpendAmount spendAmount = SpendAmount.builder()
                     .spendGoalAmount(spendGoalAmount)

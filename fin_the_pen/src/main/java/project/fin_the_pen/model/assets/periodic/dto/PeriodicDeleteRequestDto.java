@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PeriodAmountDeleteRequestDto {
+public class PeriodicDeleteRequestDto {
     @JsonProperty(value = "user_id")
     @Schema(example = "test1234", description = "현재 로그인 된 사용자 id")
     private String userId;
@@ -15,6 +15,4 @@ public class PeriodAmountDeleteRequestDto {
     @JsonProperty(value = "id")
     @Schema(example = "1", description = "삭제하기 위해 선택된 정기 입출금액 id")
     private Long id;
-
-
 }

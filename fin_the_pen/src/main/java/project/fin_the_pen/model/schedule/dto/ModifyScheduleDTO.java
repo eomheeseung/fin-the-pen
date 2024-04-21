@@ -78,9 +78,9 @@ public class ModifyScheduleDTO {
     private boolean isExclude;
 
     // 중요도
-    @JsonProperty(value = "importance")
-    @Schema(description = "중요도", example = "상")
-    private String importance;
+    @JsonProperty(value = "payment_type")
+    @Schema(description = "결제수단 (ACCOUNT or CARD or CASH) 모두 대문자", example = "ACCOUNT")
+    private String paymentType;
 
     // 자산 설정
     @JsonProperty(value = "set_amount")

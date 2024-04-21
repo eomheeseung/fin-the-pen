@@ -6,6 +6,7 @@ import project.fin_the_pen.finClient.core.error.customException.DuplicatedSchedu
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
+import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.entity.type.year.YearCategory;
@@ -34,6 +35,17 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
         try {
             boolean isDifferent = isDuplicatedSaveSchedule(dto);
+
+            String dtoPaymentType = dto.getPaymentType();
+            PaymentType paymentType;
+
+            if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
+                paymentType = PaymentType.ACCOUNT;
+            } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
+                paymentType = PaymentType.CASH;
+            } else {
+                paymentType = PaymentType.CARD;
+            }
 
             if (!isDifferent) {
                 throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
@@ -77,7 +89,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build())
                                     .isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -117,7 +129,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -156,7 +168,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build())
                                     .isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -224,7 +236,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                                 .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                                 .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                                 .build()).isExclude(dto.isExclude())
-                                        .importance(dto.getImportance())
+                                        .paymentType(paymentType)
                                         .amount(dto.getAmount())
                                         .isFixAmount(dto.isFixAmount())
                                         .period(createPeriodType(() -> {
@@ -264,7 +276,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -325,7 +337,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                                 .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                                 .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                                 .build()).isExclude(dto.isExclude())
-                                        .importance(dto.getImportance())
+                                        .paymentType(paymentType)
                                         .amount(dto.getAmount())
                                         .isFixAmount(dto.isFixAmount())
                                         .period(createPeriodType(() -> {
@@ -364,7 +376,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -423,7 +435,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -467,7 +479,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -528,7 +540,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                                 .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                                 .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                                 .build()).isExclude(dto.isExclude())
-                                        .importance(dto.getImportance())
+                                        .paymentType(paymentType)
                                         .amount(dto.getAmount())
                                         .isFixAmount(dto.isFixAmount())
                                         .period(createPeriodType(() -> {
@@ -574,7 +586,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -621,15 +633,6 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
                                 log.info("*중요 저장될 date:{}", currentDate);
 
-                                /*YearType bindingYearType = new YearType();
-                                bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
-                                bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory());
-
-                                TypeManage typeManage = TypeManage
-                                        .builder()
-                                        .yearType(bindingYearType)
-                                        .build();*/
-
                                 Schedule schedule = Schedule.builder()
                                         .userId(dto.getUserId())
                                         .eventName(dto.getEventName())
@@ -644,7 +647,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                                 .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                                 .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                                 .build()).isExclude(dto.isExclude())
-                                        .importance(dto.getImportance())
+                                        .paymentType(paymentType)
                                         .amount(dto.getAmount())
                                         .isFixAmount(dto.isFixAmount())
                                         .period(createPeriodType(() -> {
@@ -671,17 +674,6 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
                             log.info("다음 년도의 조건에 해당하는 date:{}", nextDay);
 
-                            /*YearType bindingYearType = new YearType();
-                            bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
-                            bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory().toString());
-
-                            log.info("저장되는 repeatDate: {}", currentDate);
-
-                            TypeManage typeManage = TypeManage
-                                    .builder()
-                                    .yearType(bindingYearType)
-                                    .build();*/
-
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
                                     .eventName(dto.getEventName())
@@ -696,7 +688,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -740,15 +732,6 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
                             log.info("*중요 저장될 date:{}", currentDate);
 
-                            /*YearType bindingYearType = new YearType();
-                            bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
-                            bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory());
-
-                            TypeManage typeManage = TypeManage
-                                    .builder()
-                                    .yearType(bindingYearType)
-                                    .build();*/
-
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
                                     .eventName(dto.getEventName())
@@ -763,7 +746,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
@@ -796,17 +779,6 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
 
                             log.info("다음 년도의 조건에 해당하는 date:{}", nextDay);
 
-                            /*YearType bindingYearType = new YearType();
-                            bindingYearType.setValue(dto.getRepeat().getYearTypeVO().getValue());
-                            bindingYearType.setYearCategory(dto.getRepeat().getYearTypeVO().getYearCategory().toString());
-
-                            log.info("저장되는 repeatDate: {}", currentDate);
-
-                            TypeManage typeManage = TypeManage
-                                    .builder()
-                                    .yearType(bindingYearType)
-                                    .build();*/
-
                             Schedule schedule = Schedule.builder()
                                     .userId(dto.getUserId())
                                     .eventName(dto.getEventName())
@@ -821,7 +793,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                             .term(dto.getRepeat().getYearTypeVO().getRepeatTerm())
                                             .options(dto.getRepeat().getYearTypeVO().getYearCategory())
                                             .build()).isExclude(dto.isExclude())
-                                    .importance(dto.getImportance())
+                                    .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {

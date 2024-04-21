@@ -25,7 +25,7 @@ public class ScheduleResponseDTO {
     private PeriodType period;
     private String priceType;
     private boolean isExclude;
-    private String importance;
+    private String paymentType;
     private String amount;
     private boolean isFixAmount;
     private String repeatKind;
@@ -34,7 +34,7 @@ public class ScheduleResponseDTO {
     public ScheduleResponseDTO(Long scheduleId, String userId, String eventName, String category,
                                String startDate, String endDate, String startTime, String endTime, boolean allDay,
                                UnitedType repeatOptions, PeriodType period, PriceType priceType,
-                               boolean isExclude, String importance, String amount, boolean isFixAmount,
+                               boolean isExclude, String paymentType, String amount, boolean isFixAmount,
                                String repeatKind) {
         this.scheduleId = scheduleId;
         this.userId = userId;
@@ -49,7 +49,7 @@ public class ScheduleResponseDTO {
         this.period = period;
         this.priceType = priceType.getType();
         this.isExclude = isExclude;
-        this.importance = importance;
+        this.paymentType = paymentType;
         this.amount = amount;
         this.isFixAmount = isFixAmount;
         this.repeatKind = repeatKind;

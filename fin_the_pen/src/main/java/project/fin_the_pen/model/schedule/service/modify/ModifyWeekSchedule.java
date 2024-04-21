@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
+import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
@@ -33,6 +34,17 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
         int intervalWeeks = Integer.parseInt(dto.getRepeat().getWeekTypeVO().getRepeatTerm());
 
         List<String> days = new ArrayList<>();
+
+        String dtoPaymentType = dto.getPaymentType();
+        PaymentType paymentType;
+
+        if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
+            paymentType = PaymentType.ACCOUNT;
+        } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
+            paymentType = PaymentType.CASH;
+        } else{
+            paymentType = PaymentType.CARD;
+        }
 
         // 선택된 요일을 토큰화해서 list에 저장
         while (tokenizer.hasMoreTokens()) {
@@ -83,7 +95,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(criteriaDate.getDayOfWeek().toString())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -155,7 +167,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .term(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                     .options(criteriaDate.getDayOfWeek().toString())
                                     .build()).isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -225,7 +237,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     .options(criteriaDate.getDayOfWeek().toString())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {

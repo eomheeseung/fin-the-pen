@@ -123,7 +123,6 @@ public class ScheduleService {
             throw new RuntimeException(e.getMessage());
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
-//            throw new RuntimeException("등록 오류입니다.");
         }
     }
 
@@ -425,7 +424,7 @@ public class ScheduleService {
                 .period(schedule.getPeriod())
                 .priceType(schedule.getPriceType())
                 .isExclude(schedule.isExclude())
-                .importance(schedule.getImportance())
+                .paymentType(schedule.getPaymentType().toString())
                 .amount(schedule.getAmount())
                 .isFixAmount(schedule.isFixAmount())
                 .build();

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
+import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
@@ -32,6 +33,17 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
         LocalDate criteriaDate = formatDate(dto.getStartDate());
 
         List<Integer> dates = new ArrayList<>();
+
+        String dtoPaymentType = dto.getPaymentType();
+        PaymentType paymentType;
+
+        if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
+            paymentType = PaymentType.ACCOUNT;
+        } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
+            paymentType = PaymentType.CASH;
+        } else{
+            paymentType = PaymentType.CARD;
+        }
 
         while (tokenizer.hasMoreTokens()) {
             int parseDate = Integer.parseInt(tokenizer.nextToken().trim());
@@ -73,7 +85,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                                     .term(dto.getRepeat().getDayTypeVO().getRepeatTerm())
                                     .build())
                             .isExclude(dto.isExclude())
-                            .importance(dto.getImportance())
+                            .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
                             .period(createPeriodType(() -> {
@@ -143,7 +155,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                                             .repeatKind(RepeatKind.MONTH.name())
                                             .repeatOptions(UnitedType.builder().term(dto.getRepeat().getMonthTypeVO().getRepeatTerm()).build())
                                             .isExclude(dto.isExclude())
-                                            .importance(dto.getImportance())
+                                            .paymentType(paymentType)
                                             .amount(dto.getAmount())
                                             .isFixAmount(dto.isFixAmount())
                                             .period(createPeriodType(() -> {
@@ -189,7 +201,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                                             .repeatKind(RepeatKind.MONTH.name())
                                             .repeatOptions(UnitedType.builder().term(dto.getRepeat().getMonthTypeVO().getRepeatTerm()).build())
                                             .isExclude(dto.isExclude())
-                                            .importance(dto.getImportance())
+                                            .paymentType(paymentType)
                                             .amount(dto.getAmount())
                                             .isFixAmount(dto.isFixAmount())
                                             .period(createPeriodType(() -> {

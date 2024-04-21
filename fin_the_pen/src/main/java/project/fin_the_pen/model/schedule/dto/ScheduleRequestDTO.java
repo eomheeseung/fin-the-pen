@@ -67,9 +67,9 @@ public class ScheduleRequestDTO {
     private boolean isExclude;
 
     // 중요도
-    @JsonProperty(value = "importance")
-    @Schema(description = "중요도", example = "상")
-    private String importance;
+    @JsonProperty(value = "payment_type")
+    @Schema(description = "결제수단 (ACCOUNT or CARD or CASH) 모두 대문자", example = "ACCOUNT")
+    private String paymentType;
 
     // 자산 설정
     @JsonProperty(value = "set_amount")
@@ -80,8 +80,4 @@ public class ScheduleRequestDTO {
     @JsonProperty(value = "fix_amount")
     @Schema(description = "금액을 고정할 것인지", example = "false")
     private boolean isFixAmount;
-
-    /*@JsonProperty(value = "repeat_options")
-    @Schema(description = "반복되는 일정인지 아닌지", example = "false")
-    private boolean repeatOptions;*/
 }

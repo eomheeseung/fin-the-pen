@@ -381,7 +381,7 @@ public class HomeService {
                 .period(schedule.getPeriod())
                 .priceType(schedule.getPriceType())
                 .isExclude(schedule.isExclude())
-                .importance(schedule.getImportance())
+                .paymentType(schedule.getPaymentType().toString())
                 .amount(schedule.getAmount())
                 .isFixAmount(schedule.isFixAmount())
                 .build();

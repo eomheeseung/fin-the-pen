@@ -100,6 +100,10 @@ public class SpendGoalAmountService {
      * 지출 목표액 설정
      * <p>
      * TODO 수정할때 2개가 다 안보여짐
+     *  1-1. 하나는 일반 하나는 정기로 설정하고 batch false하면 한달에 2개가 DB에 생성됨
+     *  1-2. batch all하고 수정하는 경우
+     *  2. 이 과정에서 수정하고 view를 돌리면 view가 안보임
+     *
      *
      * @param dto
      * @param request

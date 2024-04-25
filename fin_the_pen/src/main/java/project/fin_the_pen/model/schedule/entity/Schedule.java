@@ -100,4 +100,44 @@ public class Schedule {
     /*public void setPriceType(Supplier<PriceType> priceTypeSupplier) {
         this.priceType = priceTypeSupplier.get();
     }*/
+
+    public void update(String userId, String eventName, String category, String startDate, String endDate,
+                       String startTime, String endTime, boolean isAllDay, String repeatKind, UnitedType repeatOptions,
+                       PeriodType period, PriceType priceType, boolean isExclude, String paymentType, String amount,
+                       boolean isFixAmount) {
+        this.userId = userId;
+        this.eventName = eventName;
+        this.category = category;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.isAllDay = isAllDay;
+        this.repeatKind = repeatKind;
+        this.repeatOptions = repeatOptions;
+        this.period = period;
+
+        if (priceType.getType().equals("+")) {
+            this.priceType = PriceType.Plus;
+        } else if (priceType.getType().equals("-")) {
+            this.priceType = PriceType.Minus;
+        }
+
+        this.isExclude = isExclude;
+
+        switch (paymentType) {
+            case "CARD":
+                this.paymentType = PaymentType.CARD;
+                break;
+            case "CASH":
+                this.paymentType = PaymentType.CASH;
+                break;
+            case "ACCOUNT":
+                this.paymentType = PaymentType.ACCOUNT;
+                break;
+        }
+
+        this.amount = amount;
+        this.isFixAmount = isFixAmount;
+    }
 }

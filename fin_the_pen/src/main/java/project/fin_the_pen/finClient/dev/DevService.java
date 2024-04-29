@@ -77,7 +77,7 @@ public class DevService {
 
                 schedule.update(userId, eventName, category, startDate, endDate,
                         startTime, endTime, allDay, repeatKind.name(), unitedType, periodType,
-                        priceType, exclude, dtoPaymentType, amount, fixAmount);
+                        priceType, exclude, dtoPaymentType, amount, fixAmount,schedule.getRegularType());
 
                 repository.save(schedule);
             }

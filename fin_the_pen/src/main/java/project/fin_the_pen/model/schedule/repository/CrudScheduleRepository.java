@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,10 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("select s from Schedule s where s.userId = :userId and s.category LIKE CONCAT('%', :categoryName, '%')")
     List<Schedule> findScheduleByCategory(@Param("userId") String userId, @Param("categoryName") String categoryName);
+
+    Optional<Schedule> findByUserIdAndEventNameAndCategory(String userId, String eventName, String category);
+
+    Optional<Schedule> findByUserIdAndEventNameAndCategoryAndRegularType(String userId, String eventName, String category, RegularType regularType);
 
     @Query("select s from Schedule s where s.userId = :userId and s.category LIKE CONCAT('%', :category, '%') and substring(s.startDate,1,7) = :date")
     List<Schedule> findByCategoryBetweenDate(@Param("userId") String userId, @Param("category") String category, @Param("date") String date);

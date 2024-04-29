@@ -4,11 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum RegularType {
-    None("none", 0L),
-
-    Deposit("deposit", 1L),
-
-    Withdrawal("withdrawal", 2L);
+    EACH("each", 0L),
+    REGULAR("regular", 1L);
 
     private final String type;
     private final Long sortNum;

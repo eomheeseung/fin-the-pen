@@ -12,6 +12,7 @@ import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
@@ -109,6 +110,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                             return PriceType.Plus;
                                         } else return PriceType.Minus;
                                     }))
+                                    .regularType(RegularType.REGULAR)
                                     .build();
 
                             super.getCrudScheduleRepository().save(schedule);
@@ -174,6 +176,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                                         return PriceType.Plus;
                                                     } else return PriceType.Minus;
                                                 }))
+                                                .regularType(RegularType.REGULAR)
                                                 .build());
                             } catch (DateTimeException e) {
                                 log.info("유효하지 않은 날짜입니다.");
@@ -223,6 +226,7 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
                                                         return PriceType.Plus;
                                                     } else return PriceType.Minus;
                                                 }))
+                                                .regularType(RegularType.REGULAR)
                                                 .build());
                                 currentDate = parseDate;
                             } catch (DateTimeException e) {

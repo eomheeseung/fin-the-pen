@@ -8,6 +8,7 @@ import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import javax.persistence.*;
 
@@ -91,8 +92,9 @@ public class Schedule {
     private boolean isFixAmount;
 
     // ScheduleType로 하나 만들어야 함.
-//    @Column(name = "regular_type")
-//    private RegularType regularType;
+    @Column(name = "regular_type")
+    @Enumerated(EnumType.STRING)
+    private RegularType regularType;
 
     /*@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
     private ScheduleManage scheduleManage;*/
@@ -104,7 +106,7 @@ public class Schedule {
     public void update(String userId, String eventName, String category, String startDate, String endDate,
                        String startTime, String endTime, boolean isAllDay, String repeatKind, UnitedType repeatOptions,
                        PeriodType period, PriceType priceType, boolean isExclude, String paymentType, String amount,
-                       boolean isFixAmount) {
+                       boolean isFixAmount,RegularType regularType) {
         this.userId = userId;
         this.eventName = eventName;
         this.category = category;
@@ -116,6 +118,7 @@ public class Schedule {
         this.repeatKind = repeatKind;
         this.repeatOptions = repeatOptions;
         this.period = period;
+        this.regularType = regularType;
 
         if (priceType.getType().equals("+")) {
             this.priceType = PriceType.Plus;

@@ -12,6 +12,7 @@ import project.fin_the_pen.model.schedule.entity.type.year.YearCategory;
 import project.fin_the_pen.model.schedule.entity.type.year.YearScheduleFunc;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -100,6 +101,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -149,6 +151,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -197,6 +200,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -272,6 +276,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                         return PriceType.Plus;
                                     } else return PriceType.Minus;
                                 }))
+                                .regularType(RegularType.REGULAR)
                                 .build();
 
                         getCrudScheduleRepository().save(schedule);
@@ -324,6 +329,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -392,6 +398,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                         return PriceType.Plus;
                                     } else return PriceType.Minus;
                                 }))
+                                .regularType(RegularType.REGULAR)
                                 .build();
 
                         getCrudScheduleRepository().save(schedule);
@@ -443,6 +450,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -508,6 +516,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -564,6 +573,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -636,6 +646,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                         return PriceType.Plus;
                                     } else return PriceType.Minus;
                                 }))
+                                .regularType(RegularType.REGULAR)
                                 .build();
 
                         getCrudScheduleRepository().save(schedule);
@@ -694,6 +705,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -761,6 +773,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                         return PriceType.Plus;
                                     } else return PriceType.Minus;
                                 }))
+                                .regularType(RegularType.REGULAR)
                                 .build();
 
                         getCrudScheduleRepository().save(schedule);
@@ -814,6 +827,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -879,6 +893,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);

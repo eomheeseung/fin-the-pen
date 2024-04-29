@@ -10,6 +10,7 @@ import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -99,6 +100,7 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -169,7 +171,9 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                                                 if (dto.getPriceType().equals(PriceType.Plus)) {
                                                     return PriceType.Plus;
                                                 } else return PriceType.Minus;
-                                            })).build());
+                                            }))
+                                            .regularType(RegularType.REGULAR)
+                                            .build());
                         }
                     } catch (DateTimeException e) {
                         log.info("유효하지 않은 날짜입니다, 다음으로 넘어갑니다.");
@@ -215,7 +219,9 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                                                 if (dto.getPriceType().equals(PriceType.Plus)) {
                                                     return PriceType.Plus;
                                                 } else return PriceType.Minus;
-                                            })).build());
+                                            }))
+                                            .regularType(RegularType.REGULAR)
+                                            .build());
                         }
                     } catch (DateTimeException e) {
                         log.info("유효하지 않은 날짜입니다, 다음으로 넘어갑니다.");

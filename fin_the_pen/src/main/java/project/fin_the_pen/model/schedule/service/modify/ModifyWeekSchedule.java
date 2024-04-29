@@ -10,6 +10,7 @@ import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -109,6 +110,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -181,6 +183,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);
@@ -251,6 +254,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                                     return PriceType.Plus;
                                 } else return PriceType.Minus;
                             }))
+                            .regularType(RegularType.REGULAR)
                             .build();
 
                     getCrudScheduleRepository().save(schedule);

@@ -52,5 +52,4 @@ public abstract class RegisterSchedule {
     public PeriodType createPeriodType(Supplier<PeriodType> supplier) {
         return supplier.get();
     }
-
 }

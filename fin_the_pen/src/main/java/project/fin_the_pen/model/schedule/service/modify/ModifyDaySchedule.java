@@ -10,6 +10,7 @@ import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import java.time.LocalDate;
 
@@ -70,6 +71,7 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
                                 .repeatNumberOfTime("0")
                                 .repeatEndLine(null)
                                 .build()))
+                        .regularType(RegularType.REGULAR)
                         .priceType(judgmentPriceType(() -> dto.getPriceType().equals(PriceType.Plus) ? PriceType.Plus : PriceType.Minus))
                         .build();
 
@@ -112,6 +114,7 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
                                 return PriceType.Plus;
                             } else return PriceType.Minus;
                         }))
+                        .regularType(RegularType.REGULAR)
                         .build();
                 // entities 리스트를 모두 순회한 경우
                 log.info("나머지 저장");
@@ -153,6 +156,7 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc{
                                 return PriceType.Plus;
                             } else return PriceType.Minus;
                         }))
+                        .regularType(RegularType.REGULAR)
                         .build();
 
                 getCrudScheduleRepository().save(schedule);

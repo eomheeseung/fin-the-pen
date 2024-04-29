@@ -1,5 +1,6 @@
 package project.fin_the_pen.model.schedule.service.register;
 
+import com.sun.xml.bind.v2.TODO;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
@@ -10,6 +11,7 @@ import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import java.time.LocalDate;
 
@@ -21,149 +23,163 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
 
     @Override
     public Boolean registerSchedule(ScheduleRequestDTO dto) {
-        try {
-            boolean isDifferent = isDuplicatedSaveSchedule(dto);
 
-            String dtoPaymentType = dto.getPaymentType();
+        /*
+        TODO 이름, 카테고리, userId가 같고, regular이면 ex 구현
+         1. aop
+         2. 단순 메서드 형식
+        * */
 
-            PaymentType paymentType;
+        if (isDuplicated) {
+            throw new DuplicatedScheduleException("정기 일정 등록시 중복됩니다.");
+        } else {
+            try {
+                boolean isDifferent = isDuplicatedSaveSchedule(dto);
 
-            if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
-                paymentType = PaymentType.ACCOUNT;
-            } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
-                paymentType = PaymentType.CASH;
-            } else{
-                paymentType = PaymentType.CARD;
-            }
+                String dtoPaymentType = dto.getPaymentType();
 
-            if (!isDifferent) {
-                throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
-            } else {
+                PaymentType paymentType;
 
-                int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getRepeatTerm());
-                LocalDate currentDate = formatDate(dto.getStartDate());
+                if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
+                    paymentType = PaymentType.ACCOUNT;
+                } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
+                    paymentType = PaymentType.CASH;
+                } else {
+                    paymentType = PaymentType.CARD;
+                }
 
-                if (dto.getPeriod().isRepeatAgain()) {
-                    for (int i = 0; i < 50; i++) {
-                        Schedule schedule = Schedule.builder()
-                                .userId(dto.getUserId())
-                                .eventName(dto.getEventName())
-                                .category(dto.getCategory())
-                                .startDate(currentDate.toString())  // 수정된 부분
-                                .endDate(currentDate.toString())
-                                .startTime(dto.getStartTime())
-                                .endTime(dto.getEndTime())
-                                .isAllDay(dto.isAllDay())
-                                .repeatKind(RepeatKind.DAY.toString())
-                                .repeatOptions(UnitedType.builder()
-                                        .term(dto.getRepeat().getDayTypeVO().getRepeatTerm())
-                                        .options("none")
-                                        .build())
-                                .isExclude(dto.isExclude())
-                                .paymentType(paymentType)
-                                .amount(dto.getAmount())
-                                .isFixAmount(dto.isFixAmount())
-                                .period(createPeriodType(() -> {
-                                    return PeriodType.builder()
-                                            .isRepeatAgain(true)
-                                            .repeatNumberOfTime("0")
-                                            .repeatEndLine("none")
-                                            .build();
-                                }))
-                                .priceType(judgmentPriceType(() -> {
-                                    if (dto.getPriceType().equals(PriceType.Plus)) {
-                                        return PriceType.Plus;
-                                    } else return PriceType.Minus;
-                                }))
-                                .build();
+                if (!isDifferent) {
+                    throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
+                } else {
 
-                        super.getCrudScheduleRepository().save(schedule);
+                    int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getRepeatTerm());
+                    LocalDate currentDate = formatDate(dto.getStartDate());
 
-                        currentDate = currentDate.plusDays(intervalDays);
-                    }
-                } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
-                    int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
+                    if (dto.getPeriod().isRepeatAgain()) {
+                        for (int i = 0; i < 50; i++) {
+                            Schedule schedule = Schedule.builder()
+                                    .userId(dto.getUserId())
+                                    .eventName(dto.getEventName())
+                                    .category(dto.getCategory())
+                                    .startDate(currentDate.toString())  // 수정된 부분
+                                    .endDate(currentDate.toString())
+                                    .startTime(dto.getStartTime())
+                                    .endTime(dto.getEndTime())
+                                    .isAllDay(dto.isAllDay())
+                                    .repeatKind(RepeatKind.DAY.toString())
+                                    .repeatOptions(UnitedType.builder()
+                                            .term(dto.getRepeat().getDayTypeVO().getRepeatTerm())
+                                            .options("none")
+                                            .build())
+                                    .isExclude(dto.isExclude())
+                                    .paymentType(paymentType)
+                                    .amount(dto.getAmount())
+                                    .isFixAmount(dto.isFixAmount())
+                                    .period(createPeriodType(() -> {
+                                        return PeriodType.builder()
+                                                .isRepeatAgain(true)
+                                                .repeatNumberOfTime("0")
+                                                .repeatEndLine("none")
+                                                .build();
+                                    }))
+                                    .priceType(judgmentPriceType(() -> {
+                                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                                            return PriceType.Plus;
+                                        } else return PriceType.Minus;
+                                    }))
+                                    .regularType(RegularType.REGULAR)
+                                    .build();
 
-                    for (int i = 0; i < repeatNumberOfTime; i++) {
-                        Schedule schedule = Schedule.builder()
-                                .userId(dto.getUserId())
-                                .eventName(dto.getEventName())
-                                .category(dto.getCategory())
-                                .startDate(currentDate.toString())  // 수정된 부분
-                                .endDate(currentDate.toString())
-                                .startTime(dto.getStartTime())
-                                .endTime(dto.getEndTime())
-                                .isAllDay(dto.isAllDay())
-                                .repeatKind(RepeatKind.DAY.toString())
-                                .repeatOptions(UnitedType.builder()
-                                        .options("none")
-                                        .term(dto.getRepeat().getDayTypeVO().getRepeatTerm())
-                                        .build())
-                                .isExclude(dto.isExclude())
-                                .paymentType(paymentType)
-                                .amount(dto.getAmount())
-                                .isFixAmount(dto.isFixAmount())
-                                .period(createPeriodType(() -> {
-                                    return PeriodType.builder()
-                                            .isRepeatAgain(false)
-                                            .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
-                                            .repeatEndLine("none")
-                                            .build();
-                                }))
-                                .priceType(judgmentPriceType(() -> {
-                                    if (dto.getPriceType().equals(PriceType.Plus)) {
-                                        return PriceType.Plus;
-                                    } else return PriceType.Minus;
-                                }))
-                                .build();
+                            super.getCrudScheduleRepository().save(schedule);
 
-                        super.getCrudScheduleRepository().save(schedule);
+                            currentDate = currentDate.plusDays(intervalDays);
+                        }
+                    } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
+                        int repeatNumberOfTime = Integer.parseInt(dto.getPeriod().getRepeatNumberOfTime());
 
-                        currentDate = currentDate.plusDays(intervalDays);
-                    }
-                } else if (dto.getPeriod().getRepeatEndLine() != null) {
+                        for (int i = 0; i < repeatNumberOfTime; i++) {
+                            Schedule schedule = Schedule.builder()
+                                    .userId(dto.getUserId())
+                                    .eventName(dto.getEventName())
+                                    .category(dto.getCategory())
+                                    .startDate(currentDate.toString())  // 수정된 부분
+                                    .endDate(currentDate.toString())
+                                    .startTime(dto.getStartTime())
+                                    .endTime(dto.getEndTime())
+                                    .isAllDay(dto.isAllDay())
+                                    .repeatKind(RepeatKind.DAY.toString())
+                                    .repeatOptions(UnitedType.builder()
+                                            .options("none")
+                                            .term(dto.getRepeat().getDayTypeVO().getRepeatTerm())
+                                            .build())
+                                    .isExclude(dto.isExclude())
+                                    .paymentType(paymentType)
+                                    .amount(dto.getAmount())
+                                    .isFixAmount(dto.isFixAmount())
+                                    .period(createPeriodType(() -> {
+                                        return PeriodType.builder()
+                                                .isRepeatAgain(false)
+                                                .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
+                                                .repeatEndLine("none")
+                                                .build();
+                                    }))
+                                    .priceType(judgmentPriceType(() -> {
+                                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                                            return PriceType.Plus;
+                                        } else return PriceType.Minus;
+                                    }))
+                                    .regularType(RegularType.REGULAR)
+                                    .build();
 
-                    LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
-                    while (!currentDate.isAfter(endLine)) {
-                        Schedule schedule = Schedule.builder()
-                                .userId(dto.getUserId())
-                                .eventName(dto.getEventName())
-                                .category(dto.getCategory())
-                                .startDate(currentDate.toString())  // 수정된 부분
-                                .endDate(currentDate.toString())
-                                .startTime(dto.getStartTime())
-                                .endTime(dto.getEndTime())
-                                .isAllDay(dto.isAllDay())
-                                .repeatKind(RepeatKind.DAY.toString())
-                                .repeatOptions(UnitedType.builder().term(dto.getRepeat().getDayTypeVO().getRepeatTerm())
-                                        .options("none")
-                                        .build())
-                                .isExclude(dto.isExclude())
-                                .paymentType(paymentType)
-                                .amount(dto.getAmount())
-                                .isFixAmount(dto.isFixAmount())
-                                .period(createPeriodType(() -> {
-                                    return PeriodType.builder()
-                                            .isRepeatAgain(false)
-                                            .repeatNumberOfTime("none")
-                                            .repeatEndLine(endLine.toString())
-                                            .build();
-                                }))
-                                .priceType(judgmentPriceType(() -> {
-                                    if (dto.getPriceType().equals(PriceType.Plus)) {
-                                        return PriceType.Plus;
-                                    } else return PriceType.Minus;
-                                }))
-                                .build();
+                            super.getCrudScheduleRepository().save(schedule);
 
-                        super.getCrudScheduleRepository().save(schedule);
+                            currentDate = currentDate.plusDays(intervalDays);
+                        }
+                    } else if (dto.getPeriod().getRepeatEndLine() != null) {
 
-                        currentDate = currentDate.plusDays(intervalDays);
+                        LocalDate endLine = formatDate(dto.getPeriod().getRepeatEndLine());
+                        while (!currentDate.isAfter(endLine)) {
+                            Schedule schedule = Schedule.builder()
+                                    .userId(dto.getUserId())
+                                    .eventName(dto.getEventName())
+                                    .category(dto.getCategory())
+                                    .startDate(currentDate.toString())  // 수정된 부분
+                                    .endDate(currentDate.toString())
+                                    .startTime(dto.getStartTime())
+                                    .endTime(dto.getEndTime())
+                                    .isAllDay(dto.isAllDay())
+                                    .repeatKind(RepeatKind.DAY.toString())
+                                    .repeatOptions(UnitedType.builder().term(dto.getRepeat().getDayTypeVO().getRepeatTerm())
+                                            .options("none")
+                                            .build())
+                                    .isExclude(dto.isExclude())
+                                    .paymentType(paymentType)
+                                    .amount(dto.getAmount())
+                                    .isFixAmount(dto.isFixAmount())
+                                    .period(createPeriodType(() -> {
+                                        return PeriodType.builder()
+                                                .isRepeatAgain(false)
+                                                .repeatNumberOfTime("none")
+                                                .repeatEndLine(endLine.toString())
+                                                .build();
+                                    }))
+                                    .priceType(judgmentPriceType(() -> {
+                                        if (dto.getPriceType().equals(PriceType.Plus)) {
+                                            return PriceType.Plus;
+                                        } else return PriceType.Minus;
+                                    }))
+                                    .regularType(RegularType.REGULAR)
+                                    .build();
+
+                            super.getCrudScheduleRepository().save(schedule);
+
+                            currentDate = currentDate.plusDays(intervalDays);
+                        }
                     }
                 }
+            } catch (RuntimeException e) {
+                return null;
             }
-        } catch (RuntimeException e) {
-            return null;
         }
         return true;
     }

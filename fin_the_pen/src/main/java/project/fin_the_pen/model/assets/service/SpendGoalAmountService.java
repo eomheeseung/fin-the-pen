@@ -25,7 +25,6 @@ public class SpendGoalAmountService {
     private final CrudScheduleRepository scheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
 
-    // TODO 현재 일자가 2024-03인데 넘겨서 2024-04인 경우 지출액을 어떻게 보여줄 것인가
     public Map<String, SpendAmountResponseDto> viewSpendGoalAmount(String userId, String date, HttpServletRequest request) {
         List<SpendAmount> spendAmountList = spendAmountRepository.findByUserIdAndStartDateToList(userId, date);
 

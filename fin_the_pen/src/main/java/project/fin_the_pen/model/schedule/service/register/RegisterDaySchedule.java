@@ -1,6 +1,5 @@
 package project.fin_the_pen.model.schedule.service.register;
 
-import com.sun.xml.bind.v2.TODO;
 import org.springframework.stereotype.Component;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
@@ -23,12 +22,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
 
     @Override
     public Boolean registerSchedule(ScheduleRequestDTO dto) {
-
-        /*
-        TODO 이름, 카테고리, userId가 같고, regular이면 ex 구현
-         1. aop
-         2. 단순 메서드 형식
-        * */
+        boolean isDuplicated = isDuplicatedRegular(dto.getUserId(), dto.getEventName(), dto.getCategory());
 
         if (isDuplicated) {
             throw new DuplicatedScheduleException("정기 일정 등록시 중복됩니다.");

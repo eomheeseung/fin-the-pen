@@ -194,7 +194,7 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                         criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 
                     } else criteriaDate = criteriaDate.plusDays(1);
-                    // TODO (수정) 일요일부터 시작하는 경우를 수정해야 함...
+
                 } else {
                     i--;
                     if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
@@ -265,7 +265,6 @@ public class ModifyWeekSchedule extends ModifySchedule implements ModifyXXXFunc 
                         criteriaDate = criteriaDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 
                     } else criteriaDate = criteriaDate.plusDays(1);
-                    // TODO (수정) 일요일부터 시작하는 경우를 수정해야 함...
                 } else {
                     if (criteriaDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
                         criteriaDate = criteriaDate.plusWeeks(intervalWeeks);

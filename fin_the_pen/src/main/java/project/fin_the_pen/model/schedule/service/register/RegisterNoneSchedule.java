@@ -20,23 +20,6 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
         super(crudScheduleRepository);
     }
 
-    private Optional<Schedule> getSchedule(String userId, String eventName, String category) {
-        CrudScheduleRepository crudScheduleRepository = getCrudScheduleRepository();
-        Optional<Schedule> findBeforeSaveSchedule =
-                crudScheduleRepository.findByUserIdAndEventNameAndCategory(userId, eventName, category);
-
-        if (findBeforeSaveSchedule.isEmpty()) {
-            return Optional.empty();
-        } else {
-            Optional<Schedule> regularSchedule = findBeforeSaveSchedule
-                    .filter(schedule -> schedule.getRegularType().equals(RegularType.REGULAR))
-                    .stream()
-                    .findFirst();
-
-            return regularSchedule.or(Optional::empty);
-        }
-    }
-
     /**
      * 반복이 아닐 때 (단일일정)
      *
@@ -136,5 +119,22 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
             return null;
         }
         return true;
+    }
+
+    private Optional<Schedule> getSchedule(String userId, String eventName, String category) {
+        CrudScheduleRepository crudScheduleRepository = getCrudScheduleRepository();
+        Optional<Schedule> findBeforeSaveSchedule =
+                crudScheduleRepository.findByUserIdAndEventNameAndCategory(userId, eventName, category);
+
+        if (findBeforeSaveSchedule.isEmpty()) {
+            return Optional.empty();
+        } else {
+            Optional<Schedule> regularSchedule = findBeforeSaveSchedule
+                    .filter(schedule -> schedule.getRegularType().equals(RegularType.REGULAR))
+                    .stream()
+                    .findFirst();
+
+            return regularSchedule.or(Optional::empty);
+        }
     }
 }

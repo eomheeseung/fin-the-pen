@@ -9,10 +9,12 @@ import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @Component
@@ -51,5 +53,18 @@ public abstract class RegisterSchedule {
 
     public PeriodType createPeriodType(Supplier<PeriodType> supplier) {
         return supplier.get();
+    }
+
+    public boolean isDuplicatedRegular(String userId, String eventName, String category) {
+        Optional<Schedule> optionalSchedule =
+                crudScheduleRepository
+                        .findByUserIdAndEventNameAndCategory(userId, eventName, category);
+
+        Optional<Schedule> findSchedule = optionalSchedule.filter(schedule -> schedule.getRegularType().equals(RegularType.REGULAR)).stream().findFirst();
+
+        if (findSchedule.isEmpty()) {
+            return true;
+        }
+        return false;
     }
 }

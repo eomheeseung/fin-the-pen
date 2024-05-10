@@ -16,8 +16,9 @@ public class ConsumeReportDetailRequestDto {
     @Schema(example = "외식", description = "상세 조회할 카테고리")
     private String category;
 
+    // 여기서 오늘의 값을 전체 보내줘야 함 일자까지
     @JsonProperty(value = "date")
-    @Schema(example = "2024-02", description = "상세 조회할 달(month)")
+    @Schema(example = "2024-05-04", description = "상세 조회할 달인데 day까지 보내줘야 함")
     private String date;
 
 }

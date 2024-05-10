@@ -27,7 +27,7 @@ public class PeriodicService {
         String endDate = dto.getEndDate();
 
 
-        List<Schedule> findScheduleList = scheduleRepository.findByStartDateAndeEndDate(userId, startDate, endDate);
+        List<Schedule> findScheduleList = scheduleRepository.findByStartDateAndEndDate(userId, startDate, endDate);
 
         List<Schedule> filterToRegularList =
                 findScheduleList.stream()

@@ -210,7 +210,7 @@ public class HomeService {
             responseDto.setWeekOfNumber(week + "주차");
             responseDto.setPeriod(firstDayOfWeek + " ~ " + lastDayOfWeek);
 
-            List<Schedule> findList = scheduleRepository.findByStartDateAndeEndDate(dto.getUserId(), firstDayOfWeek.toString(), lastDayOfWeek.toString());
+            List<Schedule> findList = scheduleRepository.findByStartDateAndEndDate(dto.getUserId(), firstDayOfWeek.toString(), lastDayOfWeek.toString());
 
             int plusSum = 0;
             int minusSum = 0;

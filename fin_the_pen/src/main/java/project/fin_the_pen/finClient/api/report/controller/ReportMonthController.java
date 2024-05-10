@@ -6,17 +6,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
+import project.fin_the_pen.model.report.dto.ConsumeReportDetailRequestDto;
 import project.fin_the_pen.model.report.dto.ReportRequestDemoDTO;
 import project.fin_the_pen.model.report.service.ReportService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,22 +26,11 @@ public class ReportMonthController {
     private final ReportService reportService;
     private final ConvertResponse convertResponse;
 
-    /*@PostMapping
-    @Operation(description = "리포트 메인 화면입니다.", summary = "리포트 메인 화면")
-    public ResponseEntity<Object> reportHome(@RequestBody ReportRequestDemoDTO dto, HttpServletRequest request) {
-        try {
-            log.info(dto.getDate());
-            HashMap<Object, Object> map = reportService.reportHome(dto, request);
-
-            return ResponseEntity.ok().body(map);
-        } catch (NotFoundDataException e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }*/
-
     @GetMapping
     @Operation(description = "리포트 메인 화면입니다.", summary = "리포트 메인 화면")
-    public ResponseEntity<Object> reportHome(@RequestParam("date") String date, @RequestParam("user_id") String userId, HttpServletRequest request) {
+    public ResponseEntity<Object> reportHome(@RequestParam("date") String date,
+                                             @RequestParam("user_id") String userId,
+                                             HttpServletRequest request) {
         try {
 //            log.info(dto.getDate());
             ReportRequestDemoDTO dto = new ReportRequestDemoDTO();
@@ -56,26 +44,14 @@ public class ReportMonthController {
         }
     }
 
-    /*@PostMapping
-    @Operation(description = "지출 목표액을 설정합니다.", summary = "지출 목표액 설정")
-    public ResponseEntity<Object> setAmount(@RequestBody ExpenditureRequestDTO dto, HttpServletRequest request) {
-        return ResponseEntity.ok().body(reportService.setAmount(dto, request));
-    }*/
-
-
-    /*
-    TODO 2024-02-01같이 day까지 받아야 하는지...
+    /**
+     * 소비 리포트 상세
      */
-    /*@PostMapping("/basic")
-    @Operation(description = "입력된 월의 소비 리포트를 조회합니다.", summary = "소비 리포트 조회")
-    public ResponseEntity<Object> consumeReport(@RequestBody ConsumeReportRequestDTO dto, HttpServletRequest request) {
-        return convertResponse.getResponseEntity(reportService.inquiryReport(dto, request));
-    }
+    @PostMapping("/details")
+    @Operation(description = "리포트", summary = "카테고리로 월별 리포트 소비 목록 조회")
+    public ResponseEntity<Object> reportDetails(@RequestBody ConsumeReportDetailRequestDto dto, HttpServletRequest request) {
+        Map<Object, Object> responseMap = reportService.inquiryCategoryDetail(dto, request);
 
-    @PostMapping("/detail")
-    @Operation(description = "입력된 월의 소비 리포트를 조회합니다.", summary = "소비 리포트 조회")
-    public ResponseEntity<Object> consumeDetailReport(@RequestBody ConsumeReportDetailRequestDto dto, HttpServletRequest request) {
-        Map<Object, Object> objectObjectMap = reportService.inquiryCategoryDetail(dto, request);
-        return ResponseEntity.ok().body(objectObjectMap);
-    }*/
+        return ResponseEntity.ok().body(responseMap);
+    }
 }

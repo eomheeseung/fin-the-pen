@@ -51,7 +51,7 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
 
     Optional<Schedule> findByUserIdAndEventNameAndCategoryAndRegularType(String userId, String eventName, String category, RegularType regularType);
 
-    @Query("select s from Schedule s where s.userId = :userId and s.category LIKE CONCAT('%', :category, '%') and substring(s.startDate,1,7) = :date")
+    @Query("select s from Schedule s where s.userId = :userId and s.category LIKE CONCAT('%', :category, '%') and s.startDate = :date")
     List<Schedule> findByCategoryBetweenDate(@Param("userId") String userId, @Param("category") String category, @Param("date") String date);
 
     @Query("select s from Schedule s where s.userId = :userId and s.id = :scheduleId")
@@ -93,5 +93,5 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
     List<String> findByFixedAmountMonth(@Param("userId") String userId, @Param("priceType") PriceType priceType, @Param("fixed") boolean fixed, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
     @Query("select s from Schedule s where s.userId = :userId and s.startDate between :startDate and :endDate")
-    List<Schedule> findByStartDateAndeEndDate(@Param("userId") String userId, @Param("startDate") String startDate, @Param("endDate") String endDate);
+    List<Schedule> findByStartDateAndEndDate(@Param("userId") String userId, @Param("startDate") String startDate, @Param("endDate") String endDate);
 }

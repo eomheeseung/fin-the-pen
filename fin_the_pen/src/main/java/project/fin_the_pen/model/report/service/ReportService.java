@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.TokenManager;
+import project.fin_the_pen.model.assets.category.entity.Category;
+import project.fin_the_pen.model.assets.category.repository.CategoryRepository;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmount;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmountRegular;
 import project.fin_the_pen.model.assets.spend.repository.SpendAmountRepository;
@@ -33,6 +35,7 @@ import java.util.function.BiFunction;
 @Slf4j
 @Service
 public class ReportService {
+    private final CategoryRepository categoryRepository;
     private final TokenManager tokenManager;
     private final UsersTokenRepository tokenRepository;
     private final ScheduleRepository scheduleRepository;
@@ -402,8 +405,7 @@ public class ReportService {
     }
 
     /**
-     * TODO
-     *  카테고리 소비 목표 금액은 설정 => 자산 페이지에서
+     * 소비리포트 상세
      *
      * @param dto
      * @param request
@@ -416,54 +418,78 @@ public class ReportService {
 
         HashMap<Object, Object> responseMap = new HashMap<>();
 
-
-//        실제로 사용할 값
-        LocalDateTime localDateTime = LocalDateTime.now();
-        LocalDateTime startDateTime = localDateTime.withDayOfMonth(1);
-
-        // 현재 시간 값 (가정)
-//        LocalDateTime localDateTime = LocalDateTime.of(2024, 2, 13, 14, 0);
+        String parseMonth = date.substring(0, 6);
+        log.info("parsing month :{}", parseMonth);
 
         List<Schedule> categoryList = crudScheduleRepository.findByCategoryBetweenDate(userId, category, date);
 
+
         log.info("find list size:{}", categoryList.size());
 
-        int categoryExpense = 0;
-        int categoryExpect = 0;
-        int categoryBalance = 0;
+        // 현재 지출한 금액
+        int currentValue = 0;
 
-        List<Schedule> responseList = new ArrayList<>();
 
-        for (Schedule schedule : categoryList) {
-            if (schedule.getPriceType() == PriceType.Minus) {
-                // DB에 저장되어 있는 일정을 parsing -> 위의 localDateTime와 비교해서 예정 값 끌어오려고
-                LocalDate parseDate = LocalDate.parse(schedule.getStartDate());
-                LocalTime parseTime = LocalTime.parse(schedule.getStartTime(), timeFormatter);
+        // 예정된 금액
+        int expectValue = 0;
 
-                LocalDateTime parseDateTime = LocalDateTime.of(parseDate.getYear(),
-                        parseDate.getMonth(),
-                        parseDate.getDayOfMonth(),
-                        parseTime.getHour(),
-                        parseTime.getMinute());
+        // 카테고리 목표 지출액 - 현재 지출한 금액 - 예정된 금액
+        int balanceValue = 0;
 
-                if (parseDateTime.isBefore(localDateTime)) {
-                    categoryExpense += Integer.parseInt(schedule.getAmount());
-                } else {
-                    categoryExpect += Integer.parseInt(schedule.getAmount());
-                }
-                responseList.add(schedule);
-            }
+        Optional<Category> findCategory =
+                categoryRepository.findByUserIdAndMediumNameAndDate(userId, category, parseMonth);
+
+        String categoryValue;
+        int convertCategoryValue = 0;
+
+        if (findCategory.isEmpty()) {
+            categoryValue = "?";
+            responseMap.put("category_goal_amount", categoryValue);
+        } else {
+            categoryValue = findCategory.get().getMediumValue();
+            responseMap.put("category_goal_amount", categoryValue);
+            convertCategoryValue = Integer.parseInt(categoryValue);
         }
 
-        responseMap.put("current_date", dto.getDate());
-        responseMap.put("category", dto.getCategory());
-        responseMap.put("category_expense", String.valueOf(categoryExpense));
-        responseMap.put("category_expect", String.valueOf(categoryExpect));
-        responseMap.put("month_schedule", responseList);
-        responseMap.put("schedule_count", responseList.size());
+        LocalDate currentDate = LocalDate.parse(date, formatter);
+        LocalDate firstDate = currentDate.withDayOfMonth(1);
+        LocalDate lastDate = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
 
+
+        List<Schedule> firstToCurrentList =
+                crudScheduleRepository.findByStartDateAndEndDate(userId, firstDate.toString(), currentDate.toString());
+
+        List<Schedule> currentToLastList =
+                crudScheduleRepository.findByStartDateAndEndDate(userId, currentDate.plusDays(1).toString(), lastDate.toString());
+
+        List<Schedule> wholeList =
+                crudScheduleRepository.findByStartDateAndEndDate(userId, firstDate.toString(), lastDate.toString());
+
+        currentValue = firstToCurrentList.stream()
+                .filter(schedule -> schedule.getCategory().equals(category))
+                .filter(schedule -> schedule.getPriceType().equals(PriceType.Minus))
+                .mapToInt(schedule -> Integer.parseInt(schedule.getAmount()))
+                .sum();
+
+        expectValue = currentToLastList.stream().filter(schedule -> schedule.getCategory().equals(category))
+                .filter(schedule -> schedule.getPriceType().equals(PriceType.Minus))
+                .mapToInt(schedule -> Integer.parseInt(schedule.getAmount()))
+                .sum();
+
+        balanceValue = convertCategoryValue - currentValue - expectValue;
+
+        responseMap.put("currentValue", String.valueOf(currentValue));
+        responseMap.put("expectValue", String.valueOf(expectValue));
+        responseMap.put("balanceValue", String.valueOf(balanceValue));
+
+        responseMap.put("list", wholeList);
+
+
+
+        responseMap.put("name", category + "소비 리포트");
 
         return responseMap;
+
     }
 
     private List<String> inquiryAmountList(ReportRequestDemoDTO dto) {

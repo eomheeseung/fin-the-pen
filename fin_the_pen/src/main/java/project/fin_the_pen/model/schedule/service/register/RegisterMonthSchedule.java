@@ -30,7 +30,7 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
     public Boolean registerSchedule(ScheduleRequestDTO dto) {
         boolean isDuplicated = isDuplicatedRegular(dto.getUserId(), dto.getEventName(), dto.getCategory());
 
-        if (isDuplicated) {
+        if (!isDuplicated) {
             throw new DuplicatedScheduleException("정기 일정 등록시 중복됩니다.");
         } else {
 

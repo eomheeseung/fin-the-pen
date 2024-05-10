@@ -60,7 +60,10 @@ public abstract class RegisterSchedule {
                 crudScheduleRepository
                         .findByUserIdAndEventNameAndCategory(userId, eventName, category);
 
-        Optional<Schedule> findSchedule = optionalSchedule.filter(schedule -> schedule.getRegularType().equals(RegularType.REGULAR)).stream().findFirst();
+        Optional<Schedule> findSchedule = optionalSchedule
+                .filter(schedule -> schedule.getRegularType().equals(RegularType.REGULAR))
+                .stream()
+                .findFirst();
 
         if (findSchedule.isEmpty()) {
             return true;

@@ -42,7 +42,6 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
     private final SpendAmountRepository spendAmountRepository;
 
     private String userId;
@@ -418,17 +417,11 @@ public class ReportService {
 
         HashMap<Object, Object> responseMap = new HashMap<>();
 
-        String parseMonth = date.substring(0, 6);
+        String parseMonth = date.substring(0, 7);
         log.info("parsing month :{}", parseMonth);
-
-        List<Schedule> categoryList = crudScheduleRepository.findByCategoryBetweenDate(userId, category, date);
-
-
-        log.info("find list size:{}", categoryList.size());
 
         // 현재 지출한 금액
         int currentValue = 0;
-
 
         // 예정된 금액
         int expectValue = 0;
@@ -439,12 +432,18 @@ public class ReportService {
         Optional<Category> findCategory =
                 categoryRepository.findByUserIdAndMediumNameAndDate(userId, category, parseMonth);
 
+
         String categoryValue;
         int convertCategoryValue = 0;
 
         if (findCategory.isEmpty()) {
             categoryValue = "?";
             responseMap.put("category_goal_amount", categoryValue);
+            responseMap.put("currentValue", String.valueOf(currentValue));
+            responseMap.put("expectValue", String.valueOf(expectValue));
+            responseMap.put("balanceValue", String.valueOf(balanceValue));
+            return responseMap;
+
         } else {
             categoryValue = findCategory.get().getMediumValue();
             responseMap.put("category_goal_amount", categoryValue);
@@ -485,15 +484,10 @@ public class ReportService {
         responseMap.put("list", wholeList);
 
 
-
         responseMap.put("name", category + "소비 리포트");
 
         return responseMap;
 
-    }
-
-    private List<String> inquiryAmountList(ReportRequestDemoDTO dto) {
-        return crudScheduleRepository.findByAmount(dto.getDate(), dto.getUserId(), PriceType.Minus);
     }
 
     @NotNull

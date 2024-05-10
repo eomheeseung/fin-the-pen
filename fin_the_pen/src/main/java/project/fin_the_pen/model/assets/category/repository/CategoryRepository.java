@@ -17,6 +17,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     @Query("select c from Category c where c.userId = :userId and c.date = :date")
     List<Category> findByUserIdAndDate(@Param("userId") String userId, @Param("date") String date);
 
+    @Query("select c from Category c where c.userId = :userId and c.mediumName = :mediumName and c.date = :date")
     Optional<Category> findByUserIdAndMediumNameAndDate(@Param("userId") String userId,
                                                         @Param("mediumName") String mediumName,
                                                         @Param("date") String date);

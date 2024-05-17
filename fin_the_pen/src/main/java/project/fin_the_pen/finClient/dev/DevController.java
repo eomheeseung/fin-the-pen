@@ -13,14 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@Tag(name = "dev용",description = "정기 입출금액 개별 수정")
+@Tag(name = "dev용", description = "정기 입출금액 개별 수정")
 public class DevController {
     private final DevService service;
 
-    @Operation(description = "테스트용",summary = "test")
+    @Operation(description = "테스트용", summary = "test")
     @PostMapping("/modify/dev")
     public ResponseEntity<HttpStatus> devModify(@RequestBody DevModifyDto dto) {
         HttpStatus modify = service.modify(dto);
         return ResponseEntity.status(modify).build();
     }
+
 }

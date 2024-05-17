@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
+import project.fin_the_pen.model.schedule.template.Template;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RegularType;
 
@@ -21,6 +22,7 @@ import javax.persistence.*;
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "schedule_id")
     private Long id;
 
     // 일단 schedule와 같은 column을 가져간다고 하자.
@@ -96,17 +98,32 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private RegularType regularType;
 
-    /*@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
-    private ScheduleManage scheduleManage;*/
+    @JoinColumn(name = "template_id")
+    @ManyToOne
+    private Template template;
 
-    /*public void setPriceType(Supplier<PriceType> priceTypeSupplier) {
-        this.priceType = priceTypeSupplier.get();
-    }*/
+    public void setTemplate(Template template) {
+        if (template == null) {
+            Template noneTemplate = Template.builder()
+                    .categoryName("none")
+                    .categoryName("none")
+                    .userId("?")
+                    .build();
+
+            noneTemplate.getScheduleList().add(this);
+        } else {
+            this.template = template;
+            template.getScheduleList().add(this);
+        }
+
+
+    }
+
 
     public void update(String userId, String eventName, String category, String startDate, String endDate,
                        String startTime, String endTime, boolean isAllDay, String repeatKind, UnitedType repeatOptions,
                        PeriodType period, PriceType priceType, boolean isExclude, String paymentType, String amount,
-                       boolean isFixAmount,RegularType regularType) {
+                       boolean isFixAmount, RegularType regularType) {
         this.userId = userId;
         this.eventName = eventName;
         this.category = category;

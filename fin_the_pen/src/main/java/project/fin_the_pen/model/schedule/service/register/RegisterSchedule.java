@@ -8,6 +8,8 @@ import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
+import project.fin_the_pen.model.schedule.template.Template;
+import project.fin_the_pen.model.schedule.template.TemplateRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RegularType;
 
@@ -23,6 +25,7 @@ import java.util.function.Supplier;
 public abstract class RegisterSchedule {
     private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final TemplateRepository templateRepository;
 
     @NotNull
     public LocalDate formatDate(String convertDate) {
@@ -69,5 +72,14 @@ public abstract class RegisterSchedule {
             return true;
         }
         return false;
+    }
+
+    public boolean isDuplicatedTemplate(String userId, String eventName, String category) {
+        Optional<Template> optionalTemplate =
+                templateRepository.findByUserIdAndTemplateNameAndCategoryName(userId, eventName, category);
+
+        if (optionalTemplate.isEmpty()) {
+            return true;
+        } else return false;
     }
 }

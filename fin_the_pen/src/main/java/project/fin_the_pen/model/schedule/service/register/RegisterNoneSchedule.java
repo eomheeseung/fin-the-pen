@@ -9,6 +9,7 @@ import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
+import project.fin_the_pen.model.schedule.template.TemplateRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RegularType;
 
@@ -16,8 +17,9 @@ import java.util.Optional;
 
 @Component
 public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXXXFunc {
-    public RegisterNoneSchedule(CrudScheduleRepository crudScheduleRepository) {
-        super(crudScheduleRepository);
+    public RegisterNoneSchedule(CrudScheduleRepository crudScheduleRepository,
+                                TemplateRepository templateRepository) {
+        super(crudScheduleRepository,templateRepository);
     }
 
     /**

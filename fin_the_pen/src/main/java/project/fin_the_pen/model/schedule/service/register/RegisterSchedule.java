@@ -82,4 +82,37 @@ public abstract class RegisterSchedule {
             return true;
         } else return false;
     }
+
+    /*
+     우선 템플릿의 이름은 일정의 이름과 동일하게 설정함.
+     템플릿을 따로 설정하는 곳이 있어야 함.
+     */
+    public Template createTemplate(String userId, String category, String eventName){
+        Template template = null;
+
+        // 중복된 템플릿이 없는 경우 생성해서
+        if (isDuplicatedTemplate(userId, category, eventName)) {
+            template = Template.builder()
+                    .userId(userId)
+                    .templateName(eventName)
+                    .categoryName(category)
+                    .build();
+
+            template.init();
+            getTemplateRepository().save(template);
+            return template;
+            // 중복된 템플릿이 있다면 이미 저장된 것이므로 DB에서 가져와서 설정해줌
+        } else {
+            Optional<Template> optionalTemplate =
+                    getTemplateRepository().findByUserIdAndTemplateNameAndCategoryName(userId, category, eventName);
+
+            if (optionalTemplate.isEmpty()) {
+                throw new RuntimeException();
+            } else {
+                template = optionalTemplate.get();
+            }
+        }
+
+        return template;
+    }
 }

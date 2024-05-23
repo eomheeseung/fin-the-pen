@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.schedule.dto.DeleteScheduleDTO;
@@ -17,6 +14,7 @@ import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
+import project.fin_the_pen.model.schedule.template.TemplateService;
 import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,9 +29,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ScheduleController {
     private final ScheduleService scheduleService;
     private final ConvertResponse convertResponse;
+    private final TemplateService templateService;
 
     /**
      * header에 authorization에 "Bearer ~"로 들어온 것을 파싱하고 db와 비교해서 로직 수행
+     * 여기서 동일한 경로를 사용하면서 2가지의 일을 하려고 함
+     * front에서 X-Action-Type라고 http request header에 넣어줘야 함.
+     * X-Action-Type가 view라면 -> 사용자가 일정등록할 때 template를 보여지게 함
+     * X-Action-Type가 save라면 -> 사용자가 진짜 일정을 등록하는 것임
      *
      * @param dto
      * @return
@@ -43,21 +46,30 @@ public class ScheduleController {
             "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" +
             "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>",
             summary = "일정등록 (O)")
-    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto, HttpServletRequest request) {
-        try {
-            Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
+    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto,
+                                                   @RequestHeader String actionType, HttpServletRequest request) {
 
-            if (responseMap.get("data").equals(dto.getUserId())) {
-                log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
-                return ResponseEntity.ok().body(responseMap);
-            } else throw new RuntimeException();
-        } catch (DuplicatedScheduleException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (RuntimeException e) {
-            // 에러 핸들링 로직 추가
-            log.error("일정 등록 중 에러 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        if (actionType.equals("save")) {
+            try {
+                Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
+
+                if (responseMap.get("data").equals(dto.getUserId())) {
+                    log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
+
+                } else throw new RuntimeException();
+            } catch (DuplicatedScheduleException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            } catch (RuntimeException e) {
+                // 에러 핸들링 로직 추가
+                log.error("일정 등록 중 에러 발생", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            }
+            // 단순히 템플릿을 보여주는 것
+        } else if (actionType.equals("view")) {
+            String userId = dto.getUserId();
+            return ResponseEntity.ok().body(templateService.viewTemplateList(userId));
         }
+        return ResponseEntity.ok().build();
     }
 
 
@@ -123,9 +135,9 @@ public class ScheduleController {
      * @return
      */
     @PostMapping("/modifySchedule")
-    @Operation(description = "일정을 수정 <br>"+
-            "modify_options에 들어가는 목록<br>"+
-            " - nowFromAfter : 선택된 현재 일정부터 이후까지<br>"+
+    @Operation(description = "일정을 수정 <br>" +
+            "modify_options에 들어가는 목록<br>" +
+            " - nowFromAfter : 선택된 현재 일정부터 이후까지<br>" +
             " - exceptNowAfter : 현재 일정 제외하고 이후<br>" +
             " - all : 모든 일정", summary = "일정 수정")
     public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {

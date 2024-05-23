@@ -16,9 +16,9 @@ public class TemplateRequestDto {
     @Schema(name = "test1234")
     private String userId;
 
-    @JsonProperty(value = "event_name")
+    @JsonProperty(value = "template_aname")
     @Schema(name = "가족들과 식사")
-    private String eventName;
+    private String templateName;
 
     @JsonProperty(value = "category")
     @Schema(name = "외식")

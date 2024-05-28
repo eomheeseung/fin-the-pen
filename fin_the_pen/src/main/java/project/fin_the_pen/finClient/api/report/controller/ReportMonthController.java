@@ -32,7 +32,6 @@ public class ReportMonthController {
                                              @RequestParam("user_id") String userId,
                                              HttpServletRequest request) {
         try {
-//            log.info(dto.getDate());
             ReportRequestDemoDTO dto = new ReportRequestDemoDTO();
             dto.setDate(date);
             dto.setUserId(userId);

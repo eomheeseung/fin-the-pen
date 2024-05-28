@@ -30,11 +30,30 @@ public class TemplateService {
             responseList.add(sortedTemplate.getTemplateName());
         }
         if (responseList.isEmpty()) {
-            responseMap.put("data", "0");
+            responseMap.put("data", "none");
         } else {
             responseMap.put("data", responseList);
         }
 
+
+        return responseMap;
+    }
+
+    public Map<String, List<TemplateResponseDto>> viewAllTemplateList(String userId) {
+        List<Template> findAllList = templateRepository.findByUserId(userId);
+
+        Map<String, List<TemplateResponseDto>> responseMap = new HashMap<>();
+
+        List<TemplateResponseDto> depositList =
+                findAllList.stream().filter(template -> template.getStatement().equals(TemplateBankStatement.DEPOSIT))
+                        .map(TemplateResponseDto::new).collect(Collectors.toList());
+
+        List<TemplateResponseDto> withdrawList =
+                findAllList.stream().filter(template -> template.getStatement().equals(TemplateBankStatement.WITHDRAW))
+                        .map(TemplateResponseDto::new).collect(Collectors.toList());
+
+        responseMap.put("deposit", depositList);
+        responseMap.put("withdraw", withdrawList);
 
         return responseMap;
     }

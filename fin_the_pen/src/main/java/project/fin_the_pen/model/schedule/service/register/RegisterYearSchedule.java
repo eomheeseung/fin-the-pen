@@ -13,6 +13,7 @@ import project.fin_the_pen.model.schedule.entity.type.year.YearCategory;
 import project.fin_the_pen.model.schedule.entity.type.year.YearScheduleFunc;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.template.Template;
+import project.fin_the_pen.model.schedule.template.TemplateBankStatement;
 import project.fin_the_pen.model.schedule.template.TemplateRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RegularType;
@@ -42,6 +43,12 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
         // template을 사용하는 경우
         if (dto.isRegisterTemplate()) {
             Template template = createTemplate(userId, category, eventName);
+
+            if (dto.getPriceType().equals(PriceType.Plus)) {
+                template.updateStatement(TemplateBankStatement.DEPOSIT);
+            } else {
+                template.updateStatement(TemplateBankStatement.WITHDRAW);
+            }
 
             try {
                 boolean isDifferent = isDuplicatedSaveSchedule(dto);

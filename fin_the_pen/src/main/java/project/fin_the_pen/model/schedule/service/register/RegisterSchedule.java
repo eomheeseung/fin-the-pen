@@ -101,6 +101,7 @@ public abstract class RegisterSchedule {
             template.init();
             getTemplateRepository().save(template);
             return template;
+
             // 중복된 템플릿이 있다면 이미 저장된 것이므로 DB에서 가져와서 설정해줌
         } else {
             Optional<Template> optionalTemplate =

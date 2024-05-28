@@ -1,5 +1,6 @@
 package project.fin_the_pen.model.schedule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -100,6 +101,7 @@ public class Schedule {
 
     @JoinColumn(name = "template_id")
     @ManyToOne
+    @JsonBackReference
     private Template template;
 
     public void setTemplate(Template template) {

@@ -36,6 +36,12 @@ public class RegisterMonthSchedule extends RegisterSchedule implements RegisterX
         String eventName = dto.getEventName();
 
 
+        boolean isDuplicated = isDuplicatedRegular(userId, eventName, category);
+
+        if (!isDuplicated && !dto.isRegisterTemplate()) {
+            return false;
+        }
+
         // template을 사용하는 경우
         if (dto.isRegisterTemplate()) {
             Template template = createTemplate(userId, category, eventName);

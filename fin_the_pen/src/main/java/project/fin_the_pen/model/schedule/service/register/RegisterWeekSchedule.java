@@ -37,12 +37,16 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
     @Override
     public Boolean registerSchedule(ScheduleRequestDTO dto) {
 
-        boolean isDuplicated = isDuplicatedRegular(dto.getUserId(), dto.getEventName(), dto.getCategory());
 
         String userId = dto.getUserId();
         String category = dto.getCategory();
         String eventName = dto.getEventName();
 
+        boolean isDuplicated = isDuplicatedRegular(userId, eventName, category);
+
+        if (!isDuplicated && !dto.isRegisterTemplate()) {
+            return false;
+        }
 
         // template을 사용하는 경우
         if (dto.isRegisterTemplate()) {

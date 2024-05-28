@@ -40,6 +40,10 @@ public class TemplateService {
     }
 
     public Map<String, List<TemplateResponseDto>> viewAllTemplateList(String userId) {
+        List<Template> updateList = templateRepository.findByUserId(userId);
+
+        updateAmount(updateList);
+
         List<Template> findAllList = templateRepository.findByUserId(userId);
 
         Map<String, List<TemplateResponseDto>> responseMap = new HashMap<>();
@@ -56,5 +60,17 @@ public class TemplateService {
         responseMap.put("withdraw", withdrawList);
 
         return responseMap;
+    }
+
+    // tempalte에 있는 모든 정기일정의 값들을 합산하는 method
+    // 시간에 따라서 금액이 빠지는 경우도 생각해야 함.
+    public void updateAmount(List<Template> templateList) {
+        templateList.forEach(template -> {
+            int totalAmount = template.getScheduleList().stream()
+                    .mapToInt(schedule -> Integer.parseInt(schedule.getAmount()))
+                    .sum();
+            template.updateAmount(totalAmount);
+            templateRepository.save(template);
+        });
     }
 }

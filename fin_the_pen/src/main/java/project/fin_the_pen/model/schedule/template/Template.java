@@ -50,6 +50,10 @@ public class Template {
         this.statement = statement;
     }
 
+    public void updateAmount(Integer amount) {
+        this.amount = String.valueOf(amount);
+    }
+
 
     @Builder
     public Template(String userId, String templateName, String categoryName, String amount) {

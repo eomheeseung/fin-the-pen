@@ -18,6 +18,7 @@ public class TemplateResponseDto {
 
     public TemplateResponseDto(Template template) {
         this.id = template.getId();
+        this.amount = template.getAmount();
         this.userId = template.getUserId();
         this.templateName = template.getTemplateName();
         this.categoryName = template.getCategoryName();

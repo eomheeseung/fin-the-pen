@@ -36,8 +36,6 @@ public class RegisterWeekSchedule extends RegisterSchedule implements RegisterXX
 
     @Override
     public Boolean registerSchedule(ScheduleRequestDTO dto) {
-
-
         String userId = dto.getUserId();
         String category = dto.getCategory();
         String eventName = dto.getEventName();

@@ -18,6 +18,7 @@ import java.util.Map;
 
 /**
  * 정기 입출금액 템플릿 관리
+ * 자산관리의 정기템플릿 리스트를 보여주는 것과 일정등록에서 템플릿 리스트와는 다름
  */
 @RestController
 @Slf4j
@@ -30,7 +31,13 @@ public class TemplatePeriodicController {
     @GetMapping("/template/view")
     @Operation(summary = "정기 입출금액 템플릿 화면 보여주기", description = "정기 입출금액의 템플릿들을 입금과 출금별로 구분해서 보여줍니다.")
     public ResponseEntity<Object> templateView(@RequestParam("user_id") String userId, HttpServletRequest request) {
-        Map<String, List<TemplateResponseDto>> responseMap = templateService.viewAllTemplateList(userId);
+        Map<String, List<TemplateResponseDto>> responseMap =
+                templateService.viewAllTemplateList(userId);
         return ResponseEntity.ok().body(responseMap);
     }
+
+    // 관리 -> 편집 (수정)
+
+
+    // 관리 -> 삭제
 }

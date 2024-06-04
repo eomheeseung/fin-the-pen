@@ -63,7 +63,7 @@ public class TemplateService {
     }
 
     // tempalte에 있는 모든 정기일정의 값들을 합산하는 method
-    // 시간에 따라서 금액이 빠지는 경우도 생각해야 함.
+    // 금액 계산은 과거부터 현재까지
     public void updateAmount(List<Template> templateList) {
         templateList.forEach(template -> {
             int totalAmount = template.getScheduleList().stream()

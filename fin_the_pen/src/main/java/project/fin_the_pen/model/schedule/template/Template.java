@@ -11,13 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 템플릿이 정기일정을 관리한다
- *  1(부모테이플): n(자식)
- *
- * 정기일정만 삭제한다 => 자식테이블의 데이터를 먼저삭제
- *
- * 수정이 저장이랑 보여주는것보다 더 힘듬!
- *
+ * TODO
+ *  템플릿이름 / 내부에 들어가는 일정명
+ *  이 2개가 달라야 함
  */
 @Entity
 @NoArgsConstructor
@@ -30,8 +26,7 @@ public class Template {
 
     private String userId;
 
-    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true,
-            fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
     // 순환 참조 방지 어노테이션(직렬화 과정에서 발생)
     @JsonManagedReference
     private List<Schedule> scheduleList = new ArrayList<>();

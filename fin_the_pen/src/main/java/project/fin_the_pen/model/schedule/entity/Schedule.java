@@ -19,6 +19,9 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+/**
+ * 템플릿에 포함되지 않은 경우 template_id가 null로 저장됨 이를 해결해야 함
+ */
 //@Setter
 public class Schedule {
     @Id
@@ -99,7 +102,8 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private RegularType regularType;
 
-    @JoinColumn(name = "template_id")
+
+    @JoinColumn(name = "template_id", nullable = true)
     @ManyToOne
     @JsonBackReference
     private Template template;

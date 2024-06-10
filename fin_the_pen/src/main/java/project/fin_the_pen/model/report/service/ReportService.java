@@ -434,6 +434,7 @@ public class ReportService {
 
 
         String categoryValue;
+
         int convertCategoryValue = 0;
 
         if (findCategory.isEmpty()) {

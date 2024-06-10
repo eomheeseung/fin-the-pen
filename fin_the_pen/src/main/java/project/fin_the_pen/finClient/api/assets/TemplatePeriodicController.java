@@ -5,11 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import project.fin_the_pen.model.schedule.template.TemplateResponseDto;
+import org.springframework.web.bind.annotation.*;
+import project.fin_the_pen.model.schedule.template.dto.response.TemplateResponseDto;
 import project.fin_the_pen.model.schedule.template.TemplateService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +29,7 @@ public class TemplatePeriodicController {
     @Operation(summary = "정기 입출금액 템플릿 화면 보여주기", description = "정기 입출금액의 템플릿들을 입금과 출금별로 구분해서 보여줍니다.")
     public ResponseEntity<Object> templateView(@RequestParam("user_id") String userId, HttpServletRequest request) {
         Map<String, List<TemplateResponseDto>> responseMap =
-                templateService.viewAllTemplateList(userId);
+                templateService.viewAllDepositWithdrawList(userId, request);
         return ResponseEntity.ok().body(responseMap);
     }
 
@@ -40,4 +37,14 @@ public class TemplatePeriodicController {
 
 
     // 관리 -> 삭제
+    @DeleteMapping("/template/delete")
+    @Operation(description = "정기템플릿을 선택해서 삭제합니다.", summary = "정기템플릿 선택삭제")
+    public ResponseEntity<Object> templateDelete(@RequestParam("template_id") String templateId, HttpServletRequest request) {
+        boolean flag = templateService.selectDelete(templateId, request);
+
+        if (flag) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.internalServerError().build();
+    }
 }

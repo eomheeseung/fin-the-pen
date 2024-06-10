@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.error.dto.ErrorResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,13 +17,13 @@ import java.util.NoSuchElementException;
 public class ApiExceptionHandlerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class})
+    @ExceptionHandler({IllegalArgumentException.class, NoSuchElementException.class, NotFoundDataException.class})
     public ResponseEntity<ErrorResponse> badRequestException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         e.printStackTrace();
         return ResponseEntity.badRequest().body(ErrorResponse.builder()
-                        .message(e.getMessage())
-                        .path(request.getRequestURI())
-                        .status(HttpStatus.BAD_REQUEST.value())
+                .message(e.getMessage())
+                .path(request.getRequestURI())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .build());
     }
 
@@ -48,4 +49,6 @@ public class ApiExceptionHandlerAdvice {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .build());
     }
+
+
 }

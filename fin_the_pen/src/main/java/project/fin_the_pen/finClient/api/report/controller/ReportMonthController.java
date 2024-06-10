@@ -45,6 +45,10 @@ public class ReportMonthController {
 
     /**
      * 소비 리포트 상세
+     * TODO 카테고리로 조회하므로 카테고리 이름으로 구별이 되어져야 함.
+     *  현재는 시간값으로만 계산이 됨
+     *  예를들어, 소비지출목표액에서 카테고리이름을 "여가"로 지정했는데
+     *  "외식"도 계산값에서 빠지는 문제가 발생함.
      */
     @PostMapping("/details")
     @Operation(description = "리포트", summary = "카테고리로 월별 리포트 소비 목록 조회")

@@ -12,9 +12,12 @@ import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.schedule.dto.DeleteScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
+import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
+import project.fin_the_pen.model.schedule.template.dto.request.ImportTemplateRequestDto;
 import project.fin_the_pen.model.schedule.template.TemplateService;
+import project.fin_the_pen.model.schedule.template.dto.response.TemplateSimpleResponseDto;
 import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,11 +35,7 @@ public class ScheduleController {
     private final TemplateService templateService;
 
     /**
-     * header에 authorization에 "Bearer ~"로 들어온 것을 파싱하고 db와 비교해서 로직 수행
-     * 여기서 동일한 경로를 사용하면서 2가지의 일을 하려고 함
-     * front에서 X-Action-Type라고 http request header에 넣어줘야 함.
-     * X-Action-Type가 view라면 -> 사용자가 일정등록할 때 template를 보여지게 함
-     * X-Action-Type가 save라면 -> 사용자가 진짜 일정을 등록하는 것임
+     * 일정등록
      *
      * @param dto
      * @return
@@ -44,33 +43,31 @@ public class ScheduleController {
     @PostMapping(value = "/createSchedule", produces = "application/json")
     @Operation(description = "일정을 등록하는 API입니다.  " + "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 <br>" +
             "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" +
-            "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>"
-            +"초기에 보여줄 때는 actionType를 view, 저장할 때는 actionType을 save로 하시면 됩니다.",
+            "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>",
             summary = "일정등록 (O)")
-    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto,
-                                                   @RequestHeader String actionType, HttpServletRequest request) {
+    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto, HttpServletRequest request) {
+        try {
+            Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
 
-        if (actionType.equals("save")) {
-            try {
-                Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
+            if (responseMap.get("data").equals(dto.getUserId())) {
+                log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
 
-                if (responseMap.get("data").equals(dto.getUserId())) {
-                    log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
-
-                } else throw new RuntimeException();
-            } catch (DuplicatedScheduleException e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-            } catch (RuntimeException e) {
-                // 에러 핸들링 로직 추가
-                log.error("일정 등록 중 에러 발생", e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-            }
-            // 단순히 템플릿을 보여주는 것
-        } else if (actionType.equals("view")) {
-            String userId = dto.getUserId();
-            return ResponseEntity.ok().body(templateService.viewTemplateList(userId));
+            } else throw new RuntimeException();
+        } catch (DuplicatedScheduleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            // 에러 핸들링 로직 추가
+            log.error("일정 등록 중 에러 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/createSchedule", produces = "application/json")
+    @Operation(description = "일정을 등록하는 API입니다. (그전에 등록되어 있는 템플릿을 먼저 불러오기 위해서 login Id를 통해서 템플릿을 조회합니다.)",
+            summary = "일정등록 (O)")
+    public ResponseEntity<Object> registerSchedule(@RequestParam("user_id") String userId, HttpServletRequest request) {
+        return ResponseEntity.ok().body(templateService.viewTemplateList(userId, request));
     }
 
 
@@ -92,18 +89,6 @@ public class ScheduleController {
             return ResponseEntity.badRequest().body("오류 입니다.");
         }
     }
-
-//    @PostMapping("/getMonthSchedules")
-//    @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.", summary = "월별 조회 (O)")
-//    public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
-//        if (findCertainMonthVO.getDate() == null) {
-//            return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
-//        }
-//
-//        Map<String, Object> responseMap = scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
-//
-//        return convertResponse.getResponseEntity(responseMap);
-//    }
 
     @PostMapping("/getMonthSchedules/section")
     public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
@@ -155,15 +140,48 @@ public class ScheduleController {
         }
     }
 
+    /*@GetMapping("/template/import/select")
+    @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
+            "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
+            "템플릿을 가져옴.", summary = "카테고리 선택 후 템플릿 가져오기")
+    public ResponseEntity<Object> templateImport(@RequestParam("template_id") String templateId,
+                                                 @RequestParam("is_import") Boolean isImport,
+                                                 HttpServletRequest request) {
+
+        if (!isImport) {
+            return ResponseEntity.ok().build();
+        } else {
+            templateService.importAndSaveTemplate(templateId, request);
+        }
+    }*/
+
+    @GetMapping("/template/import")
+    @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
+            "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
+            "템플릿이 있는지의 유무반환.", summary = "카테고리 선택을 누르고 동일한 정기템플릿이 있는지 확인")
+    public ResponseEntity<Object> isTemplate(@RequestBody ImportTemplateRequestDto dto, HttpServletRequest request) {
+        TemplateSimpleResponseDto responseDto = templateService.selectedTemplate(dto, request);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    @PostMapping("/createSchedule/template")
+    @Operation(description = "정기 템플릿을 선택하여 일정을 만드는 경우" +
+            "templateId를 사용해서 response로 템플릿 내부의 데이터들을 가져옴", summary = "정기 템플릿을 선택하여 일정을 만드는 경우")
+    public ResponseEntity<Object> isTemplate(@RequestParam("template_id") String templateId,
+                                             @RequestParam("template_name") String templateName, HttpServletRequest request) {
+        ScheduleResponseDTO responseDto = templateService.responseTemplate(templateId, templateName, request);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
     /**
      * 일정 삭제
      */
     @DeleteMapping("/deleteSchedule")
     @Operation(description = "일정을 삭제합니다.", summary = "일정 삭제")
+
     public ResponseEntity<Object> deleteSchedule(@RequestBody DeleteScheduleDTO dto, HttpServletRequest request) {
         try {
             scheduleService.deleteSchedule(dto, request);
-
             return ResponseEntity.ok().build();
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -174,4 +192,12 @@ public class ScheduleController {
         }
     }
 
+    /**
+     * 정기 템플릿 (전체보기)
+     */
+    @GetMapping("/template/details")
+    @Operation(description = "일정등록에서 정기템플릿 전체보기를 했을 경우", summary = "정기 템플릿 전체 보기")
+    public ResponseEntity<Object> templateDetailsView(@RequestParam("user_id") String userId, HttpServletRequest request) {
+        return ResponseEntity.ok().body(templateService.viewAllTemplateList(userId, request));
+    }
 }

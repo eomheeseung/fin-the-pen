@@ -9,4 +9,6 @@ public interface TemplateRepository extends JpaRepository<Template, Long> {
     Optional<Template> findByUserIdAndTemplateNameAndCategoryName(String userId, String templateName, String categoryName);
 
     List<Template> findByUserId(String userId);
+
+    Optional<Template> findByIdAndTemplateName(Long id, String templateName);
 }

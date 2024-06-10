@@ -50,7 +50,7 @@ public class TemplateService {
     }
 
     /**
-     * 출금과 입금을 구분하지 않음
+     * 출금과 입금을 구분하지 않고 보여줌
      *
      * @param userId
      * @return
@@ -115,6 +115,12 @@ public class TemplateService {
         });
     }
 
+    /**
+     * 템플릿 선택 삭제
+     * @param templateId
+     * @param request
+     * @return
+     */
     public boolean selectDelete(String templateId, HttpServletRequest request) {
         Long key = Long.valueOf(templateId);
 

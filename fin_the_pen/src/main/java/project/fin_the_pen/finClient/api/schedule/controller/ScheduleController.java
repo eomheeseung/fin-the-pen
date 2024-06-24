@@ -15,7 +15,6 @@ import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
-import project.fin_the_pen.model.schedule.template.dto.request.ImportTemplateRequestDto;
 import project.fin_the_pen.model.schedule.template.TemplateService;
 import project.fin_the_pen.model.schedule.template.dto.response.TemplateSimpleResponseDto;
 import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
@@ -155,15 +154,30 @@ public class ScheduleController {
         }
     }*/
 
+    /**
+     * 오류
+     * @param dto
+     * @param request
+     * @return
+     */
     @GetMapping("/template/import")
     @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
             "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
             "템플릿이 있는지의 유무반환.", summary = "카테고리 선택을 누르고 동일한 정기템플릿이 있는지 확인")
-    public ResponseEntity<Object> isTemplate(@RequestBody ImportTemplateRequestDto dto, HttpServletRequest request) {
-        TemplateSimpleResponseDto responseDto = templateService.selectedTemplate(dto, request);
+    public ResponseEntity<Object> isTemplate(@RequestParam("userId") String userId, @RequestParam("category_name") String categoryName,
+                                             @RequestParam("event_name") String eventName,
+                                             HttpServletRequest request) {
+        TemplateSimpleResponseDto responseDto = templateService.selectedTemplate(userId, categoryName, eventName, request);
         return ResponseEntity.ok().body(responseDto);
     }
 
+    /**
+     * 오류
+     * @param templateId
+     * @param templateName
+     * @param request
+     * @return
+     */
     @PostMapping("/createSchedule/template")
     @Operation(description = "정기 템플릿을 선택하여 일정을 만드는 경우" +
             "templateId를 사용해서 response로 템플릿 내부의 데이터들을 가져옴", summary = "정기 템플릿을 선택하여 일정을 만드는 경우")

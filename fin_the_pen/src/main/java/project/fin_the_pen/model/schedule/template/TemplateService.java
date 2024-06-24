@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
-import project.fin_the_pen.model.schedule.template.dto.request.ImportTemplateRequestDto;
 import project.fin_the_pen.model.schedule.template.dto.response.TemplateResponseDto;
 import project.fin_the_pen.model.schedule.template.dto.response.TemplateSimpleResponseDto;
 
@@ -117,6 +116,7 @@ public class TemplateService {
 
     /**
      * 템플릿 선택 삭제
+     *
      * @param templateId
      * @param request
      * @return
@@ -137,15 +137,11 @@ public class TemplateService {
      * DB에 동일한 정기 템플릿이 있는지에 대한 유무
      * response => templateId, templateName, categoryName
      *
-     * @param dto
+     * 이 다음에...?
      * @param request
      * @return
      */
-    public TemplateSimpleResponseDto selectedTemplate(ImportTemplateRequestDto dto, HttpServletRequest request) {
-        String userId = dto.getUserId();
-        String categoryName = dto.getCategoryName();
-        String eventName = dto.getEventName();
-
+    public TemplateSimpleResponseDto selectedTemplate(String userId, String categoryName, String eventName, HttpServletRequest request) {
         List<Template> findAllList = templateRepository.findByUserId(userId);
 
         TemplateSimpleResponseDto responseDto = new TemplateSimpleResponseDto();
@@ -176,7 +172,6 @@ public class TemplateService {
         }
 
         return responseDto;
-
     }
 
     /**
@@ -189,7 +184,9 @@ public class TemplateService {
 
     /**
      * case4)
-     *  정기 템플릿을 선택할 경우 템플릿에 있는 일정을 가져와서 화면에 바인딩
+     * 정기 템플릿을 선택할 경우 템플릿에 있는 일정을 가져와서 화면에 바인딩
+     * 된듯..
+     *
      * @param templateId
      * @param templateName
      * @param request

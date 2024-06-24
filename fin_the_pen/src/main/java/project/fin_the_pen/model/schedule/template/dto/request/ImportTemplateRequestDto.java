@@ -13,18 +13,18 @@ import lombok.Setter;
 @Setter
 public class ImportTemplateRequestDto {
     @JsonProperty(value = "user_id")
-    @Schema(name = "로그인된 id", example = "test1234")
+    @Schema(description = "로그인된 아이디", example = "test1234")
     private String userId;
 
     @JsonProperty(value = "event_name")
-    @Schema(name = "일정명", example = "가족과의 식사")
+    @Schema(description = "일정 이름", example = "가족과의 식사")
     private String eventName;
 
     @JsonProperty(value = "category_name")
-    @Schema(name = "category 명", example = "외식")
+    @Schema(description = "category 이름", example = "외식")
     private String categoryName;
 
     @JsonProperty(value = "is_import")
-    @Schema(name = "", example = "true")
+    @Schema(description = "유무", example = "true")
     private String isImport;
 }

@@ -35,6 +35,11 @@ public class ScheduleController {
 
     /**
      * 일정등록
+     * TODO
+     *  register_template : true
+     *  인 경우 일정을 만들면서 템플릿을 만들기만 함...
+     *  템플릿이 만들어진 상태에서 새로운 일정을 등록할 때 템플릿에 어떻게 포함시킬지
+     *
      *
      * @param dto
      * @return
@@ -155,8 +160,9 @@ public class ScheduleController {
     }*/
 
     /**
+     * case3) 얘가 문제
      * 오류
-     * @param dto
+     *
      * @param request
      * @return
      */
@@ -164,7 +170,8 @@ public class ScheduleController {
     @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
             "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
             "템플릿이 있는지의 유무반환.", summary = "카테고리 선택을 누르고 동일한 정기템플릿이 있는지 확인")
-    public ResponseEntity<Object> isTemplate(@RequestParam("userId") String userId, @RequestParam("category_name") String categoryName,
+    public ResponseEntity<Object> isTemplate(@RequestParam("userId") String userId,
+                                             @RequestParam("category_name") String categoryName,
                                              @RequestParam("event_name") String eventName,
                                              HttpServletRequest request) {
         TemplateSimpleResponseDto responseDto = templateService.selectedTemplate(userId, categoryName, eventName, request);
@@ -172,7 +179,9 @@ public class ScheduleController {
     }
 
     /**
+     * case4
      * 오류
+     *
      * @param templateId
      * @param templateName
      * @param request

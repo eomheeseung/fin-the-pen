@@ -11,7 +11,7 @@ services:
       - MYSQL_ROOT_PASSWORD=finthepen!0102  # root 비밀번호 설정
       - MYSQL_DATABASE=fin_the_pen
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - finthepen-network
 

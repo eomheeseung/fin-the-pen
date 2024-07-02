@@ -16,7 +16,6 @@ import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
 import project.fin_the_pen.model.schedule.template.TemplateService;
-import project.fin_the_pen.model.schedule.template.dto.response.TemplateSimpleResponseDto;
 import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +38,6 @@ public class ScheduleController {
      *  register_template : true
      *  인 경우 일정을 만들면서 템플릿을 만들기만 함...
      *  템플릿이 만들어진 상태에서 새로운 일정을 등록할 때 템플릿에 어떻게 포함시킬지
-     *
      *
      * @param dto
      * @return
@@ -166,16 +164,16 @@ public class ScheduleController {
      * @param request
      * @return
      */
-    @GetMapping("/template/import")
+    @GetMapping("/template/is_exists")
     @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
             "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
-            "템플릿이 있는지의 유무반환.", summary = "카테고리 선택을 누르고 동일한 정기템플릿이 있는지 확인")
+            "템플릿의 {이름, 카테고리명}을 반환하고, 없다면 {템플릿이 없다고 반환}", summary = "카테고리 선택을 누르고 동일한 정기템플릿이 있는지 확인하고 바인딩")
     public ResponseEntity<Object> isTemplate(@RequestParam("userId") String userId,
                                              @RequestParam("category_name") String categoryName,
                                              @RequestParam("event_name") String eventName,
                                              HttpServletRequest request) {
-        TemplateSimpleResponseDto responseDto = templateService.selectedTemplate(userId, categoryName, eventName, request);
-        return ResponseEntity.ok().body(responseDto);
+        Map<String, Object> responseMap = templateService.selectedTemplate(userId, categoryName, eventName, request);
+        return ResponseEntity.ok().body(responseMap);
     }
 
     /**

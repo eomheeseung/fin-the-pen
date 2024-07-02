@@ -9,6 +9,8 @@ import project.fin_the_pen.model.schedule.entity.type.PaymentType;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
+import project.fin_the_pen.model.schedule.template.Template;
+import project.fin_the_pen.model.schedule.template.TemplateBankStatement;
 import project.fin_the_pen.model.schedule.template.TemplateRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
 import project.fin_the_pen.model.schedule.type.RegularType;
@@ -19,7 +21,7 @@ import java.util.Optional;
 public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXXXFunc {
     public RegisterNoneSchedule(CrudScheduleRepository crudScheduleRepository,
                                 TemplateRepository templateRepository) {
-        super(crudScheduleRepository,templateRepository);
+        super(crudScheduleRepository, templateRepository);
     }
 
     /**
@@ -34,91 +36,201 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
         String eventName = dto.getEventName();
         String category = dto.getCategory();
 
-        try {
-            boolean isDifferent = super.isDuplicatedSaveSchedule(dto);
+        // template을 사용하는 경우
+        if (dto.isRegisterTemplate()) {
+            Template template = createTemplate(userId, category, eventName);
 
-            if (!isDifferent) {
-                throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
-            }
-
-            String dtoPaymentType = dto.getPaymentType();
-
-            PaymentType paymentType;
-
-            if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
-                paymentType = PaymentType.ACCOUNT;
-            } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
-                paymentType = PaymentType.CASH;
+            if (dto.getPriceType().equals(PriceType.Plus)) {
+                template.updateStatement(TemplateBankStatement.DEPOSIT);
             } else {
-                paymentType = PaymentType.CARD;
+                template.updateStatement(TemplateBankStatement.WITHDRAW);
             }
 
-            Optional<Schedule> optionalSchedule = getSchedule(userId, eventName, category);
+            try {
+                boolean isDifferent = isDuplicatedSaveSchedule(dto);
 
-            if (optionalSchedule.isEmpty()) {
-                Schedule schedule = Schedule.builder()
-                        .userId(dto.getUserId())
-                        .eventName(dto.getEventName())
-                        .category(dto.getCategory())
-                        .startDate(dto.getStartDate())
-                        .endDate(dto.getEndDate())
-                        .startTime(dto.getStartTime())
-                        .endTime(dto.getEndTime())
-                        .isAllDay(dto.isAllDay())
-                        .repeatKind(RepeatKind.NONE.toString())
-                        .repeatOptions(UnitedType.builder().term("0")
-                                .options("none")
-                                .build())
-                        .isExclude(dto.isExclude())
-                        .paymentType(paymentType)
-                        .amount(dto.getAmount())
-                        .isFixAmount(dto.isFixAmount())
-                        .period(createPeriodType(() -> {
-                            return PeriodType.builder()
-                                    .isRepeatAgain(false)
-                                    .repeatNumberOfTime("none")
-                                    .repeatEndLine("none").build();
-                        }))
-                        .priceType(super.judgmentPriceType(() -> {
-                            if (dto.getPriceType().equals(PriceType.Plus)) {
-                                return PriceType.Plus;
-                            } else return PriceType.Minus;
-                        }))
-                        .regularType(RegularType.EACH)
-                        .build();
+                String dtoPaymentType = dto.getPaymentType();
 
-                super.getCrudScheduleRepository().save(schedule);
+                PaymentType paymentType;
+
+                if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
+                    paymentType = PaymentType.ACCOUNT;
+                } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
+                    paymentType = PaymentType.CASH;
+                } else {
+                    paymentType = PaymentType.CARD;
+                }
+
+                if (!isDifferent) {
+                    throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
+                } else {
+
+                    Optional<Schedule> optionalSchedule = getSchedule(userId, eventName, category);
+
+                    if (optionalSchedule.isEmpty()) {
+                        Schedule schedule = Schedule.builder()
+                                .userId(dto.getUserId())
+                                .eventName(dto.getEventName())
+                                .category(dto.getCategory())
+                                .startDate(dto.getStartDate())
+                                .endDate(dto.getEndDate())
+                                .startTime(dto.getStartTime())
+                                .endTime(dto.getEndTime())
+                                .isAllDay(dto.isAllDay())
+                                .repeatKind(RepeatKind.NONE.toString())
+                                .repeatOptions(UnitedType.builder().term("0")
+                                        .options("none")
+                                        .build())
+                                .isExclude(dto.isExclude())
+                                .paymentType(paymentType)
+                                .amount(dto.getAmount())
+                                .isFixAmount(dto.isFixAmount())
+                                .period(createPeriodType(() -> {
+                                    return PeriodType.builder()
+                                            .isRepeatAgain(false)
+                                            .repeatNumberOfTime("none")
+                                            .repeatEndLine("none").build();
+                                }))
+                                .priceType(super.judgmentPriceType(() -> {
+                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                        return PriceType.Plus;
+                                    } else return PriceType.Minus;
+                                }))
+                                .regularType(RegularType.EACH)
+                                .build();
+
+                        super.getCrudScheduleRepository().save(schedule);
+                    } else {
+                        Schedule findSchedule = optionalSchedule.get();
+
+                        Schedule schedule = Schedule.builder()
+                                .userId(findSchedule.getUserId())
+                                .eventName(findSchedule.getEventName())
+                                .category(findSchedule.getCategory())
+                                .startDate(dto.getStartDate())
+                                .endDate(dto.getEndDate())
+                                .startTime(dto.getStartTime())
+                                .endTime(dto.getEndTime())
+                                .isAllDay(dto.isAllDay())
+                                .repeatKind(findSchedule.getRepeatKind())
+                                .repeatOptions(findSchedule.getRepeatOptions())
+                                .isExclude(dto.isExclude())
+                                .paymentType(paymentType)
+                                .amount(dto.getAmount())
+                                .isFixAmount(dto.isFixAmount())
+                                .period(findSchedule.getPeriod())
+                                .priceType(super.judgmentPriceType(() -> {
+                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                        return PriceType.Plus;
+                                    } else return PriceType.Minus;
+                                }))
+                                .regularType(findSchedule.getRegularType())
+                                .build();
+
+                        super.getCrudScheduleRepository().save(schedule);
+                    }
+                }
+            } catch (RuntimeException e) {
+                return null;
+            }
+        }
+        // template를 사용하지 않는다면
+        else {
+            Template template = createTemplate(userId, category, eventName);
+
+            if (dto.getPriceType().equals(PriceType.Plus)) {
+                template.updateStatement(TemplateBankStatement.DEPOSIT);
             } else {
-                Schedule findSchedule = optionalSchedule.get();
-
-                Schedule schedule = Schedule.builder()
-                        .userId(findSchedule.getUserId())
-                        .eventName(findSchedule.getEventName())
-                        .category(findSchedule.getCategory())
-                        .startDate(dto.getStartDate())
-                        .endDate(dto.getEndDate())
-                        .startTime(dto.getStartTime())
-                        .endTime(dto.getEndTime())
-                        .isAllDay(dto.isAllDay())
-                        .repeatKind(findSchedule.getRepeatKind())
-                        .repeatOptions(findSchedule.getRepeatOptions())
-                        .isExclude(dto.isExclude())
-                        .paymentType(paymentType)
-                        .amount(dto.getAmount())
-                        .isFixAmount(dto.isFixAmount())
-                        .period(findSchedule.getPeriod())
-                        .priceType(super.judgmentPriceType(() -> {
-                            if (dto.getPriceType().equals(PriceType.Plus)) {
-                                return PriceType.Plus;
-                            } else return PriceType.Minus;
-                        }))
-                        .regularType(findSchedule.getRegularType())
-                        .build();
-
-                super.getCrudScheduleRepository().save(schedule);
+                template.updateStatement(TemplateBankStatement.WITHDRAW);
             }
-        } catch (RuntimeException e) {
-            return null;
+
+            try {
+                boolean isDifferent = isDuplicatedSaveSchedule(dto);
+
+                String dtoPaymentType = dto.getPaymentType();
+
+                PaymentType paymentType;
+
+                if (dtoPaymentType.equals(PaymentType.ACCOUNT.name())) {
+                    paymentType = PaymentType.ACCOUNT;
+                } else if (dtoPaymentType.equals(PaymentType.CASH.name())) {
+                    paymentType = PaymentType.CASH;
+                } else {
+                    paymentType = PaymentType.CARD;
+                }
+
+                if (!isDifferent) {
+                    throw new DuplicatedScheduleException("중복된 일정 등록입니다.");
+                } else {
+
+                    Optional<Schedule> optionalSchedule = getSchedule(userId, eventName, category);
+
+                    if (optionalSchedule.isEmpty()) {
+                        Schedule schedule = Schedule.builder()
+                                .userId(dto.getUserId())
+                                .eventName(dto.getEventName())
+                                .category(dto.getCategory())
+                                .startDate(dto.getStartDate())
+                                .endDate(dto.getEndDate())
+                                .startTime(dto.getStartTime())
+                                .endTime(dto.getEndTime())
+                                .isAllDay(dto.isAllDay())
+                                .repeatKind(RepeatKind.NONE.toString())
+                                .repeatOptions(UnitedType.builder().term("0")
+                                        .options("none")
+                                        .build())
+                                .isExclude(dto.isExclude())
+                                .paymentType(paymentType)
+                                .amount(dto.getAmount())
+                                .isFixAmount(dto.isFixAmount())
+                                .period(createPeriodType(() -> {
+                                    return PeriodType.builder()
+                                            .isRepeatAgain(false)
+                                            .repeatNumberOfTime("none")
+                                            .repeatEndLine("none").build();
+                                }))
+                                .priceType(super.judgmentPriceType(() -> {
+                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                        return PriceType.Plus;
+                                    } else return PriceType.Minus;
+                                }))
+                                .regularType(RegularType.EACH)
+                                .build();
+
+                        super.getCrudScheduleRepository().save(schedule);
+                    } else {
+                        Schedule findSchedule = optionalSchedule.get();
+
+                        Schedule schedule = Schedule.builder()
+                                .userId(findSchedule.getUserId())
+                                .eventName(findSchedule.getEventName())
+                                .category(findSchedule.getCategory())
+                                .startDate(dto.getStartDate())
+                                .endDate(dto.getEndDate())
+                                .startTime(dto.getStartTime())
+                                .endTime(dto.getEndTime())
+                                .isAllDay(dto.isAllDay())
+                                .repeatKind(findSchedule.getRepeatKind())
+                                .repeatOptions(findSchedule.getRepeatOptions())
+                                .isExclude(dto.isExclude())
+                                .paymentType(paymentType)
+                                .amount(dto.getAmount())
+                                .isFixAmount(dto.isFixAmount())
+                                .period(findSchedule.getPeriod())
+                                .priceType(super.judgmentPriceType(() -> {
+                                    if (dto.getPriceType().equals(PriceType.Plus)) {
+                                        return PriceType.Plus;
+                                    } else return PriceType.Minus;
+                                }))
+                                .regularType(findSchedule.getRegularType())
+                                .build();
+
+                        super.getCrudScheduleRepository().save(schedule);
+                    }
+                }
+            } catch (RuntimeException e) {
+                return null;
+            }
         }
         return true;
     }

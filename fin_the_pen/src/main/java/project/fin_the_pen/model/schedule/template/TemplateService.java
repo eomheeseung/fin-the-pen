@@ -136,15 +136,19 @@ public class TemplateService {
      * case3)
      * DB에 동일한 정기 템플릿이 있는지에 대한 유무
      * response => templateId, templateName, categoryName
-     *
+     * <p>
      * 이 다음에...?
+     *
      * @param request
      * @return
      */
-    public TemplateSimpleResponseDto selectedTemplate(String userId, String categoryName, String eventName, HttpServletRequest request) {
+    public Map<String, Object> selectedTemplate(String userId, String categoryName, String eventName, HttpServletRequest request) {
         List<Template> findAllList = templateRepository.findByUserId(userId);
 
         TemplateSimpleResponseDto responseDto = new TemplateSimpleResponseDto();
+        Optional<ScheduleResponseDTO> optionalScheduleResponseDTO = Optional.empty();
+
+        Map<String, Object> responseMap = new HashMap<>();
 
         boolean isFind = false;
 
@@ -153,6 +157,13 @@ public class TemplateService {
 
             for (Schedule schedule : scheduleList) {
                 if (schedule.getEventName().equals(eventName) && schedule.getCategory().equals(categoryName)) {
+                    optionalScheduleResponseDTO = Optional.of(new ScheduleResponseDTO(schedule.getId(), schedule.getUserId(),
+                            schedule.getEventName(), schedule.getCategory(),
+                            schedule.getStartDate(), schedule.getEndDate(),
+                            schedule.getStartTime(), schedule.getEndTime(), schedule.isAllDay(),
+                            schedule.getRepeatOptions(), schedule.getPeriod(),
+                            schedule.getPriceType(), schedule.isExclude(), schedule.getPaymentType().name(),
+                            schedule.getAmount(), schedule.isFixAmount(), schedule.getRepeatKind()));
                     isFind = true;
                     break;
                 }
@@ -163,6 +174,14 @@ public class TemplateService {
                 responseDto.setUserId(template.getUserId());
                 responseDto.setCategoryName(template.getCategoryName());
                 responseDto.setTemplateId(String.valueOf(template.getId()));
+
+                responseMap.put("template_data", responseDto);
+
+                optionalScheduleResponseDTO.ifPresentOrElse(
+                        scheduleData -> responseMap.put("schedule_data", scheduleData),
+                        () -> responseMap.put("schedule_data", "none")
+                );
+
                 break;
             }
         }
@@ -171,7 +190,7 @@ public class TemplateService {
             throw new NotFoundDataException("템플릿이 없습니다.");
         }
 
-        return responseDto;
+        return responseMap;
     }
 
     /**

@@ -11,6 +11,7 @@ import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.template.dto.request.TemplateModifyRequestDto;
+import project.fin_the_pen.model.schedule.template.dto.request.TemplateModifySelectedScheduleRequestDto;
 import project.fin_the_pen.model.schedule.template.dto.response.TemplateResponseDto;
 import project.fin_the_pen.model.schedule.template.dto.response.TemplateSimpleResponseDto;
 
@@ -270,6 +271,65 @@ public class TemplateService {
             } catch (RuntimeException e) {
                 throw new ExecuteException(e.getMessage());
             }
+            return HttpStatus.OK;
+        }
+    }
+
+    /**
+     * 템플릿 리스트 내부에서 일정들을 선택해서 수정하는 경우 {자산쪽만 수정이 가능하다.}
+     * TODO
+     *  입금과 출금의 문제
+     *  * 선택된 일정을 수정할 때
+     *  * 입금을 출금으로 바꾼다면 템플릿에서 입금과 출금을 구분하기 때문에 template의 amount가 계산이 잘못됨.
+     */
+    public HttpStatus templateModifySelectedSchedule(TemplateModifySelectedScheduleRequestDto dto) {
+        Long convertTemplateId = Long.valueOf(dto.getTemplateId());
+        String userId = dto.getUserId();
+        String scheduleIdList = dto.getScheduleIdList();
+
+        StringTokenizer tokenizer = new StringTokenizer(scheduleIdList, ",");
+
+        List<Long> convertScheduleIdList = new ArrayList<>();
+
+        while (tokenizer.hasMoreTokens()) {
+            convertScheduleIdList.add(Long.valueOf(tokenizer.nextToken()));
+        }
+
+        String modifyAmount = dto.getAmount();
+        String modifyIsFixed = dto.getIsFixed();
+        String modifyIsExcluded = dto.getIsExcluded();
+        String modifyPriceType = dto.getPriceType();
+        String modifyPaymentType = dto.getPaymentType();
+
+        Optional<Template> optionalTemplate = templateRepository.findByIdAndUserId(convertTemplateId, userId);
+
+        if (optionalTemplate.isEmpty()) {
+            throw new NotFoundDataException("not found data");
+        } else {
+            try {
+                Template template = optionalTemplate.get();
+
+                List<Schedule> scheduleList = template.getScheduleList();
+
+                Set<Long> scheduleIdSet = new HashSet<>(convertScheduleIdList);
+
+                // scheduleList를 순회하면서 scheduleId가 매치되는 스케줄을 업데이트
+                scheduleList.forEach(schedule -> {
+                    if (scheduleIdSet.contains(schedule.getId())) {
+                        // 스케줄 업데이트 로직 (예: name과 description 변경)
+                        schedule.updateExcluded(modifyIsExcluded);
+                        schedule.updateFixed(modifyIsFixed);
+                        schedule.updatePaymentType(modifyPaymentType);
+                        schedule.updatePriceType(modifyPriceType);
+                        schedule.updateAmount(modifyAmount);
+
+                        scheduleRepository.save(schedule);
+                    }
+                });
+            } catch (RuntimeException e) {
+                throw new ExecuteException(e.getMessage());
+            }
+
             return HttpStatus.OK;
         }
     }

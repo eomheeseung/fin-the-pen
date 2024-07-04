@@ -128,6 +128,42 @@ public class Schedule {
         this.category = categoryName;
     }
 
+    public void updateAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public void updateFixed(String isFixed) {
+        this.isFixAmount = Boolean.getBoolean(isFixed);
+    }
+
+    public void updateExcluded(String isExcluded) {
+        this.isExclude = Boolean.getBoolean(isExcluded);
+    }
+
+    public void updatePriceType(String priceType) {
+        if (priceType.equals("Plus")) {
+            this.priceType = PriceType.Plus;
+        } else if (priceType.equals("Minus")) {
+            this.priceType = PriceType.Minus;
+        }
+    }
+
+    public void updatePaymentType(String paymentType) {
+        switch (paymentType) {
+            case "CARD":
+                this.paymentType = PaymentType.CARD;
+                break;
+            case "CASH":
+                this.paymentType = PaymentType.CASH;
+                break;
+            case "ACCOUNT":
+                this.paymentType = PaymentType.ACCOUNT;
+                break;
+        }
+    }
+
+
+
 
     public void update(String userId, String eventName, String category, String startDate, String endDate,
                        String startTime, String endTime, boolean isAllDay, String repeatKind, UnitedType repeatOptions,

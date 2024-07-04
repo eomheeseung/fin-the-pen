@@ -7,9 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import project.fin_the_pen.model.schedule.template.dto.request.TemplateModifyRequestDto;
-import project.fin_the_pen.model.schedule.template.dto.response.TemplateResponseDto;
 import project.fin_the_pen.model.schedule.template.TemplateService;
+import project.fin_the_pen.model.schedule.template.dto.request.TemplateModifyRequestDto;
+import project.fin_the_pen.model.schedule.template.dto.request.TemplateModifySelectedScheduleRequestDto;
+import project.fin_the_pen.model.schedule.template.dto.response.TemplateResponseDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -52,9 +53,13 @@ public class TemplatePeriodicController {
     }
 
     // 관리 -> 편집 (수정)
-    /*@PostMapping("/template/modify")
-    @Operation(description = "자산관리 -> 정기템플릿 리스트를 수정하는 부분입니다.")*/
-
+    @PostMapping("/template/modify/selected_schedule")
+    @Operation(summary = "{자산관리 탭에서} 템플릿에서 선택된 일정들만 수정",
+            description = "자산관리 -> 정기템플릿 리스트내부의 일정들을 선택해서 수정하는 부분입니다.")
+    public ResponseEntity<Object> templateModifySelectedSchedule(@RequestBody TemplateModifySelectedScheduleRequestDto dto) {
+        HttpStatus httpStatus = templateService.templateModifySelectedSchedule(dto);
+        return ResponseEntity.ok().body(httpStatus);
+    }
 
     // 관리 -> 삭제
     @DeleteMapping("/template/delete")

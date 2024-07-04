@@ -121,8 +121,11 @@ public class Schedule {
             this.template = template;
             template.getScheduleList().add(this);
         }
+    }
 
-
+    public void updateEventNameAndCategoryName(String eventName, String categoryName) {
+        this.eventName = eventName;
+        this.category = categoryName;
     }
 
 

@@ -59,6 +59,11 @@ public class Template {
         this.amount = String.valueOf(amount);
     }
 
+    public void updateTemplateNameAndCategory(String templateName, String categoryName) {
+        this.categoryName = categoryName;
+        this.templateName = templateName;
+    }
+
 
     @Builder
     public Template(String userId, String templateName, String categoryName, String amount) {

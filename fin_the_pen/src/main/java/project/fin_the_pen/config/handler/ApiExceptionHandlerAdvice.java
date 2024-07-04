@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import project.fin_the_pen.finClient.core.error.customException.ExecuteException;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.error.dto.ErrorResponse;
 
@@ -39,7 +40,7 @@ public class ApiExceptionHandlerAdvice {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler({Exception.class, ExecuteException.class})
     public ResponseEntity<ErrorResponse> exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
         e.printStackTrace();
 

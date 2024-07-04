@@ -2,10 +2,15 @@ package project.fin_the_pen.model.schedule.template;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import project.fin_the_pen.finClient.core.error.customException.ExecuteException;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
+import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
+import project.fin_the_pen.model.schedule.template.dto.request.TemplateModifyRequestDto;
 import project.fin_the_pen.model.schedule.template.dto.response.TemplateResponseDto;
 import project.fin_the_pen.model.schedule.template.dto.response.TemplateSimpleResponseDto;
 
@@ -18,6 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TemplateService {
     private final TemplateRepository templateRepository;
+    private final CrudScheduleRepository scheduleRepository;
 
     /**
      * 간단하게 3개만 보여주는 작업
@@ -194,11 +200,79 @@ public class TemplateService {
     }
 
     /**
-     * template에 추가하는 경우
+     * 자산관리 -> 정기템플릿 -> 템플릿에 있는 일정들을 개별로 수정하기 위해서 정기템플릿의 내부에 있는 모든 일정들을 보여주는 메소드
      */
-    /*public TemplateSimpleResponseDto importAndSaveTemplate(String templateId, HttpServletRequest request) {
+    public Map<String, Object> templateInScheduleInfo(String templateId, String userId) {
+        Long convertTemplateId = Long.valueOf(templateId);
 
-    }*/
+        Map<String, Object> responseMap = new HashMap<>();
+
+        Optional<Template> optionalTemplate = templateRepository.findByIdAndUserId(convertTemplateId, userId);
+
+        if (optionalTemplate.isEmpty()) {
+            throw new NotFoundDataException("입력 오류입니다.");
+        } else {
+            Template template = optionalTemplate.get();
+
+            TemplateResponseDto templateResponseDto = new TemplateResponseDto();
+            templateResponseDto.setAmount(template.getAmount());
+            templateResponseDto.setTemplateName(template.getTemplateName());
+            templateResponseDto.setId(template.getId());
+            templateResponseDto.setStatement(template.getStatement());
+            templateResponseDto.setUserId(template.getUserId());
+            templateResponseDto.setCategoryName(template.getCategoryName());
+
+            responseMap.put("template", templateResponseDto);
+
+
+            List<Schedule> scheduleList = template.getScheduleList();
+
+            List<ScheduleResponseDTO> responseScheduleList = scheduleList.stream().map(schedule -> new ScheduleResponseDTO(schedule.getId(), schedule.getUserId(), schedule.getEventName(),
+                            schedule.getCategory(), schedule.getStartDate(), schedule.getEndDate(), schedule.getStartTime(),
+                            schedule.getEndTime(), schedule.isAllDay(), schedule.getRepeatOptions(),
+                            schedule.getPeriod(), schedule.getPriceType(), schedule.isExclude(),
+                            schedule.getPaymentType().name(), schedule.getAmount(), schedule.isFixAmount(), schedule.getRepeatKind()))
+                    .collect(Collectors.toList());
+
+            responseMap.put("schedule", responseScheduleList);
+            return responseMap;
+        }
+    }
+
+    /**
+     * 정기 템플릿 자체를 수정하는 경우,
+     * 이때는 정기템플릿에 포함되어 있는 모든 일정들이 {이름, 카테고리} 수정되어야 함.
+     */
+    @Transactional
+    public HttpStatus templateModify(TemplateModifyRequestDto dto) {
+        Long convertTemplateId = Long.valueOf(dto.getTemplateId());
+        String userId = dto.getUserId();
+        String modifyTemplateName = dto.getTemplateName();
+        String modifyCategoryName = dto.getCategoryName();
+
+        Optional<Template> optionalTemplate = templateRepository.findByIdAndUserId(convertTemplateId, userId);
+
+        if (optionalTemplate.isEmpty()) {
+            throw new NotFoundDataException("입력 오류입니다.");
+        } else {
+            try {
+                Template template = optionalTemplate.get();
+                List<Schedule> scheduleList = template.getScheduleList();
+                template.updateTemplateNameAndCategory(modifyTemplateName, modifyCategoryName);
+
+                scheduleList.forEach(schedule -> {
+                    schedule.updateEventNameAndCategoryName(modifyTemplateName, modifyCategoryName);
+                    scheduleRepository.save(schedule);
+                });
+
+                templateRepository.save(template);
+
+            } catch (RuntimeException e) {
+                throw new ExecuteException(e.getMessage());
+            }
+            return HttpStatus.OK;
+        }
+    }
 
 
     /**

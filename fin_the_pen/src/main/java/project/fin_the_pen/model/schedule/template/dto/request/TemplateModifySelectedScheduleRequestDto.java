@@ -18,10 +18,6 @@ public class TemplateModifySelectedScheduleRequestDto {
     @Schema(description = "수정하려는 일정들의 id", example = "2,3")
     private String scheduleIdList;
 
-    @JsonProperty(value = "priceType")
-    @Schema(description = "수정할 금액의 타입 {입금 / 출금}", example = "deposit")
-    private String priceType;
-
     @JsonProperty(value = "amount")
     @Schema(description = "수정할 금액", example = "33333")
     private String amount;

@@ -14,7 +14,6 @@ import project.fin_the_pen.model.schedule.service.modify.ModifyWeekSchedule;
 import project.fin_the_pen.model.schedule.service.modify.ModifyYearSchedule;
 import project.fin_the_pen.model.schedule.service.register.*;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,8 +22,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ScheduleRepository {
     private final CrudScheduleRepository crudScheduleRepository;
-    //    private final CRUDRegularScheduleRepository regularScheduleRepository;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final RegisterNoneSchedule registerNoneSchedule;
     private final RegisterDaySchedule registerDaySchedule;
     private final RegisterWeekSchedule registerWeekSchedule;

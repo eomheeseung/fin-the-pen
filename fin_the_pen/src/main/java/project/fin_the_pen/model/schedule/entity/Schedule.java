@@ -102,7 +102,6 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private RegularType regularType;
 
-
     @JoinColumn(name = "template_id", nullable = true)
     @ManyToOne
     @JsonBackReference

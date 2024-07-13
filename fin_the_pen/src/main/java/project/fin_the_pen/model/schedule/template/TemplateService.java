@@ -277,10 +277,6 @@ public class TemplateService {
 
     /**
      * 템플릿 리스트 내부에서 일정들을 선택해서 수정하는 경우 {자산쪽만 수정이 가능하다.}
-     * TODO
-     *  입금과 출금의 문제
-     *  * 선택된 일정을 수정할 때
-     *  * 입금을 출금으로 바꾼다면 템플릿에서 입금과 출금을 구분하기 때문에 template의 amount가 계산이 잘못됨.
      */
     public HttpStatus templateModifySelectedSchedule(TemplateModifySelectedScheduleRequestDto dto) {
         Long convertTemplateId = Long.valueOf(dto.getTemplateId());
@@ -298,7 +294,6 @@ public class TemplateService {
         String modifyAmount = dto.getAmount();
         String modifyIsFixed = dto.getIsFixed();
         String modifyIsExcluded = dto.getIsExcluded();
-        String modifyPriceType = dto.getPriceType();
         String modifyPaymentType = dto.getPaymentType();
 
         Optional<Template> optionalTemplate = templateRepository.findByIdAndUserId(convertTemplateId, userId);
@@ -320,7 +315,6 @@ public class TemplateService {
                         schedule.updateExcluded(modifyIsExcluded);
                         schedule.updateFixed(modifyIsFixed);
                         schedule.updatePaymentType(modifyPaymentType);
-                        schedule.updatePriceType(modifyPriceType);
                         schedule.updateAmount(modifyAmount);
 
                         scheduleRepository.save(schedule);

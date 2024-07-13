@@ -107,12 +107,10 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                             .paymentType(paymentType)
                             .amount(dto.getAmount())
                             .isFixAmount(dto.isFixAmount())
-                            .period(createPeriodType(() -> {
-                                return PeriodType.builder()
-                                        .isRepeatAgain(true)
-                                        .repeatNumberOfTime("0")
-                                        .repeatEndLine(null).build();
-                            }))
+                            .period(createPeriodType(() -> PeriodType.builder()
+                                    .isRepeatAgain(true)
+                                    .repeatNumberOfTime("0")
+                                    .repeatEndLine(null).build()))
                             .priceType(judgmentPriceType(() -> {
                                 if (dto.getPriceType().equals(PriceType.Plus)) {
                                     return PriceType.Plus;
@@ -178,13 +176,11 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                                     .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
-                                    .period(createPeriodType(() -> {
-                                        return PeriodType.builder()
-                                                .isRepeatAgain(false)
-                                                .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
-                                                .repeatEndLine("none")
-                                                .build();
-                                    }))
+                                    .period(createPeriodType(() -> PeriodType.builder()
+                                            .isRepeatAgain(false)
+                                            .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
+                                            .repeatEndLine("none")
+                                            .build()))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
                                             return PriceType.Plus;
@@ -229,13 +225,11 @@ public class ModifyMonthSchedule extends ModifySchedule implements ModifyXXXFunc
                                     .paymentType(paymentType)
                                     .amount(dto.getAmount())
                                     .isFixAmount(dto.isFixAmount())
-                                    .period(createPeriodType(() -> {
-                                        return PeriodType.builder()
-                                                .isRepeatAgain(false)
-                                                .repeatNumberOfTime(String.valueOf("none"))
-                                                .repeatEndLine(endLine.toString())
-                                                .build();
-                                    }))
+                                    .period(createPeriodType(() -> PeriodType.builder()
+                                            .isRepeatAgain(false)
+                                            .repeatNumberOfTime("none")
+                                            .repeatEndLine(endLine.toString())
+                                            .build()))
                                     .priceType(judgmentPriceType(() -> {
                                         if (dto.getPriceType().equals(PriceType.Plus)) {
                                             return PriceType.Plus;

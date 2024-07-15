@@ -85,7 +85,7 @@ public class Schedule {
     private boolean isExclude;
 
     // 중요도
-    @Column(name = "importance")
+    @Column(name = "payment_type")
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 

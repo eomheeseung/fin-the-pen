@@ -91,4 +91,11 @@ public class ModifyScheduleDTO {
     @JsonProperty(value = "fix_amount")
     @Schema(description = "금액을 고정할 것인지", example = "false")
     private boolean isFixAmount;
+
+    /**
+     *
+     * @JsonProperty(value = "register_template")
+     *     @Schema(description = "템플릿에 등록할 것인지 true이면 등록 / false이면 등록하지 않음", example = "false")
+     *     private boolean registerTemplate;
+     */
 }

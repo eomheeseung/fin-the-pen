@@ -44,6 +44,8 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
 
+    implementation 'org.springframework.security:spring-security-oauth2-client:5.7.5'
+
     testImplementation 'org.mockito:mockito-core:4.11.0'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'

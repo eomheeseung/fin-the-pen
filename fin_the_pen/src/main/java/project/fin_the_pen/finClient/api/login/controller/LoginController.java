@@ -1,21 +1,10 @@
 package project.fin_the_pen.finClient.api.login.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import project.fin_the_pen.model.user.dto.SignInRequest;
-import project.fin_the_pen.model.user.dto.SignInResponse;
-import project.fin_the_pen.model.user.dto.UserRequestDTO;
-import project.fin_the_pen.model.user.dto.UserResponseDTO;
-import project.fin_the_pen.model.user.service.LoginService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @Slf4j
@@ -23,14 +12,14 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Tag(name = "API 테스트 / 로그인")
 public class LoginController {
-    private final LoginService loginService;
+   /* private final LoginService loginService;
 
-    /**
+    *//**
      * 회원 가입
      *
      * @param userRequestDTO
      * @return
-     */
+     *//*
     @PostMapping(value = "/sign-up", produces = "application/json")
     @Operation(summary = "회원 가입 (O)")
     public ResponseEntity<Object> signUp(@RequestBody UserRequestDTO userRequestDTO) {
@@ -39,12 +28,12 @@ public class LoginController {
 //        return ApiResponse.success(loginService.signUp(userRequestDTO));
     }
 
-    /**
+    *//**
      * 로그인
      *
      * @return
      * @throws IOException
-     */
+     *//*
     @PostMapping(value = "/sign-in", produces = "application/json")
     @Operation(summary = "로그인 (O)")
     public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
@@ -65,5 +54,5 @@ public class LoginController {
             return ResponseEntity.ok().body("로그아웃 되었습니다.");
         }
         return ResponseEntity.badRequest().body("로그아웃 오류");
-    }
+    }*/
 }

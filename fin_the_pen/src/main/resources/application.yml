@@ -47,3 +47,4 @@ springdoc:
     disabled: true
 
   packages-to-scan: project.fin_the_pen.finClient
+

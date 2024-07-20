@@ -22,7 +22,7 @@ spring:
   jpa:
     database: h2
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
@@ -31,6 +31,26 @@ spring:
   security:
     user:
       password: 1
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: 58044d766e3a6a856f75bd256d28a073
+            client-secret: mXZxsQdiZAPbSS6eQTJPvdLmYuHRrqm0
+            authorization-grant-type: authorization_code
+            client-authentication-method: POST
+            scope:
+              - profile_nickname
+              - profile_image
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+
 
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
@@ -47,4 +67,5 @@ springdoc:
     disabled: true
 
   packages-to-scan: project.fin_the_pen.finClient
+
 

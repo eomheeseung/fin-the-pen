@@ -64,9 +64,9 @@ public class TemplatePeriodicController {
     // 관리 -> 삭제
     @DeleteMapping("/template/delete")
     @Operation(description = "정기템플릿을 선택해서 삭제합니다.", summary = "정기템플릿 선택삭제")
-    public ResponseEntity<Object> templateDelete(@RequestParam("template_id") String templateId, HttpServletRequest request) {
+    public ResponseEntity<Object> templateDelete(@RequestParam("template_ids") List<String> templateIds, HttpServletRequest request) {
 
-        boolean flag = templateService.selectDelete(templateId, request);
+        boolean flag = templateService.selectDelete(templateIds, request);
 
         if (flag) {
             return ResponseEntity.ok().build();

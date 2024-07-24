@@ -43,6 +43,7 @@ spring:
               - profile_nickname
               - profile_image
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            client-name: Kakao
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize

@@ -30,29 +30,16 @@ public class Oauth2SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(authorizeRequests ->
-                        authorizeRequests
-                                .antMatchers("/", "/login").permitAll()
-                                .anyRequest().authenticated()
-                )
-                .oauth2Client(oauth2Client ->
-                        oauth2Client.clientRegistrationRepository(clientRegistrationRepository())
-                )
+                        authorizeRequests.antMatchers("/signup", "/", "/login", "/oauth2/authorization/**").permitAll()
+                                .anyRequest().authenticated())
                 .oauth2Login(oauth2Login ->
-                        oauth2Login
-                                /*
-                                loginPage("/login")**는 사용자에게 로그인 폼을 제공하는 경로를 설정합니다.
-                                이 URL은 사용자가 로그인하지 않은 상태에서 보호된 리소스에 접근하려 할 때 표시됩니다.
-                                OAuth2 인증 흐름은 사용자 인증 후 OAuth2 로그인 제공자의 로그인 페이지로 리다이렉트되고,
-                                로그인 성공 후 커스텀 핸들러에 의해 리다이렉트할 페이지를 설정할 수 있습니다.
-                                 */
-                                .loginPage("/login")
+                        oauth2Login.loginPage("/login")
                                 .userInfoEndpoint()
-                                .userService(customOauth2UserService))
-                .oauth2Login(oauth2Login -> oauth2Login.successHandler(oauth2AuthenticationSuccessHandler()))
-                .oauth2Login(oauth2Login -> oauth2Login.failureHandler(oauth2AuthenticationFailureHandler()));
-               /* .formLogin(formLogin ->
-                        formLogin.successHandler(oauth2AuthenticationSuccessHandler())
-                );*/
+                                .userService(customOauth2UserService)
+                                .and()
+                                .successHandler(oauth2AuthenticationSuccessHandler())
+                                .failureHandler(oauth2AuthenticationFailureHandler())
+                );
 
         return http.build();
     }
@@ -64,7 +51,7 @@ public class Oauth2SecurityConfig {
 
     @Bean
     public AuthenticationFailureHandler oauth2AuthenticationFailureHandler() {
-        return new CustomAuthenticationFailureHandler();
+        return new CustomOauth2FailureHandler();
     }
 
 
@@ -81,8 +68,7 @@ public class Oauth2SecurityConfig {
                 // 인증 결과를 애플리케이션으로 제공할 리다이렉트 uri
                 .redirectUri(kakaoClientProperties.getRedirectUri())
                 .clientName("kakao")
-                .authorizationGrantType(new AuthorizationGrantType(kakaoClientProperties
-                        .getAuthorizationGrantType()))
+                .authorizationGrantType(new AuthorizationGrantType(kakaoClientProperties.getAuthorizationGrantType()))
                 .build();
 
         return new InMemoryClientRegistrationRepository(clientRegistration);

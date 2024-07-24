@@ -1,8 +1,6 @@
 package project.fin_the_pen.config.oauth2;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import javax.servlet.ServletException;
@@ -15,13 +13,8 @@ public class CustomOauth2SuccessHandler implements AuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof OAuth2User) {
-            OAuth2User oAuth2User = (OAuth2User) principal;
-        } else if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-        }
-        response.sendRedirect("/index");
+        // 성공 후 처리 로직
+        // 예: 로그인 성공 시 사용자에게 환영 메시지를 표시
+        response.sendRedirect("/welcome"); // 로그인 성공 후 리다이렉트할 페이지
     }
 }

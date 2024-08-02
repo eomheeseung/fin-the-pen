@@ -1,4 +1,4 @@
-package project.fin_the_pen.config.oauth2;
+package project.fin_the_pen.config.oauth2.kakao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

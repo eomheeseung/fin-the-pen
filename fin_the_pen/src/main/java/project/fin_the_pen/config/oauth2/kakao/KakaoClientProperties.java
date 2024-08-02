@@ -1,4 +1,4 @@
-package project.fin_the_pen.config.oauth2;
+package project.fin_the_pen.config.oauth2.kakao;
 
 import lombok.Getter;
 import lombok.Setter;

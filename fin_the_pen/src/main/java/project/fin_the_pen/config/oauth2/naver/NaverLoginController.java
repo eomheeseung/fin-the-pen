@@ -15,7 +15,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class NaverLoginController {
     private final NaverOAuth2Service naverOAuth2Service;
 
-    @GetMapping("/login/oauth2/code/naver")
+    /**
+     * 해당 엔드포인트를 사용해서 사용자의 정보 가져오기
+     * @param code
+     * @param state
+     * @param redirectAttributes
+     * @return
+     * @throws JsonProcessingException
+     */
+   @GetMapping("/login/oauth2/code/naver")
     public String naverCallback(@RequestParam String code, @RequestParam String state, RedirectAttributes redirectAttributes) throws JsonProcessingException {
         // 액세스 토큰을 요청합니다.
         String accessToken = naverOAuth2Service.getAccessToken(code);

@@ -31,7 +31,7 @@ public class Oauth2SecurityConfig {
 //    private final NaverClientProperties naverClientProperties;
 
     private final static String NAVER_REDIRECT_URI = "http://localhost:8080/login/oauth2/code/naver";
-    private final static String KAKAO_REDIRECT_URI = "http://localhost:8080/login/oauth2/code/kakao";
+    private final static String KAKAO_REDIRECT_URI = "http://localhost:8080/login/oauth2/code/kakao/1107979";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,13 +41,15 @@ public class Oauth2SecurityConfig {
                         authorizeRequests.antMatchers("/signup", "/",
                                         "/login",
                                         "**/favicon.ico",
-                                        "/oauth2/authorization/**", "/login/oauth2/code/naver").permitAll()
+                                        "/oauth2/authorization/**",
+                                        "/login/oauth2/code/naver",
+                                        "/login/oauth2/code/kakao/1107979").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2Login(oauth2Login -> oauth2Login
-                        .userInfoEndpoint()
-                        .userService(customOauth2UserService)
-                        .and()
-                        .successHandler(oauth2AuthenticationSuccessHandler())
+                                .userInfoEndpoint()
+                                .userService(customOauth2UserService)
+                                .and()
+                                .successHandler(oauth2AuthenticationSuccessHandler())
 //                        .failureHandler(oauth2AuthenticationFailureHandler())
                 );
 
@@ -68,18 +70,18 @@ public class Oauth2SecurityConfig {
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository() {
         ClientRegistration kakaoClientRegistration = ClientRegistration.withRegistrationId("kakao")
-                .clientId(kakaoClientProperties.getClientId())
-                .clientSecret(kakaoClientProperties.getClientSecret())
-                .scope(kakaoClientProperties.getScope())
+                .clientId(KakaoClientProperties.clientId)
+                .clientSecret(KakaoClientProperties.clientSecret)
+                .scope(KakaoClientProperties.nickName, KakaoClientProperties.image)
                 .authorizationUri("https://kauth.kakao.com/oauth/authorize")
                 .tokenUri("https://kauth.kakao.com/oauth/token")
                 .userInfoUri("https://kapi.kakao.com/v2/user/me")
-
-                // 인증 결과를 애플리케이션으로 제공할 리다이렉트 uri
-                .redirectUri(kakaoClientProperties.getRedirectUri())
+                .redirectUri(KAKAO_REDIRECT_URI)
                 .clientName("Kakao")
-                .authorizationGrantType(new AuthorizationGrantType(kakaoClientProperties.getAuthorizationGrantType()))
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .userNameAttributeName("id")
                 .build();
+
 
         ClientRegistration naverClientRegistration = ClientRegistration.withRegistrationId("naver")
                 .clientId(NaverClientProperties.clientId)
@@ -90,8 +92,8 @@ public class Oauth2SecurityConfig {
                 .redirectUri(NAVER_REDIRECT_URI)
                 .clientName("Naver")
                 .userInfoUri("https://openapi.naver.com/v1/nid/me")
-                .authorizationGrantType(new AuthorizationGrantType(NaverClientProperties.authorization_code))
-                .userNameAttributeName("name") // 여기에서 userNameAttributeName을 설정합니다.
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .userNameAttributeName("response") // 여기에서 userNameAttributeName을 설정합니다.
                 .build();
 
 

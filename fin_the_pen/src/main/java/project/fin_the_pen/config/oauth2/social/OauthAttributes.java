@@ -2,9 +2,7 @@ package project.fin_the_pen.config.oauth2.social;
 
 import lombok.Builder;
 import lombok.Getter;
-import project.fin_the_pen.config.oauth2.kakao.KakaoOauth2UserInfo;
 
-import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -19,27 +17,27 @@ public class OauthAttributes {
         this.oauth2UserInfo = oauth2UserInfo;
     }
 
-    public static OauthAttributes of(SocialType socialType,
-                                     String userNameAttributeName,
-                                     Map<String, Object> attributes) {
-        /*if (socialType == SocialType.NAVER) {
-            return ofNaver(userNameAttributeName, attributes);
-        }
-        if (socialType == SocialType.KAKAO) {
-            return ofKakao(userNameAttributeName, attributes);
-        }
-        return ofGoogle(userNameAttributeName, attributes);*/
+//    public static OauthAttributes of(SocialType socialType,
+//                                     String userNameAttributeName,
+//                                     Map<String, Object> attributes) {
+//        /*if (socialType == SocialType.NAVER) {
+//            return ofNaver(userNameAttributeName, attributes);
+//        }
+//        if (socialType == SocialType.KAKAO) {
+//            return ofKakao(userNameAttributeName, attributes);
+//        }
+//        return ofGoogle(userNameAttributeName, attributes);*/
+//
+//        return ofKakao(userNameAttributeName, attributes);
+//    }
 
-        return ofKakao(userNameAttributeName, attributes);
-    }
-
-    private static OauthAttributes ofKakao(String userNameAttributeName,
-                                           Map<String, Object> attributes) {
-        return OauthAttributes.builder()
-                .nameAttributeKey(userNameAttributeName)
-                .oauth2UserInfo(new KakaoOauth2UserInfo(attributes))
-                .build();
-    }
+//    private static OauthAttributes ofKakao(String userNameAttributeName,
+//                                           Map<String, Object> attributes) {
+//        return OauthAttributes.builder()
+//                .nameAttributeKey(userNameAttributeName)
+//                .oauth2UserInfo(new KakaoOauth2UserInfo(attributes))
+//                .build();
+//    }
 
 //    private static OauthAttributes ofNaver(String userNameAttributeName,
 //                                           Map<String, Object> attributes) {

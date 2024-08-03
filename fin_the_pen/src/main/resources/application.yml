@@ -22,7 +22,7 @@ spring:
   jpa:
     database: h2
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
@@ -36,12 +36,12 @@ spring:
         registration:
           kakao:
             client-id: 58044d766e3a6a856f75bd256d28a073
-            client-secret: mXZxsQdiZAPbSS6eQTJPvdLmYuHRrqm0
+            client-secret: J7UYWTOODX58Up3ilLUb5U7HxaL7LVoK
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao/1107979
             authorization-grant-type: authorization_code
-            client-authentication-method: POST
             scope: profile_nickname, profile_image
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             client-name: Kakao
+            client-authentication-method: POST
           naver:
             client-id: SxhQhNoooSBYAzq1XRno
             client-secret: 7KEyxFXbyg
@@ -49,6 +49,7 @@ spring:
             authorization-grant-type: authorization_code
             scope: name, email
             client-name: Naver
+
         provider:
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize

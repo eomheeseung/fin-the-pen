@@ -14,6 +14,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * token uri를 직접사용해서 인증을 받아야 할 것 같음.
+ * authorization_uri -> token uri를 직접 호출해서 code를 담아 request
+ * accessToken 사용
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j

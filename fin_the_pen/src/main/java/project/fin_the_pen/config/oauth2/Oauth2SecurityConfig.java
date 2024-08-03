@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import project.fin_the_pen.config.oauth2.kakao.KakaoClientProperties;
 import project.fin_the_pen.config.oauth2.naver.NaverClientProperties;
 import project.fin_the_pen.config.oauth2.social.CustomOauth2UserService;
+import project.fin_the_pen.config.oauth2.social.SocialUserRepository;
 
 @Order(1)
 @Configuration
@@ -27,6 +28,7 @@ import project.fin_the_pen.config.oauth2.social.CustomOauth2UserService;
 @RequiredArgsConstructor
 public class Oauth2SecurityConfig {
     private final KakaoClientProperties kakaoClientProperties;
+    private final SocialUserRepository socialUserRepository;
     private final CustomOauth2UserService customOauth2UserService;
 //    private final NaverClientProperties naverClientProperties;
 
@@ -60,6 +62,9 @@ public class Oauth2SecurityConfig {
     public AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler() {
         return new CustomOauth2SuccessHandler();
     }
+
+
+
 
     /*@Bean
     public AuthenticationFailureHandler oauth2AuthenticationFailureHandler() {

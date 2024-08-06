@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 @Setter
+/**
+ *
+ */
 public class KakaoClientProperties {
     public static final String clientId = "58044d766e3a6a856f75bd256d28a073";
     public static final String clientSecret="J7UYWTOODX58Up3ilLUb5U7HxaL7LVoK";

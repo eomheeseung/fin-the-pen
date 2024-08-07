@@ -13,10 +13,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import project.fin_the_pen.config.oauth2.custom.CustomOAuth2Service;
+import project.fin_the_pen.config.oauth2.custom.UserService;
+import project.fin_the_pen.config.oauth2.handler.CustomLogoutSuccessHandler;
+import project.fin_the_pen.config.oauth2.handler.CustomOauth2SuccessHandler;
 import project.fin_the_pen.config.oauth2.kakao.KakaoProperties;
 import project.fin_the_pen.config.oauth2.naver.NaverProperties;
 
@@ -28,6 +32,8 @@ import project.fin_the_pen.config.oauth2.naver.NaverProperties;
 public class Oauth2SecurityConfig {
     private final KakaoProperties kakaoProperties;
     private final NaverProperties naverProperties;
+    private final CustomOAuth2Service customOAuth2Service;
+    private final UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,23 +43,40 @@ public class Oauth2SecurityConfig {
                         authorizeRequests.antMatchers("/signup", "/",
                                         "/oauth2/authorization/**",
                                         "/login", "/css/**", "/js/**",
+                                        "/h2-console/**",
                                         "/login/oauth2/code/naver",
                                         "/login/oauth2/code/kakao/1107979").permitAll()
                                 .anyRequest().authenticated())
-                .oauth2Login(oauth2Login -> oauth2Login
+                .oauth2Login(oauth2Login -> {
+                    try {
+                        oauth2Login
                                 .userInfoEndpoint()
-                                .userService(new DefaultOAuth2UserService())
+                                .userService(customOAuth2Service)
                                 .and()
                                 .successHandler(oauth2AuthenticationSuccessHandler())
+                                .and()
+                                .logout()
+                                .logoutUrl("/logout")  // 로그아웃 요청 URL
+                                .logoutSuccessHandler(oauth2LogoutSuccessHandler())  // 로그아웃 성공 후 핸들러
+                                .permitAll();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
 //                        .failureHandler(oauth2AuthenticationFailureHandler())
-                );
+
 
         return http.build();
     }
 
     @Bean
     public AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler() {
-        return new CustomOauth2SuccessHandler();
+        return new CustomOauth2SuccessHandler(userService);
+    }
+
+    @Bean
+    public LogoutSuccessHandler oauth2LogoutSuccessHandler() {
+        return new CustomLogoutSuccessHandler();
     }
 
 

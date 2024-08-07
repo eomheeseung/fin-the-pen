@@ -1,4 +1,4 @@
-package project.fin_the_pen.config.oauth2.social;
+package project.fin_the_pen.config.oauth2.socialDomain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

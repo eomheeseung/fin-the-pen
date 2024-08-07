@@ -1,4 +1,4 @@
-package project.fin_the_pen.config.oauth2.social;
+package project.fin_the_pen.config.oauth2.socialDomain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

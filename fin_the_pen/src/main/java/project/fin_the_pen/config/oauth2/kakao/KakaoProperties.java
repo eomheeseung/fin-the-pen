@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class KakaoProperties {
     private final String clientId = "58044d766e3a6a856f75bd256d28a073";
     private final String clientSecret = "J7UYWTOODX58Up3ilLUb5U7HxaL7LVoK";
-    private final String redirectUri = "http://localhost:8080/login/oauth2/code/kakao/1107979";
+    private final String redirectUri = "http://localhost:8080/login/oauth2/code/kakao";
     private final String nickName = "profile_nickname";
     private final String image = "profile_image";
     private final String clientName = "Kakao";

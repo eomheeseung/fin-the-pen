@@ -37,9 +37,12 @@ spring:
           kakao:
             client-id: 58044d766e3a6a856f75bd256d28a073
             client-secret: J7UYWTOODX58Up3ilLUb5U7HxaL7LVoK
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao/1107979
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             scope: profile_nickname, profile_image
+#            scope:
+#              - profile
+#              - account_email
             client-name: Kakao
             client-authentication-method: POST
           naver:

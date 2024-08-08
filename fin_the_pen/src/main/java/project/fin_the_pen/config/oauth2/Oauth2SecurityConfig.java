@@ -10,10 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -45,7 +41,7 @@ public class Oauth2SecurityConfig {
                                         "/login", "/css/**", "/js/**",
                                         "/h2-console/**",
                                         "/login/oauth2/code/naver",
-                                        "/login/oauth2/code/kakao/1107979").permitAll()
+                                        "/login/oauth2/code/kakao").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2Login(oauth2Login -> {
                     try {
@@ -88,38 +84,39 @@ public class Oauth2SecurityConfig {
     }*/
 
 
-    @Bean
-    public ClientRegistrationRepository clientRegistrationRepository() {
-        ClientRegistration kakaoClientRegistration = ClientRegistration
-                .withRegistrationId(kakaoProperties.getClientId())
-                .clientName(kakaoProperties.getClientName())
-                .clientId(kakaoProperties.getClientId())
-                .clientSecret(kakaoProperties.getClientSecret())
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationUri(kakaoProperties.getAuthorizationUri())
-                .tokenUri(kakaoProperties.getTokenUri())
-                .userInfoUri(kakaoProperties.getUserInfoUri())
-                .scope(kakaoProperties.getNickName(), kakaoProperties.getImage())
-                .redirectUri(kakaoProperties.getRedirectUri())
-                .userNameAttributeName("id")
-                .build();
-
-        ClientRegistration naverClientRegistration = ClientRegistration
-                .withRegistrationId(naverProperties.getClientId())
-                .clientName(naverProperties.getClientName())
-                .clientId(naverProperties.getClientId())
-                .clientSecret(naverProperties.getClientSecret())
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .authorizationUri(naverProperties.getAuthorizationUri())
-                .tokenUri(naverProperties.getTokenUri())
-                .userInfoUri(naverProperties.getUserInfoUri())
-                .redirectUri(naverProperties.getRedirectUri())
-                .scope(naverProperties.getName(), naverProperties.getEmail())
-                .userNameAttributeName("response")
-                .build();
-
-        return new InMemoryClientRegistrationRepository(kakaoClientRegistration, naverClientRegistration);
-    }
+//    @Bean
+//    public ClientRegistrationRepository clientRegistrationRepository() {
+//        ClientRegistration kakaoClientRegistration = ClientRegistration
+//                .withRegistrationId(kakaoProperties.getClientId())
+//                .clientName(kakaoProperties.getClientName())
+//                .clientId(kakaoProperties.getClientId())
+//                .clientSecret(kakaoProperties.getClientSecret())
+//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//                .authorizationUri(kakaoProperties.getAuthorizationUri())
+//                .tokenUri(kakaoProperties.getTokenUri())
+//                .userInfoUri(kakaoProperties.getUserInfoUri())
+//                .scope(kakaoProperties.getNickName(), kakaoProperties.getImage())
+////                .scope(kakaoProperties.getKakaoAccount(), kakaoProperties.getProfile())
+//                .redirectUri(kakaoProperties.getRedirectUri())
+//                .userNameAttributeName("id")
+//                .build();
+//
+//        ClientRegistration naverClientRegistration = ClientRegistration
+//                .withRegistrationId(naverProperties.getClientId())
+//                .clientName(naverProperties.getClientName())
+//                .clientId(naverProperties.getClientId())
+//                .clientSecret(naverProperties.getClientSecret())
+//                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//                .authorizationUri(naverProperties.getAuthorizationUri())
+//                .tokenUri(naverProperties.getTokenUri())
+//                .userInfoUri(naverProperties.getUserInfoUri())
+//                .redirectUri(naverProperties.getRedirectUri())
+//                .scope(naverProperties.getName(), naverProperties.getEmail())
+//                .userNameAttributeName("response")
+//                .build();
+//
+//        return new InMemoryClientRegistrationRepository(kakaoClientRegistration, naverClientRegistration);
+//    }
 
 
     @Bean

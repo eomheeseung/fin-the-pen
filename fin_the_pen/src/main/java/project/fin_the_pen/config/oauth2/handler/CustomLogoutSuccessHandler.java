@@ -16,6 +16,6 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             throws IOException, ServletException {
 
         // OAuth2 로그아웃 URL로 리다이렉트
-        response.sendRedirect("/");
+        response.sendRedirect("/login");
     }
 }

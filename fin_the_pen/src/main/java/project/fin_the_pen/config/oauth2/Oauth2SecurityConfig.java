@@ -17,6 +17,8 @@ import project.fin_the_pen.config.oauth2.custom.CustomOAuth2Service;
 import project.fin_the_pen.config.oauth2.custom.UserService;
 import project.fin_the_pen.config.oauth2.handler.CustomLogoutSuccessHandler;
 import project.fin_the_pen.config.oauth2.handler.CustomOauth2SuccessHandler;
+import project.fin_the_pen.config.oauth2.handler.KakaoLogoutHandler;
+import project.fin_the_pen.config.oauth2.handler.NaverLogoutHandler;
 import project.fin_the_pen.config.oauth2.kakao.KakaoProperties;
 import project.fin_the_pen.config.oauth2.naver.NaverProperties;
 
@@ -30,6 +32,8 @@ public class Oauth2SecurityConfig {
     private final NaverProperties naverProperties;
     private final CustomOAuth2Service customOAuth2Service;
     private final UserService userService;
+    private final KakaoLogoutHandler kakaoLogoutHandler;
+    private final NaverLogoutHandler naverLogoutHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,22 +47,30 @@ public class Oauth2SecurityConfig {
                                         "/login/oauth2/code/naver",
                                         "/login/oauth2/code/kakao").permitAll()
                                 .anyRequest().authenticated())
+                .formLogin()
+                .loginPage("/login")
+                .and()
                 .oauth2Login(oauth2Login -> {
-                    try {
-                        oauth2Login
-                                .userInfoEndpoint()
-                                .userService(customOAuth2Service)
-                                .and()
-                                .successHandler(oauth2AuthenticationSuccessHandler())
-                                .and()
-                                .logout()
-                                .logoutUrl("/logout")  // 로그아웃 요청 URL
-                                .logoutSuccessHandler(oauth2LogoutSuccessHandler())  // 로그아웃 성공 후 핸들러
-                                .permitAll();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                            try {
+                                oauth2Login
+                                        .loginPage("/loginForm")
+                                        .userInfoEndpoint()
+                                        .userService(customOAuth2Service)
+                                        .and()
+                                        .successHandler(oauth2AuthenticationSuccessHandler())
+                                        .permitAll();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                )
+                .logout(configurer -> configurer
+                        .addLogoutHandler(kakaoLogoutHandler)
+                        .addLogoutHandler(naverLogoutHandler)
+                        .logoutSuccessHandler(oauth2LogoutSuccessHandler())
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID"));
 //                        .failureHandler(oauth2AuthenticationFailureHandler())
 
 

@@ -9,4 +9,14 @@ public class IndexController {
     public String welCome() {
         return "welcome";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "loginForm";
+    }
+
+    @GetMapping("/login?logout")
+    public String logoutPage() {
+        return "logout"; // 로그아웃 후 리다이렉트 페이지를 반환
+    }
 }

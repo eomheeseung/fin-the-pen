@@ -19,4 +19,14 @@ public class IndexController {
     public String logoutPage() {
         return "logout"; // 로그아웃 후 리다이렉트 페이지를 반환
     }
+
+    @GetMapping("/login/kakao")
+    public String kakaoLogin() {
+        return "redirect:/oauth2/authorization/kakao";
+    }
+
+    @GetMapping("/login/naver")
+    public String naverLogin() {
+        return "redirect:/oauth2/authorization/naver";
+    }
 }

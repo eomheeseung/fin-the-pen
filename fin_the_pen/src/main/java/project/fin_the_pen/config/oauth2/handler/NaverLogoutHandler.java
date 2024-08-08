@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import project.fin_the_pen.config.oauth2.naver.NaverProperties;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,8 +25,6 @@ public class NaverLogoutHandler implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String token = request.getHeader("Authorization");
 
-        log.info("naver logout call");
-
         if (token != null) {
             String clientId = naverProperties.getClientId();
             String clientSecret = naverProperties.getClientSecret();
@@ -34,6 +33,16 @@ public class NaverLogoutHandler implements LogoutHandler {
                     .replace("{clientSecret}", clientSecret)
                     .replace("{accessToken}", token);
             restTemplate.postForEntity(url, null, String.class);
+        }
+
+        // 세션과 쿠키 삭제
+        request.getSession().invalidate();
+
+        for (Cookie cookie : request.getCookies()) {
+            cookie.setValue("");
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
         }
     }
 }

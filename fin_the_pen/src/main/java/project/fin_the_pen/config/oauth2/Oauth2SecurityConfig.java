@@ -57,8 +57,7 @@ public class Oauth2SecurityConfig {
                                         .userInfoEndpoint()
                                         .userService(customOAuth2Service)
                                         .and()
-                                        .successHandler(oauth2AuthenticationSuccessHandler())
-                                        .permitAll();
+                                        .successHandler(oauth2AuthenticationSuccessHandler());
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }

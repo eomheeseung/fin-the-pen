@@ -24,30 +24,6 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-       /* CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-
-        String email = oAuth2User.getEmail();
-        String name = oAuth2User.getFullName();
-
-        // 로그 저장 예시
-        if (oAuth2User.getSocial().equals("naver")) {
-            String email = oAuth2User.getEmail();
-            String name = oAuth2User.getFullName();
-            log.info("User logged in with Naver: {}", email);
-            userService.saveUser(email, name);
-        } else if (oAuth2User.getSocial().equals("kakao")) {
-            String email = oAuth2User.getEmail();
-            String name = oAuth2User.getFullName();
-            log.info("User logged in with Kakao: {}", email);
-            userService.saveUser(email, name);
-        }
-
-        // 사용자 정보를 DB에 저장
-
-
-        // 리다이렉트 URL
-        String redirectUrl = "/welcome";
-        response.sendRedirect(redirectUrl);*/
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof CustomOAuth2NaverUser) {

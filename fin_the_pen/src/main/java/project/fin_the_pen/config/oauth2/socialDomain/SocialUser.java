@@ -19,6 +19,7 @@ public class SocialUser {
     private String nickName;
     private int age;
     private String city;
+    private String email;
 
     @Enumerated(EnumType.STRING)
     private SocialRole role;

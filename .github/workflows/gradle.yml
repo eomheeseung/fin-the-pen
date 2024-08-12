@@ -5,73 +5,73 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Finthepen CI/CD branche develop
+# name: Finthepen CI/CD branche develop
 
-on:
-  push:
-    branches: [ develop ]
+# on:
+#   push:
+#     branches: [ develop ]
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v3
+#     steps:
+#     - uses: actions/checkout@v3
     
-    - name: Set up Jdk 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin' 
-    - name: list file fin_the_pen
-      run: ls -al
+#     - name: Set up Jdk 11
+#       uses: actions/setup-java@v3
+#       with:
+#         java-version: '11'
+#         distribution: 'temurin' 
+#     - name: list file fin_the_pen
+#       run: ls -al
         
-    - name: Grand execute permission for graldew
-      run: chmod +x fin_the_pen/gradlew
+#     - name: Grand execute permission for graldew
+#       run: chmod +x fin_the_pen/gradlew
       
-    - name: Build with Gradle
-      run: cd fin_the_pen; ./gradlew clean bootjar -x test -Pprofile=prod
+#     - name: Build with Gradle
+#       run: cd fin_the_pen; ./gradlew clean bootjar -x test -Pprofile=prod
       
-    - name: Find jar file
-      run: cd fin_the_pen/build/libs; ls -al
+#     - name: Find jar file
+#       run: cd fin_the_pen/build/libs; ls -al
 
-    - name: Search EC2 jar file and Delete
-      uses: tiyee/action-ssh@v1.0.1
-      with:
-        command: |
-          local_jar="fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar";
-          remote_path="/home/ec2-user/app";
-          remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar";
-          if [ -f $remote_jar ]; then
-            sudo rm -f $remote_jar;
-            ls -al;
-          fi
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        port: 22
-        privateKey: ${{ secrets.EC2_SSH_KEY }}
+#     - name: Search EC2 jar file and Delete
+#       uses: tiyee/action-ssh@v1.0.1
+#       with:
+#         command: |
+#           local_jar="fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar";
+#           remote_path="/home/ec2-user/app";
+#           remote_jar="${remote_path}/fin_the_pen-0.0.1-SNAPSHOT.jar";
+#           if [ -f $remote_jar ]; then
+#             sudo rm -f $remote_jar;
+#             ls -al;
+#           fi
+#         host: ${{ secrets.EC2_HOST }}
+#         username: ${{ secrets.EC2_USERNAME }}
+#         port: 22
+#         privateKey: ${{ secrets.EC2_SSH_KEY }}
         
-    - name: CD to EC2 instance    
-      run: |
-        echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-        chmod 600 private_key.pem
-        scp -i private_key.pem \
-        -o StrictHostKeyChecking=no \
-        fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar \
-        ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/app/fin_the_pen-0.0.1-SNAPSHOT.jar
+#     - name: CD to EC2 instance    
+#       run: |
+#         echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
+#         chmod 600 private_key.pem
+#         scp -i private_key.pem \
+#         -o StrictHostKeyChecking=no \
+#         fin_the_pen/build/libs/fin_the_pen-0.0.1-SNAPSHOT.jar \
+#         ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USERNAME }}/app/fin_the_pen-0.0.1-SNAPSHOT.jar
     
-    - name: Start finthepen-api
-      uses: tiyee/action-ssh@v1.0.1
-      with:
-        command: |
-          sudo systemctl restart finthepen-api;
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USERNAME }}
-        port: 22
-        privateKey: ${{ secrets.EC2_SSH_KEY }}    
+#     - name: Start finthepen-api
+#       uses: tiyee/action-ssh@v1.0.1
+#       with:
+#         command: |
+#           sudo systemctl restart finthepen-api;
+#         host: ${{ secrets.EC2_HOST }}
+#         username: ${{ secrets.EC2_USERNAME }}
+#         port: 22
+#         privateKey: ${{ secrets.EC2_SSH_KEY }}    
     
         
     

@@ -1,14 +1,34 @@
 package project.fin_the_pen.model.user.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import project.fin_the_pen.config.security.TokenProvider;
+import project.fin_the_pen.finClient.core.util.TokenManager;
+import project.fin_the_pen.model.user.dto.SignInRequest;
+import project.fin_the_pen.model.user.dto.SignInResponse;
+import project.fin_the_pen.model.user.dto.UserRequestDTO;
+import project.fin_the_pen.model.user.dto.UserResponseDTO;
+import project.fin_the_pen.model.user.entity.Users;
+import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
+import project.fin_the_pen.model.user.repository.LoginRepository;
+import project.fin_the_pen.model.usersToken.entity.UsersToken;
+import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class LoginService {
-    /*private final LoginRepository loginRepository;
+    private final LoginRepository loginRepository;
     private final PasswordEncoder encoder;
     private final ObjectMapper objectMapper;
     private final CRUDLoginRepository crudLoginRepository;
@@ -16,13 +36,13 @@ public class LoginService {
     private final UsersTokenRepository tokenRepository;
     private final TokenManager tokenManager;
 
-    *//*@Transactional
-    @PostConstruct
-    public void init() {
-        LocalDate currentDate = LocalDate.now();
-        Date convertDate = Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        tokenRepository.deleteByAccessTokenIsAfter(convertDate);
-    }*//*
+//    @Transactional
+//    @PostConstruct
+//    public void init() {
+//        LocalDate currentDate = LocalDate.now();
+//        Date convertDate = Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//        tokenRepository.deleteByAccessTokenIsAfter(convertDate);
+//    }
 
     @PostConstruct
     public void convertStrategy() {
@@ -62,12 +82,13 @@ public class LoginService {
         return new SignInResponse(users.getName(), users.getUserRole(), token);
     }
 
-    *//**
+    /**
      * 회원가입
+     *
      * @param dto
      * @param request
      * @return
-     *//*
+     */
     @Transactional
     public SignInResponse signIn(SignInRequest dto, HttpServletRequest request) {
         Users users = crudLoginRepository.findByUserId(dto.getUserId())
@@ -103,23 +124,22 @@ public class LoginService {
     }
 
 
-
-    *//*public Optional<Users> TempFindUser() {
+    /*public Optional<Users> TempFindUser() {
         List<Users> all = loginRepository.findAll();
         return all.stream().filter(users -> users.getName().equals("테스터")).findFirst();
-    }*//*
+    }
 
-    *//*public UserResponseDTO findByUser(String id, String password) {
+    public UserResponseDTO findByUser(String id, String password) {
         UserResponseDTO currentUser = loginRepository.findByUser(id, password);
         return currentUser;
-    }*//*
+    }
 
     public Users findByUser(String id, String password) {
         return loginRepository.findByUser(id, password);
-    }
+    }*/
 
 
-    public boolean saveAppPassword(String password) {
+    /*public boolean saveAppPassword(String password) {
         try {
             loginRepository.saveAppPassword(password);
             return true;

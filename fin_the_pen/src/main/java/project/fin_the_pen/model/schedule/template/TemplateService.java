@@ -133,7 +133,6 @@ public class TemplateService {
                 .map(Long::valueOf)
                 .collect(Collectors.toList());
 
-
         try {
             convertTemplateIds.forEach(templateRepository::deleteById);
         } catch (RuntimeException e) {

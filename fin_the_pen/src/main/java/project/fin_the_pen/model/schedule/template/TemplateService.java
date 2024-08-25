@@ -124,15 +124,18 @@ public class TemplateService {
     /**
      * 템플릿 선택 삭제
      *
-     * @param templateId
+     * @param templateIds
      * @param request
      * @return
      */
-    public boolean selectDelete(String templateId, HttpServletRequest request) {
-        Long key = Long.valueOf(templateId);
+    public boolean selectDelete(List<String> templateIds, HttpServletRequest request) {
+        List<Long> convertTemplateIds = templateIds.stream()
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
+
 
         try {
-            templateRepository.deleteById(key);
+            convertTemplateIds.forEach(templateRepository::deleteById);
         } catch (RuntimeException e) {
             return false;
         }

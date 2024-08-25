@@ -322,6 +322,8 @@ public class ScheduleService {
                 case "all":
                     scheduleRepository.deleteAllSchedule(dto);
                     break;
+                case "none":
+                    scheduleRepository.deleteSingle(dto);
             }
 
         } catch (RuntimeException e) {

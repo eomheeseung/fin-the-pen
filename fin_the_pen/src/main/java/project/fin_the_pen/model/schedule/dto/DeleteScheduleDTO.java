@@ -14,6 +14,7 @@ public class DeleteScheduleDTO {
      * nowFromAfter : 선택된 현재 일정부터 이후까지
      * exceptNowAfter : 현재 일정 제외하고 이후
      * all : 모든 일정
+     * none: 현재 일정만 삭제
      */
     @JsonProperty(value = "delete_options")
     @Schema(description = "수정하려는 옵션",example = "nowFromAfter")

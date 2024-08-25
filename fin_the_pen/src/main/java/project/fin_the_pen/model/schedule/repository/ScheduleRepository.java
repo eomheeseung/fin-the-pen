@@ -3,6 +3,7 @@ package project.fin_the_pen.model.schedule.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.model.schedule.dto.DeleteScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
@@ -200,6 +201,20 @@ public class ScheduleRepository {
             }
         }
         return true;
+    }
+
+    public Boolean deleteSingle(DeleteScheduleDTO dto) {
+        String userId = dto.getUserId();
+        Long convertScheduleId = Long.valueOf(dto.getScheduleId());
+
+        Optional<Schedule> optionalSchedule = crudScheduleRepository.findByIdAndUserId(userId, convertScheduleId);
+
+        if (optionalSchedule.isPresent()) {
+            crudScheduleRepository.delete(optionalSchedule.get());
+            return true;
+        } else {
+            throw new NotFoundDataException("삭제하려는 일정이 없습니다.");
+        }
     }
 
     public Boolean deleteNowFromAfter(DeleteScheduleDTO dto) {

@@ -164,17 +164,18 @@ public class ScheduleController {
      * @param request
      * @return
      */
-    @GetMapping("/template/is_exists")
+    /*@GetMapping("/template/is_exists")
     @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
             "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
-            "템플릿의 {이름, 카테고리명}을 반환하고, 없다면 {템플릿이 없다고 반환}", summary = "카테고리 선택을 누르고 동일한 정기템플릿이 있는지 확인하고 바인딩")
+            "템플릿의 {이름, 카테고리명}을 반환하고, 없다면 {템플릿이 없다고 반환}",
+            summary = "카테고리 선택을 누르고 동일한 정기템플릿이 있는지 확인하고 바인딩")
     public ResponseEntity<Object> isTemplate(@RequestParam("userId") String userId,
                                              @RequestParam("category_name") String categoryName,
                                              @RequestParam("event_name") String eventName,
                                              HttpServletRequest request) {
         Map<String, Object> responseMap = templateService.selectedTemplate(userId, categoryName, eventName, request);
         return ResponseEntity.ok().body(responseMap);
-    }
+    }*/
 
     /**
      * case4
@@ -198,7 +199,8 @@ public class ScheduleController {
      * 일정 삭제
      */
     @DeleteMapping("/deleteSchedule")
-    @Operation(description = "일정을 삭제합니다.", summary = "일정 삭제")
+    @Operation(description = "일정을 삭제합니다. <br>" + "nowFromAfter : 현재일정부터 삭제 <br>" +
+            "exceptNowAfter : 현재를 제외하고 삭제 <br>" + "all : 전체 일정 삭제 <br>" + "none : 현재 일정만 삭제", summary = "일정 삭제")
 
     public ResponseEntity<Object> deleteSchedule(@RequestBody DeleteScheduleDTO dto, HttpServletRequest request) {
         try {

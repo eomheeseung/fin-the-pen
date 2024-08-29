@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
 import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.assets.category.entity.Category;
+import project.fin_the_pen.model.assets.category.entity.SmallCategory;
 import project.fin_the_pen.model.assets.category.repository.CategoryRepository;
+import project.fin_the_pen.model.assets.category.repository.SmallCategoryRepository;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmount;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmountRegular;
 import project.fin_the_pen.model.assets.spend.repository.SpendAmountRepository;
@@ -43,6 +45,8 @@ public class ReportService {
     private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final SpendAmountRepository spendAmountRepository;
+
+    private final SmallCategoryRepository smallCategoryRepository;
 
     private String userId;
     private String currentDate;
@@ -430,14 +434,45 @@ public class ReportService {
         // 카테고리 목표 지출액 - 현재 지출한 금액 - 예정된 금액
         int balanceValue = 0;
 
-        Optional<Category> findCategory =
+        Optional<Category> optionalCategory =
                 categoryRepository.findByUserIdAndMediumNameAndDate(userId, category, parseMonth);
 
+        Optional<SmallCategory> optionalSmallCategory = smallCategoryRepository.findBySmallName(category);
+//        log.info(optionalSmallCategory.get().getSmallName());
 
         String categoryValue;
         int convertCategoryValue = 0;
 
-        if (findCategory.isEmpty()) {
+
+        if (optionalCategory.isPresent()) {
+            categoryValue = optionalCategory.get().getMediumValue();
+            log.info(optionalCategory.get().getMediumValue());
+            responseMap.put("category_goal_amount", categoryValue);
+            convertCategoryValue = Integer.parseInt(categoryValue);
+
+            return categoryCalcFunc(date, userId, category, convertCategoryValue, responseMap);
+
+        } else if (optionalSmallCategory.isPresent()) {
+            categoryValue = optionalSmallCategory.get().getSmallValue();
+            log.info(optionalSmallCategory.get().getSmallName());
+            responseMap.put("category_goal_amount", categoryValue);
+            convertCategoryValue = Integer.parseInt(categoryValue);
+
+            return categoryCalcFunc(date, userId, category, convertCategoryValue, responseMap);
+        } else {
+            categoryValue = "?";
+            responseMap.put("category_goal_amount", categoryValue);
+            responseMap.put("currentValue", String.valueOf(currentValue));
+            responseMap.put("expectValue", String.valueOf(expectValue));
+            responseMap.put("balanceValue", String.valueOf(balanceValue));
+            return responseMap;
+        }
+
+
+        /*String categoryValue;
+        int convertCategoryValue = 0;
+
+        if (optionalCategory.isEmpty()) {
             categoryValue = "?";
             responseMap.put("category_goal_amount", categoryValue);
             responseMap.put("currentValue", String.valueOf(currentValue));
@@ -446,12 +481,22 @@ public class ReportService {
             return responseMap;
 
         } else {
-            categoryValue = findCategory.get().getMediumValue();
-            log.info(findCategory.get().getMediumValue());
+            categoryValue = optionalCategory.get().getMediumValue();
+            log.info(optionalCategory.get().getMediumValue());
             responseMap.put("category_goal_amount", categoryValue);
             convertCategoryValue = Integer.parseInt(categoryValue);
         }
 
+        categoryCalcFunc(date, userId, category, convertCategoryValue, responseMap);
+
+        return responseMap;*/
+
+    }
+
+    private Map<Object, Object> categoryCalcFunc(String date, String userId, String category, int convertCategoryValue, HashMap<Object, Object> responseMap) {
+        int currentValue;
+        int expectValue;
+        int balanceValue;
         LocalDate currentDate = LocalDate.parse(date, formatter);
         LocalDate firstDate = currentDate.withDayOfMonth(1);
         LocalDate lastDate = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
@@ -489,7 +534,6 @@ public class ReportService {
         responseMap.put("name", category + "소비 리포트");
 
         return responseMap;
-
     }
 
     @NotNull

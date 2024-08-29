@@ -146,6 +146,7 @@ public class CategoryService {
                     if (key.contains("additionalProp")) {
                         continue;
                     }
+
                     category.addSmallCategory(SmallCategory
                             .builder()
                             .smallName(key)
@@ -171,6 +172,7 @@ public class CategoryService {
                 if (key.contains("additionalProp")) {
                     continue;
                 }
+
                 category.addSmallCategory(SmallCategory
                         .builder()
                         .smallName(key)

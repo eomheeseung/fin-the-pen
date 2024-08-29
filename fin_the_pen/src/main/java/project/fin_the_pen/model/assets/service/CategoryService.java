@@ -130,6 +130,7 @@ public class CategoryService {
         String mediumName = dto.getMediumName();
         Map<String, String> smallMap = dto.getSmallMap();
 
+
         Optional<Category> optionalCategory =
                 categoryRepository.findByUserIdAndDateAndMediumName(userId, date, mediumName);
 
@@ -140,18 +141,19 @@ public class CategoryService {
 
                 Set<String> keySet = smallMap.keySet();
 
+
                 for (String key : keySet) {
-                    SmallCategory smallCategory = SmallCategory
+                    if (key.contains("additionalProp")) {
+                        continue;
+                    }
+                    category.addSmallCategory(SmallCategory
                             .builder()
                             .smallName(key)
                             .smallValue(smallMap.get(key))
-                            .build();
-
-                    category.addSmallCategory(smallCategory);
+                            .build());
                 }
 
                 category.update(userId, mediumName, mediumValue);
-
                 categoryRepository.save(category);
                 return true;
             }
@@ -166,20 +168,23 @@ public class CategoryService {
                     .build();
 
             for (String key : keySet) {
-                SmallCategory smallCategory = SmallCategory
+                if (key.contains("additionalProp")) {
+                    continue;
+                }
+                category.addSmallCategory(SmallCategory
                         .builder()
                         .smallName(key)
                         .smallValue(smallMap.get(key))
-                        .build();
-
-                category.addSmallCategory(smallCategory);
+                        .build());
             }
 
             categoryRepository.save(category);
             return true;
-        } catch (RuntimeException e) {
+        } catch (
+                RuntimeException e) {
             return false;
         }
+
     }
 
     public boolean deleteAmount(String userId, String date, HttpServletRequest request) {

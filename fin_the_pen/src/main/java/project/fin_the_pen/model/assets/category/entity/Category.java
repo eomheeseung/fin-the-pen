@@ -35,8 +35,9 @@ public class Category {
     public void addSmallCategory(SmallCategory smallCategory) {
         if (categoryList == null) {
             categoryList = new ArrayList<>();
+        } else {
+            categoryList.add(smallCategory);
         }
-        categoryList.add(smallCategory);
     }
 
     public void update(String userId, String mediumName, String mediumValue) {

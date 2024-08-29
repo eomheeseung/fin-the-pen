@@ -30,7 +30,9 @@ public class CategoryController {
      */
     @Operation(summary = "카테고리별 자산 설정 view", description = "카테고리별 자산 설정 화면, 지출목표액과 카테고리별 지출 목표를 설정해야지 보입니다.")
     @GetMapping("/category-amount")
-    public ResponseEntity<Object> viewCategoryAmount(@RequestParam("userId") String userId, @RequestParam("date") String date, HttpServletRequest request) {
+    public ResponseEntity<Object> viewCategoryAmount(@RequestParam("userId") String userId,
+                                                     @RequestParam("date") String date,
+                                                     HttpServletRequest request) {
         Map<Object, Object> objectObjectMap =
                 categoryService.viewAmount(userId, date, request);
         return ResponseEntity.ok().body(objectObjectMap);

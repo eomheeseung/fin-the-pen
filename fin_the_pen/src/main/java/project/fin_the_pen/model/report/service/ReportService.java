@@ -417,6 +417,7 @@ public class ReportService {
 
         HashMap<Object, Object> responseMap = new HashMap<>();
 
+        // 2024-08-01
         String parseMonth = date.substring(0, 7);
         log.info("parsing month :{}", parseMonth);
 
@@ -434,7 +435,6 @@ public class ReportService {
 
 
         String categoryValue;
-
         int convertCategoryValue = 0;
 
         if (findCategory.isEmpty()) {
@@ -447,6 +447,7 @@ public class ReportService {
 
         } else {
             categoryValue = findCategory.get().getMediumValue();
+            log.info(findCategory.get().getMediumValue());
             responseMap.put("category_goal_amount", categoryValue);
             convertCategoryValue = Integer.parseInt(categoryValue);
         }

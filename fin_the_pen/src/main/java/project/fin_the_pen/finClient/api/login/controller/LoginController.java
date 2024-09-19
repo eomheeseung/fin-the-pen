@@ -16,7 +16,6 @@ import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -24,13 +23,7 @@ import java.io.IOException;
 @Tag(name = "API 테스트 / 로그인")
 public class LoginController {
     private final LoginService loginService;
-
-    /**
-     * 회원 가입
-     *
-     * @param userRequestDTO
-     * @return
-     */
+    
     @PostMapping(value = "/sign-up", produces = "application/json")
     @Operation(summary = "회원 가입 (O)")
     public ResponseEntity<Object> signUp(@RequestBody UserRequestDTO userRequestDTO) {
@@ -39,12 +32,7 @@ public class LoginController {
 //        return ApiResponse.success(loginService.signUp(userRequestDTO));
     }
 
-    /**
-     * 로그인
-     *
-     * @return
-     * @throws IOException
-     */
+
     @PostMapping(value = "/sign-in", produces = "application/json")
     @Operation(summary = "로그인 (O)")
     public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {

@@ -51,7 +51,10 @@ public class ReportMonthController {
      *  "외식"도 계산값에서 빠지는 문제가 발생함.
      */
     @PostMapping("/details")
-    @Operation(description = "리포트", summary = "카테고리로 월별 리포트 소비 목록 조회")
+    @Operation(description =
+            "아래의 api에서 /asset/category-amount/set 에서 date에 지출목표액을 설정할 달을 입력하고, <br>" +
+                    "medium_name에 상위 분류를 넣고, medium_value로 지출 목표액을 설정하고, <br> " +
+                    "small_map에 하위분류들을 적어주시면 됩니다.", summary = "카테고리로 월별 리포트 소비 목록 조회")
     public ResponseEntity<Object> reportDetails(@RequestBody ConsumeReportDetailRequestDto dto, HttpServletRequest request) {
         Map<Object, Object> responseMap = reportService.inquiryCategoryDetail(dto, request);
 

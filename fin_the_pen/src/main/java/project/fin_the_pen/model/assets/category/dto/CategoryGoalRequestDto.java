@@ -28,6 +28,7 @@ public class CategoryGoalRequestDto {
     private String mediumValue;
 
     @JsonProperty(value = "small_map")
+    @Schema(description = "소분류 이름과 값의 맵")
     private Map<String, String> smallMap = new HashMap<>();
 
 }

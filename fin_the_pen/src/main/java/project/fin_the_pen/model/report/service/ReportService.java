@@ -5,9 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
-import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.assets.category.entity.Category;
+import project.fin_the_pen.model.assets.category.entity.SmallCategory;
 import project.fin_the_pen.model.assets.category.repository.CategoryRepository;
+import project.fin_the_pen.model.assets.category.repository.SmallCategoryRepository;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmount;
 import project.fin_the_pen.model.assets.spend.entity.SpendAmountRegular;
 import project.fin_the_pen.model.assets.spend.repository.SpendAmountRepository;
@@ -19,9 +20,7 @@ import project.fin_the_pen.model.report.repository.ReportRepository;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.type.RepeatKind;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
-import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
-import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -36,24 +35,20 @@ import java.util.function.BiFunction;
 @Service
 public class ReportService {
     private final CategoryRepository categoryRepository;
-    private final TokenManager tokenManager;
-    private final UsersTokenRepository tokenRepository;
-    private final ScheduleRepository scheduleRepository;
+    //    private final TokenManager tokenManager;
+//    private final UsersTokenRepository tokenRepository;
+//    private final ScheduleRepository scheduleRepository;
     private final ReportRepository reportRepository;
     private final CrudScheduleRepository crudScheduleRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final SpendAmountRepository spendAmountRepository;
 
-    private String userId;
-    private String currentDate;
+    private final SmallCategoryRepository smallCategoryRepository;
 
-    private void init(ReportRequestDemoDTO dto) {
-        userId = dto.getUserId();
-        currentDate = dto.getDate();
-    }
 
     public HashMap<Object, Object> reportHome(ReportRequestDemoDTO dto, HttpServletRequest request) {
-        init(dto);
+        String currentDate = dto.getDate();
+        String userId = dto.getUserId();
 
         try {
             if (currentDate == null) {
@@ -64,13 +59,16 @@ public class ReportService {
 
             // yyyy-MM 까지만 추출
             String subCurrentDate = currentDate.substring(0, 7);
-            log.info(subCurrentDate);
+            log.info("1. currentDate substring 추출: {}", subCurrentDate);
 
             // 지출 목표액 가져옴 (04-05, 지출 목표액이 일괄처리가 아닌 경우 OFF가 우선순위가 높음.)
-            Optional<SpendAmount> optionalSpendOffAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate)
-                    .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.OFF));
-            Optional<SpendAmount> optionalSpendOnAmount = spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate)
-                    .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.ON));
+            Optional<SpendAmount> optionalSpendOffAmount =
+                    spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate)
+                            .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.OFF));
+
+            Optional<SpendAmount> optionalSpendOnAmount =
+                    spendAmountRepository.findByUserIdAndStartDate(userId, subCurrentDate)
+                            .filter(spendAmount -> spendAmount.getRegular().equals(SpendAmountRegular.ON));
 
             Optional<SpendAmount> optionalSpendAmount = Optional.empty();
 
@@ -283,7 +281,10 @@ public class ReportService {
     }
 
     // 6번
-    private void getConsumeForecast(Optional<SpendAmount> optionalSpendAmount, HashMap<Object, Object> responseMap, List<String> firstMonthMinusList, List<String> lastMonthMinusList) {
+    private void getConsumeForecast(Optional<SpendAmount> optionalSpendAmount,
+                                    HashMap<Object, Object> responseMap,
+                                    List<String> firstMonthMinusList,
+                                    List<String> lastMonthMinusList) {
         HashMap<Object, Object> expenditureMap = new HashMap<>();
 
         if (optionalSpendAmount.isEmpty()) {
@@ -294,17 +295,26 @@ public class ReportService {
             responseMap.put("expenditure_data", expenditureMap);
         } else {
             SpendAmount spendAmount = optionalSpendAmount.get();
+            // 지출 목표액
             expenditureMap.put("spend_amount", spendAmount.getSpendGoalAmount());
 
+            // n월 
             int firstNMonthAmount = 0;
+
+            // n월 
             int lastNMonthAmount = 0;
+            
+            // n월 사용 가능 금액
             int availableNMonthAmount = 0;
 
 
+            // firstMonthMinusList : 현재 달의 1일 부터 현재 달의 날까지 Minus들
             if (!firstMonthMinusList.isEmpty()) {
                 firstNMonthAmount = firstMonthMinusList.stream().mapToInt(Integer::parseInt).sum();
                 expenditureMap.put("first_Nmonth_Amount", String.valueOf(firstNMonthAmount));
             }
+
+            // lastMonthMinusList : 현재 달의 날부터 현재 달의 마지막날까지 Minus들
             if (!lastMonthMinusList.isEmpty()) {
                 lastNMonthAmount = lastMonthMinusList.stream().mapToInt(Integer::parseInt).sum();
                 expenditureMap.put("first_Nmonth_Amount", String.valueOf(lastNMonthAmount));
@@ -417,6 +427,7 @@ public class ReportService {
 
         HashMap<Object, Object> responseMap = new HashMap<>();
 
+        // 2024-08-01
         String parseMonth = date.substring(0, 7);
         log.info("parsing month :{}", parseMonth);
 
@@ -429,15 +440,45 @@ public class ReportService {
         // 카테고리 목표 지출액 - 현재 지출한 금액 - 예정된 금액
         int balanceValue = 0;
 
-        Optional<Category> findCategory =
+        Optional<Category> optionalCategory =
                 categoryRepository.findByUserIdAndMediumNameAndDate(userId, category, parseMonth);
 
+        Optional<SmallCategory> optionalSmallCategory = smallCategoryRepository.findBySmallName(category);
+//        log.info(optionalSmallCategory.get().getSmallName());
 
         String categoryValue;
-
         int convertCategoryValue = 0;
 
-        if (findCategory.isEmpty()) {
+
+        if (optionalCategory.isPresent()) {
+            categoryValue = optionalCategory.get().getMediumValue();
+            log.info(optionalCategory.get().getMediumValue());
+            responseMap.put("category_goal_amount", categoryValue);
+            convertCategoryValue = Integer.parseInt(categoryValue);
+
+            return categoryCalcFunc(date, userId, category, convertCategoryValue, responseMap);
+
+        } else if (optionalSmallCategory.isPresent()) {
+            categoryValue = optionalSmallCategory.get().getSmallValue();
+            log.info(optionalSmallCategory.get().getSmallName());
+            responseMap.put("category_goal_amount", categoryValue);
+            convertCategoryValue = Integer.parseInt(categoryValue);
+
+            return categoryCalcFunc(date, userId, category, convertCategoryValue, responseMap);
+        } else {
+            categoryValue = "?";
+            responseMap.put("category_goal_amount", categoryValue);
+            responseMap.put("currentValue", String.valueOf(currentValue));
+            responseMap.put("expectValue", String.valueOf(expectValue));
+            responseMap.put("balanceValue", String.valueOf(balanceValue));
+            return responseMap;
+        }
+
+
+        /*String categoryValue;
+        int convertCategoryValue = 0;
+
+        if (optionalCategory.isEmpty()) {
             categoryValue = "?";
             responseMap.put("category_goal_amount", categoryValue);
             responseMap.put("currentValue", String.valueOf(currentValue));
@@ -446,11 +487,22 @@ public class ReportService {
             return responseMap;
 
         } else {
-            categoryValue = findCategory.get().getMediumValue();
+            categoryValue = optionalCategory.get().getMediumValue();
+            log.info(optionalCategory.get().getMediumValue());
             responseMap.put("category_goal_amount", categoryValue);
             convertCategoryValue = Integer.parseInt(categoryValue);
         }
 
+        categoryCalcFunc(date, userId, category, convertCategoryValue, responseMap);
+
+        return responseMap;*/
+
+    }
+
+    private Map<Object, Object> categoryCalcFunc(String date, String userId, String category, int convertCategoryValue, HashMap<Object, Object> responseMap) {
+        int currentValue;
+        int expectValue;
+        int balanceValue;
         LocalDate currentDate = LocalDate.parse(date, formatter);
         LocalDate firstDate = currentDate.withDayOfMonth(1);
         LocalDate lastDate = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
@@ -488,7 +540,6 @@ public class ReportService {
         responseMap.put("name", category + "소비 리포트");
 
         return responseMap;
-
     }
 
     @NotNull

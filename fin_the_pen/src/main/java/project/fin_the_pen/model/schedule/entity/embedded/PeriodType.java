@@ -15,8 +15,11 @@ import javax.persistence.Embeddable;
 @Builder
 public class PeriodType {
     // 계속 반복
-    @ColumnDefault("'false'")
-    private boolean isRepeatAgain;
+//    @ColumnDefault("'false'")
+
+    // mysql version
+    @ColumnDefault("0")
+    private Boolean isRepeatAgain;
 
     // 일정 반복 횟수
     @ColumnDefault("'none'")

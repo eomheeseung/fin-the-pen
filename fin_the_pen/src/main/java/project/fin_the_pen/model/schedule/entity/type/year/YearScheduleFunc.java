@@ -1,9 +1,12 @@
 package project.fin_the_pen.model.schedule.entity.type.year;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
+@Slf4j
 public class YearScheduleFunc {
     /*
     연간 : MM월 n번째 D요일을 localDate객체로 만들어주는 method
@@ -11,21 +14,35 @@ public class YearScheduleFunc {
      inputMonth 11(월)
      ordinalNumber 2(번째)
      dayOfWeek WEDNESDAY(변환된 요일)
+
+     TODO
+      1일이 목요일 부터 시작하고, 2번째주 수요일인 경우 어떻게 처리할 것인가?
+      ex) 2024-11월의 경우
+      => apple, kakao 참조
      */
-    public LocalDate parseMonthlyDate(String inputMonth, int ordinalNumber, DayOfWeek dayOfWeek) {
+    public LocalDate parseMonthlyDate(int year, String inputMonth, int ordinalNumber, DayOfWeek dayOfWeek) {
         try {
             int month = Integer.parseInt(inputMonth);
-            LocalDate firstOfMonth = LocalDate.now().withMonth(month).withDayOfMonth(1);
 
-            LocalDate date = firstOfMonth.with(TemporalAdjusters.nextOrSame(dayOfWeek))
+            // month의 1일
+            LocalDate firstOfMonth = LocalDate.now().withYear(year).withMonth(month).withDayOfMonth(1);
+
+            log.info("case 2) firstOfMonth : {}", firstOfMonth);
+
+           /* LocalDate date = firstOfMonth
+                    .with(TemporalAdjusters.nextOrSame(dayOfWeek))
                     .with(TemporalAdjusters.next(dayOfWeek))
-                    .withDayOfMonth((ordinalNumber - 1) * 7 + 1);
+                    .withDayOfMonth((ordinalNumber - 1) * 7 + 1);*/
 
-            return date;
+            // month의 시작 요일
+            LocalDate firstOfMonthDayOfWeek = firstOfMonth.with(dayOfWeek).plusWeeks(ordinalNumber - 1);
+
+            log.info("adjusterd date: {}", firstOfMonthDayOfWeek);
+
+            return firstOfMonthDayOfWeek;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return LocalDate.now();
     }
 
     /*

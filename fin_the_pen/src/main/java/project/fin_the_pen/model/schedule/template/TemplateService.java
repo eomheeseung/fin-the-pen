@@ -124,6 +124,7 @@ public class TemplateService {
     /**
      * 템플릿 선택 삭제
      *
+     * @param templateIds
      * @param request
      * @return
      */
@@ -131,7 +132,6 @@ public class TemplateService {
         List<Long> convertTemplateIds = templateIds.stream()
                 .map(Long::valueOf)
                 .collect(Collectors.toList());
-
 
         try {
             convertTemplateIds.forEach(templateRepository::deleteById);

@@ -69,10 +69,6 @@ public interface CrudScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("select s from Schedule s where s.eventName = :eventName and s.userId = :userId")
     List<Schedule> findByEventName(@Param("eventName") String eventName, @Param("userId") String userId);
 
-    /**
-     * TODO
-     *   h2 => parsedatetime() 사용
-     */
     @Query("select s.amount from Schedule s where parsedatetime(s.startDate,'yyyy-MM-dd') >= parsedatetime(:targetDate,'yyyy-MM-dd')  and s.userId = :userId and s.priceType = :priceType")
     List<String> findByAmount(@Param("targetDate") String targetDate, @Param("userId") String userId, @Param("priceType") PriceType priceType);
 

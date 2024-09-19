@@ -248,7 +248,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 int weekValue = Integer.parseInt(parseDatesList.get(1).replaceAll("[^0-9]", ""));
                 DayOfWeek dayOfWeek = yearScheduleFunc.parseKoreanDayOfWeek(parseDatesList.get(2));
 
-                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(parseMonth, weekValue, dayOfWeek);
+                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(criteriaDate.getYear(), parseMonth, weekValue, dayOfWeek);
 
                 for (int i = 0; i < 50; i++) {
                     if (criteriaDate.isBefore(repeatDate)) {
@@ -371,7 +371,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 int weekValue = Integer.parseInt(parseDatesList.get(1).replaceAll("[^0-9]", ""));
                 DayOfWeek dayOfWeek = yearScheduleFunc.parseKoreanDayOfWeek(parseDatesList.get(2));
 
-                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(parseMonth, weekValue, dayOfWeek);
+                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(criteriaDate.getYear(), parseMonth, weekValue, dayOfWeek);
 
                 for (int i = 0; i < repeatNumberOfTime; i++) {
                     if (criteriaDate.isBefore(repeatDate)) {
@@ -490,7 +490,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 int weekValue = Integer.parseInt(parseDatesList.get(1).replaceAll("[^0-9]", ""));
                 DayOfWeek dayOfWeek = yearScheduleFunc.parseKoreanDayOfWeek(parseDatesList.get(2));
 
-                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(parseMonth, weekValue, dayOfWeek);
+                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(criteriaDate.getYear(), parseMonth, weekValue, dayOfWeek);
 
                 if (criteriaDate.isBefore(repeatDate)) {
                     criteriaDate = repeatDate;
@@ -1181,7 +1181,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 int weekValue = Integer.parseInt(parseDatesList.get(1).replaceAll("[^0-9]", ""));
                 DayOfWeek dayOfWeek = yearScheduleFunc.parseKoreanDayOfWeek(parseDatesList.get(2));
 
-                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(parseMonth, weekValue, dayOfWeek);
+                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(criteriaDate.getYear(), parseMonth, weekValue, dayOfWeek);
 
                 for (int i = 0; i < 50; i++) {
                     if (criteriaDate.isBefore(repeatDate)) {
@@ -1307,7 +1307,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 int weekValue = Integer.parseInt(parseDatesList.get(1).replaceAll("[^0-9]", ""));
                 DayOfWeek dayOfWeek = yearScheduleFunc.parseKoreanDayOfWeek(parseDatesList.get(2));
 
-                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(parseMonth, weekValue, dayOfWeek);
+                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(criteriaDate.getYear(), parseMonth, weekValue, dayOfWeek);
 
                 for (int i = 0; i < repeatNumberOfTime; i++) {
                     if (criteriaDate.isBefore(repeatDate)) {
@@ -1428,7 +1428,7 @@ public class ModifyYearSchedule extends ModifySchedule implements ModifyXXXFunc 
                 int weekValue = Integer.parseInt(parseDatesList.get(1).replaceAll("[^0-9]", ""));
                 DayOfWeek dayOfWeek = yearScheduleFunc.parseKoreanDayOfWeek(parseDatesList.get(2));
 
-                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(parseMonth, weekValue, dayOfWeek);
+                LocalDate repeatDate = yearScheduleFunc.parseMonthlyDate(criteriaDate.getYear(), parseMonth, weekValue, dayOfWeek);
 
                 if (criteriaDate.isBefore(repeatDate)) {
                     criteriaDate = repeatDate;

@@ -27,6 +27,7 @@ public abstract class RegisterSchedule {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final TemplateRepository templateRepository;
 
+    // string => localdate
     @NotNull
     public LocalDate formatDate(String convertDate) {
         return LocalDate.parse(convertDate, formatter);

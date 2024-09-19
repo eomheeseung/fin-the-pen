@@ -70,7 +70,7 @@ public class DevService {
                         .build();
 
                 PeriodType periodType = PeriodType.builder()
-                        .isRepeatAgain(schedule.getPeriod().isRepeatAgain())
+                        .isRepeatAgain(schedule.getPeriod().getIsRepeatAgain())
                         .repeatNumberOfTime(schedule.getPeriod().getRepeatNumberOfTime())
                         .repeatEndLine(schedule.getPeriod().getRepeatEndLine())
                         .build();

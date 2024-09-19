@@ -133,7 +133,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
                                         return PeriodType.builder()
-                                                .isRepeatAgain(false)
+                                                .isRepeatAgain(true)
                                                 .repeatNumberOfTime(String.valueOf(repeatNumberOfTime))
                                                 .repeatEndLine("none")
                                                 .build();
@@ -245,7 +245,7 @@ public class RegisterDaySchedule extends RegisterSchedule implements RegisterXXX
                                     .isFixAmount(dto.isFixAmount())
                                     .period(createPeriodType(() -> {
                                         return PeriodType.builder()
-                                                .isRepeatAgain(true)
+                                                .isRepeatAgain(false)
                                                 .repeatNumberOfTime("0")
                                                 .repeatEndLine("none")
                                                 .build();

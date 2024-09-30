@@ -10,7 +10,7 @@ import java.util.Map;
 @Component
 public class ConvertResponse {
     @NotNull
-    public ResponseEntity<Object> getResponseEntity(Map<String, Object> responseMap) {
+    public ResponseEntity<Object> getResponseEntity(Map<Object, Object> responseMap) {
         ResponseEntity<Object> responseEntity = null;
 
         if (responseMap.get("data").equals("error")) {

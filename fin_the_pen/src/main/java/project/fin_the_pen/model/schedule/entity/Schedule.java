@@ -1,14 +1,16 @@
 package project.fin_the_pen.model.schedule.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
-import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.type.TypeManage;
+import project.fin_the_pen.model.schedule.entity.type.PaymentType;
+import project.fin_the_pen.model.schedule.entity.type.UnitedType;
+import project.fin_the_pen.model.schedule.template.Template;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.schedule.type.RegularType;
 
 import javax.persistence.*;
 
@@ -17,10 +19,14 @@ import javax.persistence.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+/**
+ * 템플릿에 포함되지 않은 경우 template_id가 null로 저장됨 이를 해결해야 함
+ */
 //@Setter
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "schedule_id")
     private Long id;
 
     // 일단 schedule와 같은 column을 가져간다고 하자.
@@ -56,9 +62,12 @@ public class Schedule {
     private boolean isAllDay;
 
     // 반복
-    @Column(name = "repeat")
+    @Column(name = "repeat_kind")
+    private String repeatKind;
+
+    @Column(name = "repeat_options")
     @Embedded
-    private TypeManage repeat;
+    private UnitedType repeatOptions;
 
     // 반복 기간
     @Column(name = "period")
@@ -76,11 +85,12 @@ public class Schedule {
     private boolean isExclude;
 
     // 중요도
-    @Column(name = "importance")
-    private String importance;
+    @Column(name = "payment_type")
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     // 자산 설정
-    @Column(name = "set_amount")
+    @Column(name = "amount")
     private String amount;
 
     // 금액 고정
@@ -88,40 +98,110 @@ public class Schedule {
     private boolean isFixAmount;
 
     // ScheduleType로 하나 만들어야 함.
-//    @Column(name = "regular_type")
-//    private RegularType regularType;
+    @Column(name = "regular_type")
+    @Enumerated(EnumType.STRING)
+    private RegularType regularType;
 
-    /*@OneToOne(mappedBy = "schedule", cascade = CascadeType.ALL)
-    private ScheduleManage scheduleManage;*/
+    @JoinColumn(name = "template_id", nullable = true)
+    @ManyToOne
+    @JsonBackReference
+    private Template template;
 
-    /*public void setPriceType(Supplier<PriceType> priceTypeSupplier) {
-        this.priceType = priceTypeSupplier.get();
-    }*/
+    public void setTemplate(Template template) {
+        if (template == null) {
+            Template noneTemplate = Template.builder()
+                    .categoryName("none")
+                    .categoryName("none")
+                    .userId("?")
+                    .build();
 
-    /**
-     * update method
-     * @param dto
-     * @param startDate
-     * @param endDate
-     * @param typeManage
-     * @param period
-     * @param priceType
-     */
-    public void updateFrom(ModifyScheduleDTO dto, String startDate, String endDate,
-                           TypeManage typeManage, PeriodType period, PriceType priceType) {
-        this.eventName = dto.getEventName();
-        this.category = dto.getCategory();
+            noneTemplate.getScheduleList().add(this);
+        } else {
+            this.template = template;
+            template.getScheduleList().add(this);
+        }
+    }
+
+    public void updateEventNameAndCategoryName(String eventName, String categoryName) {
+        this.eventName = eventName;
+        this.category = categoryName;
+    }
+
+    public void updateAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public void updateFixed(String isFixed) {
+        this.isFixAmount = Boolean.getBoolean(isFixed);
+    }
+
+    public void updateExcluded(String isExcluded) {
+        this.isExclude = Boolean.getBoolean(isExcluded);
+    }
+
+    public void updatePriceType(String priceType) {
+        if (priceType.equals("Plus")) {
+            this.priceType = PriceType.Plus;
+        } else if (priceType.equals("Minus")) {
+            this.priceType = PriceType.Minus;
+        }
+    }
+
+    public void updatePaymentType(String paymentType) {
+        switch (paymentType) {
+            case "CARD":
+                this.paymentType = PaymentType.CARD;
+                break;
+            case "CASH":
+                this.paymentType = PaymentType.CASH;
+                break;
+            case "ACCOUNT":
+                this.paymentType = PaymentType.ACCOUNT;
+                break;
+        }
+    }
+
+
+
+
+    public void update(String userId, String eventName, String category, String startDate, String endDate,
+                       String startTime, String endTime, boolean isAllDay, String repeatKind, UnitedType repeatOptions,
+                       PeriodType period, PriceType priceType, boolean isExclude, String paymentType, String amount,
+                       boolean isFixAmount, RegularType regularType) {
+        this.userId = userId;
+        this.eventName = eventName;
+        this.category = category;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.startTime = dto.getStartTime();
-        this.endTime = dto.getEndTime();
-        this.isAllDay = dto.isAllDay();
-        this.repeat = typeManage;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.isAllDay = isAllDay;
+        this.repeatKind = repeatKind;
+        this.repeatOptions = repeatOptions;
         this.period = period;
-        this.priceType = dto.getPriceType();
-        this.isExclude = dto.isExclude();
-        this.importance = dto.getImportance();
-        this.amount = dto.getAmount();
-        this.isFixAmount = dto.isFixAmount();
+        this.regularType = regularType;
+
+        if (priceType.getType().equals("+")) {
+            this.priceType = PriceType.Plus;
+        } else if (priceType.getType().equals("-")) {
+            this.priceType = PriceType.Minus;
+        }
+
+        this.isExclude = isExclude;
+
+        switch (paymentType) {
+            case "CARD":
+                this.paymentType = PaymentType.CARD;
+                break;
+            case "CASH":
+                this.paymentType = PaymentType.CASH;
+                break;
+            case "ACCOUNT":
+                this.paymentType = PaymentType.ACCOUNT;
+                break;
+        }
+
+        this.amount = amount;
+        this.isFixAmount = isFixAmount;
     }
 }

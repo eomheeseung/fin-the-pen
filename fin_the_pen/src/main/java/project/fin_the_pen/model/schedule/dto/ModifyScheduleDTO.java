@@ -16,6 +16,7 @@ public class ModifyScheduleDTO {
      * nowFromAfter : 선택된 현재 일정부터 이후까지
      * exceptNowAfter : 현재 일정 제외하고 이후
      * all : 모든 일정
+     * none: 현재 일정만 수정
      */
     @JsonProperty(value = "modify_options")
     @Schema(description = "수정하려는 옵션",example = "nowFromAfter")
@@ -26,21 +27,21 @@ public class ModifyScheduleDTO {
     private String userId;
 
     @JsonProperty(value = "event_name")
-    @Schema(description = "등록할 일정 이름", example = "미용")
+    @Schema(description = "등록할 일정 이름", example = "수정")
     private String eventName;
 
     @JsonProperty(value = "category")
-    @Schema(description = "분류될 카테고리", example = "외식")
+    @Schema(description = "분류될 카테고리", example = "수정")
     private String category;
 
     // 시작 일자
     @JsonProperty(value = "start_date")
-    @Schema(description = "일정 시작 일자", example = "2024-01-22")
+    @Schema(description = "일정 시작 일자", example = "2024-02-22")
     private String startDate;
 
     // 종료 일자
     @JsonProperty(value = "end_date")
-    @Schema(description = "일정 종료 일자", example = "2024-01-22")
+    @Schema(description = "일정 종료 일자", example = "2024-02-22")
     private String endDate;
 
     // 시작 시간
@@ -78,9 +79,9 @@ public class ModifyScheduleDTO {
     private boolean isExclude;
 
     // 중요도
-    @JsonProperty(value = "importance")
-    @Schema(description = "중요도", example = "상")
-    private String importance;
+    @JsonProperty(value = "payment_type")
+    @Schema(description = "결제수단 (ACCOUNT or CARD or CASH) 모두 대문자", example = "ACCOUNT")
+    private String paymentType;
 
     // 자산 설정
     @JsonProperty(value = "set_amount")
@@ -91,4 +92,11 @@ public class ModifyScheduleDTO {
     @JsonProperty(value = "fix_amount")
     @Schema(description = "금액을 고정할 것인지", example = "false")
     private boolean isFixAmount;
+
+    /**
+     *
+     * @JsonProperty(value = "register_template")
+     *     @Schema(description = "템플릿에 등록할 것인지 true이면 등록 / false이면 등록하지 않음", example = "false")
+     *     private boolean registerTemplate;
+     */
 }

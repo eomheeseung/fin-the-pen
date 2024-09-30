@@ -3,7 +3,6 @@ package project.fin_the_pen.model.schedule.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Data
@@ -25,12 +24,12 @@ public class ScheduleRequestDTO {
 
     // 시작 일자
     @JsonProperty(value = "start_date")
-    @Schema(description = "일정 시작 일자", example = "2024-01-01")
+    @Schema(description = "일정 시작 일자", example = "2024-02-01")
     private String startDate;
 
     // 종료 일자
     @JsonProperty(value = "end_date")
-    @Schema(description = "일정 종료 일자", example = "2024-01-01")
+    @Schema(description = "일정 종료 일자", example = "2024-02-01")
     private String endDate;
 
     // 시작 시간
@@ -68,9 +67,9 @@ public class ScheduleRequestDTO {
     private boolean isExclude;
 
     // 중요도
-    @JsonProperty(value = "importance")
-    @Schema(description = "중요도", example = "상")
-    private String importance;
+    @JsonProperty(value = "payment_type")
+    @Schema(description = "결제수단 (ACCOUNT or CARD or CASH) 모두 대문자", example = "ACCOUNT")
+    private String paymentType;
 
     // 자산 설정
     @JsonProperty(value = "set_amount")
@@ -82,7 +81,9 @@ public class ScheduleRequestDTO {
     @Schema(description = "금액을 고정할 것인지", example = "false")
     private boolean isFixAmount;
 
-    /*@JsonProperty(value = "repeat_options")
-    @Schema(description = "반복되는 일정인지 아닌지", example = "false")
-    private boolean repeatOptions;*/
+    @JsonProperty(value = "register_template")
+    @Schema(description = "템플릿에 등록할 것인지 true이면 등록 / false이면 등록하지 않음", example = "false")
+    private boolean registerTemplate;
+
+
 }

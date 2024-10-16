@@ -19,17 +19,21 @@ import project.fin_the_pen.config.oauth2.handler.CustomLogoutSuccessHandler;
 import project.fin_the_pen.config.oauth2.handler.CustomOauth2SuccessHandler;
 import project.fin_the_pen.config.oauth2.handler.KakaoLogoutHandler;
 import project.fin_the_pen.config.oauth2.handler.NaverLogoutHandler;
-import project.fin_the_pen.config.oauth2.kakao.KakaoProperties;
-import project.fin_the_pen.config.oauth2.naver.NaverProperties;
 
+/**
+ * TODO
+ *  개발 서버용 oauth2 url/ redirect url 설정 => branch와 yml 모두 분리
+ *  kakao spec 확인
+ *  아래 내용 각각 분리
+ *  customKakaoUser
+ *  customNaverUser
+ */
 @Order(1)
 @Configuration
 @EnableWebSecurity
 @Slf4j
 @RequiredArgsConstructor
 public class Oauth2SecurityConfig {
-    private final KakaoProperties kakaoProperties;
-    private final NaverProperties naverProperties;
     private final CustomOAuth2Service customOAuth2Service;
     private final UserService userService;
     private final KakaoLogoutHandler kakaoLogoutHandler;

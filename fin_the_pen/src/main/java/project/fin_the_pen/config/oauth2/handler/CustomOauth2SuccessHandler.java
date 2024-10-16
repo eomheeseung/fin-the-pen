@@ -43,7 +43,11 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         // 사용자 정보를 DB에 저장
 
         // 리다이렉트 URL
-        String redirectUrl = "/welcome";
+        // http://localhost:5173/home
+        // db에 저장
+        // json http body
+        // 여기서 token 발행
+        String redirectUrl = "http://localhost:5173/home";
         response.sendRedirect(redirectUrl);
     }
 }

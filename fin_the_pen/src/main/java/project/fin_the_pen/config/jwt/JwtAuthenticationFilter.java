@@ -1,22 +1,49 @@
 package project.fin_the_pen.config.jwt;
 
-/*@Order(0)
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+@Order(0)
 @Component
 @RequiredArgsConstructor
 @Slf4j
+/**
+ * TODO
+ *  applicatoin 자체 access, refresh 발행하고
+ *  아래의 클래스 수정
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final TokenProvider tokenProvider;
+    private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(@NotNull HttpServletRequest request,
-                                    @NotNull HttpServletResponse response,
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+
         String token = parseBearerToken(request);
         User user = parseUserSpecification(token);
 
         AbstractAuthenticationToken authenticated =
-                UsernamePasswordAuthenticationToken.authenticated(user, token, user.getAuthorities());
+                UsernamePasswordAuthenticationToken
+                        .authenticated(user, token, user.getAuthorities());
 
         authenticated.setDetails(new WebAuthenticationDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticated);
@@ -37,10 +64,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private User parseUserSpecification(String token) {
         String[] split = Optional.ofNullable(token)
                 .filter(subject -> subject.length() >= 10)
-                .map(tokenProvider::validateTokenAndGetSubject)
+                .map(jwtService::validateTokenAndGetSubject)
                 .orElse("anonymous:anonymous")
                 .split(":");
 
         return new User(split[0], "", List.of(new SimpleGrantedAuthority(split[1])));
     }
-}*/
+}

@@ -40,19 +40,26 @@ public class Oauth2SecurityConfig {
     private final KakaoLogoutHandler kakaoLogoutHandler;
     private final NaverLogoutHandler naverLogoutHandler;
     private final OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
+    private final String[] allowUrls
+            = new String[]{"/", "/swagger-ui/**", "/v3/**", "/sign-up", "/sign-in", "/alive", "/fin-the-pen-web/getMonthSchedules",
+            "/signup", "/",
+            "/oauth2/authorization/**",
+            "/login", "/css/**", "/js/**",
+            "/h2-console/**",
+            "/login/oauth2/code/naver",
+            "/login/oauth2/code/kakao"};
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(authorizeRequests ->
-                        authorizeRequests.antMatchers("/signup", "/",
-                                        "/oauth2/authorization/**",
-                                        "/login", "/css/**", "/js/**",
-                                        "/h2-console/**",
-                                        "/login/oauth2/code/naver",
-                                        "/login/oauth2/code/kakao").permitAll()
-                                .anyRequest().authenticated())
+                        authorizeRequests.antMatchers(allowUrls)
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated()
+                )
                 .formLogin()
                 .loginPage("/login")
                 .and()

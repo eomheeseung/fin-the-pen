@@ -12,7 +12,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserService {
+public class Oauth2UserService {
     private final SocialUserRepository socialUserRepository;
 
     public void saveUser(String email, String name, SocialType socialType) {

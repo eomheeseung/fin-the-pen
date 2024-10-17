@@ -2,7 +2,7 @@ package project.fin_the_pen.model.user.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import project.fin_the_pen.config.security.TokenProvider;
+import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.entity.UserAppPassword;
 import project.fin_the_pen.model.user.entity.Users;
@@ -22,7 +22,7 @@ public class LoginRepository {
 
     private final CRUDLoginRepository crudLoginRepository;
 //    private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
+    private final JwtService jwtService;
 
     /*public void init() {
         Users users = new Users();

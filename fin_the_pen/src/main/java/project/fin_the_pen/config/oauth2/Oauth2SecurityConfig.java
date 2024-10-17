@@ -10,11 +10,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import project.fin_the_pen.config.oauth2.custom.CustomOAuth2Service;
-import project.fin_the_pen.config.oauth2.custom.UserService;
+import project.fin_the_pen.config.oauth2.custom.Oauth2UserService;
 import project.fin_the_pen.config.oauth2.handler.CustomLogoutSuccessHandler;
 import project.fin_the_pen.config.oauth2.handler.CustomOauth2SuccessHandler;
 import project.fin_the_pen.config.oauth2.handler.KakaoLogoutHandler;
@@ -35,9 +36,10 @@ import project.fin_the_pen.config.oauth2.handler.NaverLogoutHandler;
 @RequiredArgsConstructor
 public class Oauth2SecurityConfig {
     private final CustomOAuth2Service customOAuth2Service;
-    private final UserService userService;
+    private final Oauth2UserService oauth2UserService;
     private final KakaoLogoutHandler kakaoLogoutHandler;
     private final NaverLogoutHandler naverLogoutHandler;
+    private final OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -82,7 +84,7 @@ public class Oauth2SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler() {
-        return new CustomOauth2SuccessHandler(userService);
+        return new CustomOauth2SuccessHandler(oauth2UserService, oAuth2AuthorizedClientService);
     }
 
     @Bean

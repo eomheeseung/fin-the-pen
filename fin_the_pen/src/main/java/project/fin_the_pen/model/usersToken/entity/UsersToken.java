@@ -3,7 +3,6 @@ package project.fin_the_pen.model.usersToken.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Builder
@@ -20,9 +19,5 @@ public class UsersToken {
 
     @Column(name = "user_id")
     private String userId;
-
-    @Column(name = "expire_time")
-    @Setter
-    private Date expireTime;
 
 }

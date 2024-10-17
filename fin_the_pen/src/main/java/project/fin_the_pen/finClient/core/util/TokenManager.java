@@ -10,7 +10,7 @@ import java.util.Optional;
 public class TokenManager {
     public String parseBearerToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
-                .filter(token -> token.substring(0, 7).equalsIgnoreCase("Bearer "))
+                .filter(token -> token.startsWith("Bearer "))
                 .map(token -> token.substring(7))
                 .orElse(null);
     }

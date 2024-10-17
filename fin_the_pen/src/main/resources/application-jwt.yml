@@ -1,0 +1,7 @@
+jwt:
+  secret-key: NiOeyFbN1Gqo10bPgUyTFsRMkJpGLXSvGP04eFqj5B30r5TcrtlSXfQ7TndvYjNvfkEKLqILn0j1SmKODO1Yw3JpBBgI3nVPEahqxeY8qbPSFGyzyEVxnl4AQcrnVneI
+  access-expiration-time: 3
+  access-dev-minutes: 100
+  refresh-expiration-time: 3
+  refresh-dev-minutes: 100
+  issuer: finthepen123

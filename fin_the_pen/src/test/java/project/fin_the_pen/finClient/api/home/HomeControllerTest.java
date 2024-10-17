@@ -11,7 +11,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import project.fin_the_pen.config.security.JwtAuthenticationFilter;
+import project.fin_the_pen.config.jwt.JwtAuthenticationFilter;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.service.HomeService;

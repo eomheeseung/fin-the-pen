@@ -8,7 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.fin_the_pen.config.security.TokenProvider;
+import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.user.dto.SignInRequest;
 import project.fin_the_pen.model.user.dto.SignInResponse;
@@ -32,7 +32,7 @@ public class LoginService {
     private final PasswordEncoder encoder;
     private final ObjectMapper objectMapper;
     private final CRUDLoginRepository crudLoginRepository;
-    private final TokenProvider tokenProvider;
+    private final JwtService jwtService;
     private final UsersTokenRepository tokenRepository;
     private final TokenManager tokenManager;
 
@@ -66,20 +66,6 @@ public class LoginService {
                 .registerDate(users.getRegisterDate())
                 .name(users.getName())
                 .build();
-    }
-
-    private SignInResponse firstLogin(Users users, SignInRequest dto) {
-        log.info("find users Id:{}", users.getUserId());
-
-        String token = tokenProvider.createToken(String.format("%s:%s", users.getUserId(), users.getUserRole()));
-
-        tokenRepository.save(UsersToken.builder()
-                .accessToken(token)
-                .expireTime(tokenProvider.getExpiredTime())
-                .userId(dto.getUserId())
-                .build());
-
-        return new SignInResponse(users.getName(), users.getUserRole(), token);
     }
 
     /**
@@ -121,6 +107,21 @@ public class LoginService {
         String findToken = tokenManager.parseBearerToken(request);
         tokenRepository.deleteByAccessToken(findToken);
         return true;
+    }
+
+    private SignInResponse firstLogin(Users users, SignInRequest dto) {
+        log.info("find users Id:{}", users.getUserId());
+
+        String token = jwtService.createToken(String.format("%s:%s",
+                users.getUserId(),
+                users.getUserRole()));
+
+        tokenRepository.save(UsersToken.builder()
+                .accessToken(token)
+                .userId(dto.getUserId())
+                .build());
+
+        return new SignInResponse(users.getName(), users.getUserRole(), token);
     }
 
 

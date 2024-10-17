@@ -4,11 +4,6 @@ import lombok.*;
 
 import javax.persistence.*;
 
-/**
- * TODO
- *  login page 연동
- *  redirect uri 매핑
- */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -32,13 +27,13 @@ public class SocialUser {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
+    @Column(nullable = true)
     private String refreshToken;
 
 
     public void authorizeUser() {
         this.role = SocialRole.USER;
     }
-
 
     public void updateRefreshToken(String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;

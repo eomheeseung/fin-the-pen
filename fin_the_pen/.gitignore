@@ -38,5 +38,7 @@ out/
 
 # mysql private
 mysql-dev.yml
-application-jwt.yml
-application-oauth2.yml
+
+src/main/resources/application-jwt.yml
+src/main/resources/application-oauth2.yml
+

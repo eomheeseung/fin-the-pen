@@ -3,6 +3,9 @@ package project.fin_the_pen.config.oauth2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @Controller
 public class IndexController {
     @GetMapping("/welcome")
@@ -26,7 +29,7 @@ public class IndexController {
     }
 
     @GetMapping("/login/naver")
-    public String naverLogin() {
-        return "redirect:/oauth2/authorization/naver";
+    public void naverLogin(HttpServletResponse response) throws IOException {
+        response.sendRedirect("http://localhost:8080/oauth2/authorization/naver");
     }
 }

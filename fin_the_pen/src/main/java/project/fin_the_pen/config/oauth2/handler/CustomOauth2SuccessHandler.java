@@ -3,8 +3,11 @@ package project.fin_the_pen.config.oauth2.handler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.config.oauth2.custom.CustomOAuth2KakaoUser;
 import project.fin_the_pen.config.oauth2.custom.CustomOAuth2NaverUser;
 import project.fin_the_pen.config.oauth2.custom.Oauth2UserService;
@@ -20,6 +23,7 @@ import java.io.IOException;
 public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final Oauth2UserService oauth2UserService;
     private final OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
+    private final JwtService jwtService;
 
 
     @Override
@@ -29,12 +33,11 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         Object principal = authentication.getPrincipal();
 
 
-        /*
-        accessToken 확인 코드
+//        accessToken 확인 코드
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         String registrationId = oauthToken.getAuthorizedClientRegistrationId();
 
-        OAuth2AuthorizedClient client = oAuth2AuthorizedClientService.loadAuthorizedClient(registrationId, oauthToken.getName());*/
+        OAuth2AuthorizedClient client = oAuth2AuthorizedClientService.loadAuthorizedClient(registrationId, oauthToken.getName());
 
 
         if (principal instanceof CustomOAuth2NaverUser) {
@@ -42,11 +45,27 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             String email = oAuth2User.getEmail();
             String name = oAuth2User.getFullName();
 
-            /*String accessToken = client.getAccessToken().getTokenValue();
-            log.info("naver accessToken :{}", accessToken);*/
+            String accessToken = client.getAccessToken().getTokenValue();
+            log.info("naver accessToken :{}", accessToken);
 
             log.info("User logged in with Naver: {}", email);
             oauth2UserService.saveUser(email, name, SocialType.NAVER);
+
+            // OAuth2 사용자 정보 처리 후
+            String jwtToken = jwtService.createToken(email);
+            log.info("application token:{}", jwtToken);
+            response.addHeader("Authorization", "Bearer " + jwtToken);
+
+            response.setContentType("application/json"); // 응답의 Content-Type을 JSON으로 설정
+            response.setStatus(HttpServletResponse.SC_OK); // 상태 코드 200 설정
+
+            // JSON 형식으로 JWT 토큰을 응답 본문에 추가
+            String jsonResponse = "{\"token\": \"" + jwtToken + "\"}";
+
+            // 응답 본문에 쓰기
+            response.getWriter().write(jsonResponse);
+            response.getWriter().flush(); // 버퍼를 비우고 응답 전송
+
 
         } else if (principal instanceof CustomOAuth2KakaoUser) {
             CustomOAuth2KakaoUser oAuth2User = (CustomOAuth2KakaoUser) principal;

@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.config.oauth2.custom.CustomOAuth2Service;
 import project.fin_the_pen.config.oauth2.custom.Oauth2UserService;
 import project.fin_the_pen.config.oauth2.handler.CustomLogoutSuccessHandler;
@@ -39,9 +40,16 @@ public class Oauth2SecurityConfig {
     private final Oauth2UserService oauth2UserService;
     private final KakaoLogoutHandler kakaoLogoutHandler;
     private final NaverLogoutHandler naverLogoutHandler;
+    private final JwtService jwtService;
     private final OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
     private final String[] allowUrls
-            = new String[]{"/", "/swagger-ui/**", "/v3/**", "/sign-up", "/sign-in", "/alive", "/fin-the-pen-web/getMonthSchedules",
+            = new String[]{"/",
+            "/swagger-ui/**",
+            "/v3/**",
+            "/sign-up",
+            "/sign-in",
+            "/alive",
+            "/fin-the-pen-web/getMonthSchedules",
             "/signup", "/",
             "/oauth2/authorization/**",
             "/login", "/css/**", "/js/**",
@@ -91,7 +99,7 @@ public class Oauth2SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler() {
-        return new CustomOauth2SuccessHandler(oauth2UserService, oAuth2AuthorizedClientService);
+        return new CustomOauth2SuccessHandler(oauth2UserService, oAuth2AuthorizedClientService, jwtService);
     }
 
     @Bean

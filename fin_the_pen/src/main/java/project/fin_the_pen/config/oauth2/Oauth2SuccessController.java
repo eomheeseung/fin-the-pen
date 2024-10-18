@@ -53,11 +53,12 @@ public class Oauth2SuccessController {
             throw new NotFoundDataException("사용자의 이름이 없습니다.");
         }
         if (email.isPresent()) {
-            socialUserResponseDto.setName(email.get());
+            socialUserResponseDto.setEmail(email.get());
         } else {
             throw new NotFoundDataException("사용자의 이메일이 없습니다.");
         }
 
+        log.info("호출 성공");
         return ResponseEntity.ok(socialUserResponseDto);
     }
 }

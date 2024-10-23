@@ -112,7 +112,7 @@ public class LoginService {
     private SignInResponse firstLogin(Users users, SignInRequest dto) {
         log.info("find users Id:{}", users.getUserId());
 
-        String token = jwtService.createToken(String.format("%s:%s",
+        String token = jwtService.createAccessToken(String.format("%s:%s",
                 users.getUserId(),
                 users.getUserRole()));
 

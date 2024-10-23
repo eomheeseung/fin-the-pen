@@ -17,6 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -52,19 +54,18 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             oauth2UserService.saveUser(email, name, SocialType.NAVER);
 
             // OAuth2 사용자 정보 처리 후
-            String jwtToken = jwtService.createToken(email);
-            log.info("application token:{}", jwtToken);
-            response.addHeader("Authorization", "Bearer " + jwtToken);
+            String jwtAccessToken = jwtService.createAccessToken(email);
+            String refreshToken = jwtService.createRefreshToken();
+            log.info("application access token:{}", jwtAccessToken);
+            log.info("application refresh token:{}", refreshToken);
 
-            response.setContentType("application/json"); // 응답의 Content-Type을 JSON으로 설정
-            response.setStatus(HttpServletResponse.SC_OK); // 상태 코드 200 설정
-
-            // JSON 형식으로 JWT 토큰을 응답 본문에 추가
-            String jsonResponse = "{\"token\": \"" + jwtToken + "\"}";
-
-            // 응답 본문에 쓰기
-            response.getWriter().write(jsonResponse);
-            response.getWriter().flush(); // 버퍼를 비우고 응답 전송
+            // 쿼리 파라미터를 URL에 추가
+            String sendRedirectUrl = String.format(
+                    "http://localhost:5173/home?accessToken=%s&refreshToken=%s",
+                    URLEncoder.encode(jwtAccessToken, StandardCharsets.UTF_8),
+                    URLEncoder.encode(refreshToken, StandardCharsets.UTF_8)
+            );
+            response.sendRedirect(sendRedirectUrl);
 
 
         } else if (principal instanceof CustomOAuth2KakaoUser) {

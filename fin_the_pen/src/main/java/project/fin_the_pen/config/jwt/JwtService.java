@@ -17,7 +17,7 @@ import java.util.Date;
 public class JwtService {
     private final JwtProperties jwtProperties;
 
-    public String createToken(String userSpecification) {
+    public String createAccessToken(String userSpecification) {
         Date accessExpiration = Date.from(
                 Instant
                         .now()
@@ -33,6 +33,24 @@ public class JwtService {
                 .setExpiration(accessExpiration)    // JWT 토큰 만료 시간
                 .compact();// JWT 토큰 생성
     }
+
+    public String createRefreshToken() {
+        Date refreshExpiration = Date.from(
+                Instant
+                        .now()
+                        .plus(Long.parseLong(jwtProperties.getRefreshExpirationTime()), ChronoUnit.MINUTES));
+
+        return Jwts.builder()
+                // HS512 알고리즘을 사용
+                .signWith(new SecretKeySpec(jwtProperties.getSecretKey().getBytes(),
+                        SignatureAlgorithm.HS512.getJcaName()))
+                .setIssuer(jwtProperties.getIssuer())  // JWT 토큰 발급자
+                .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))    // JWT 토큰 발급 시간
+                .setExpiration(refreshExpiration)    // JWT 토큰 만료 시간
+                .compact();// JWT 토큰 생성
+    }
+
+
 
 
     public String validateTokenAndGetSubject(String token) {

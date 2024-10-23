@@ -54,7 +54,7 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             oauth2UserService.saveUser(email, name, SocialType.NAVER);
 
             // OAuth2 사용자 정보 처리 후
-            String jwtAccessToken = jwtService.createAccessToken(email);
+            String jwtAccessToken = jwtService.createAccessToken(email, SocialType.NAVER);
             String refreshToken = jwtService.createRefreshToken();
             log.info("application access token:{}", jwtAccessToken);
             log.info("application refresh token:{}", refreshToken);
@@ -65,6 +65,7 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                     URLEncoder.encode(jwtAccessToken, StandardCharsets.UTF_8),
                     URLEncoder.encode(refreshToken, StandardCharsets.UTF_8)
             );
+
             response.sendRedirect(sendRedirectUrl);
 
 

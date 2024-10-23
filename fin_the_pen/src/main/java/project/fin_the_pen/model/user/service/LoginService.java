@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.fin_the_pen.config.jwt.JwtService;
+import project.fin_the_pen.config.oauth2.socialDomain.SocialType;
 import project.fin_the_pen.finClient.core.util.TokenManager;
 import project.fin_the_pen.model.user.dto.SignInRequest;
 import project.fin_the_pen.model.user.dto.SignInResponse;
@@ -84,7 +85,7 @@ public class LoginService {
         String find = tokenManager.parseBearerToken(request);
 
         if (find == null) {
-            return firstLogin(users, dto);
+            return firstLogin(users);
         } else {
             // expire time 전에 재 로그인
             Optional<UsersToken> findToken = tokenRepository.findUsersToken(find);
@@ -96,7 +97,7 @@ public class LoginService {
                 // 가지고 잇는 토큰을 삭제하고, 새로운 토큰발급
                 tokenRepository.deleteByAccessToken(usersToken.getAccessToken());
             }
-            return firstLogin(users, dto);
+            return firstLogin(users);
         }
 
 
@@ -109,18 +110,18 @@ public class LoginService {
         return true;
     }
 
-    private SignInResponse firstLogin(Users users, SignInRequest dto) {
-        log.info("find users Id:{}", users.getUserId());
+    private SignInResponse firstLogin(Users users) {
+        log.info("find users Id: {}", users.getUserId());
 
+        SocialType socialType = SocialType.NONE;
+
+        // JWT 생성
         String token = jwtService.createAccessToken(String.format("%s:%s",
-                users.getUserId(),
-                users.getUserRole()));
+                        users.getUserId(),
+                        users.getUserRole()),
+                socialType);
 
-        tokenRepository.save(UsersToken.builder()
-                .accessToken(token)
-                .userId(dto.getUserId())
-                .build());
-
+        // SignInResponse 객체 반환
         return new SignInResponse(users.getName(), users.getUserRole(), token);
     }
 

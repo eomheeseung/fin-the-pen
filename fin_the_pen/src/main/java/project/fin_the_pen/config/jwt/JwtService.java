@@ -67,6 +67,10 @@ public class JwtService {
         return getParser().parseClaimsJws(token).getBody();  // JWT 파싱 및 클레임 반환
     }
 
+    public String getEmailFromToken(String token) {
+        return parseToken(token).get("email").toString();
+    }
+
 
     private JwtParser getParser() {
         return Jwts.parserBuilder()

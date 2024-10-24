@@ -68,9 +68,9 @@ public class Oauth2SecurityConfig {
                                 .anyRequest()
                                 .authenticated()
                 )
-                .formLogin()
-                .loginPage("/login")
-                .and()
+//                .formLogin()
+//                .loginPage("/login")
+//                .and()
                 .oauth2Login(oauth2Login -> {
                             try {
                                 oauth2Login

@@ -53,16 +53,20 @@ public class HomeService {
         String date = dto.getDate();
 
         // 수입
-        List<String> incomeList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Plus, startDate.toString(), endDate.toString());
+        List<String> incomeList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Plus,
+                startDate.toString(), endDate.toString());
 
         // 지출
-        List<String> expenseList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, startDate.toString(), dto.getCalenderDate());
+        List<String> expenseList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(),
+                PriceType.Minus, startDate.toString(), dto.getCalenderDate());
 
         // 지출 예정 금액
-        List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
+        List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(),
+                PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
 
         // 지출 목표액
-        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), dto.getUserId());
+        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(),
+                dto.getUserId());
 
         int goalAmount = 0;
 

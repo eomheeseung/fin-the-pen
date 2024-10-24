@@ -5,9 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
 import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.service.HomeService;
@@ -25,6 +27,7 @@ public class HomeController {
     private final HomeService homeService;
     private final ScheduleService scheduleService;
     private final ConvertResponse convertResponse;
+    private final JwtService jwtService;
 
     /*@Operation(summary = "홈 화면", description = "홈 화면")
     @PostMapping("/home/month")
@@ -44,10 +47,10 @@ public class HomeController {
         if (dto.getDate() == null) {
             return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
         }
-        Map<Object, Object> responseMap =
-                homeService.inquiryMonth(dto, request);
 
-        return convertResponse.getResponseEntity(responseMap);
+        Map<Object, Object> responseMap = homeService.inquiryMonth(dto, request);
+
+        return ResponseEntity.ok(responseMap);
     }
 
     @Operation(summary = "홈 화면", description = "홈 화면 - week")
@@ -71,6 +74,13 @@ public class HomeController {
         } catch (RuntimeException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/api/user/info")
+    public ResponseEntity<String> userInfo(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+
+        return ResponseEntity.ok(jwtService.getSocialTypeFromToken(principal.toString()));
     }
 
 

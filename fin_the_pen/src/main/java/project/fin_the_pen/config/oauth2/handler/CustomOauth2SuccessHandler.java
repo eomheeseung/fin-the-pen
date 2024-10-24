@@ -61,10 +61,7 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             Cookie accessTokenCookie = new Cookie("access_token", jwtAccessToken);
             Cookie refreshTokenCookie = new Cookie("refresh_token", jwtRefreshToken);
 
-            response.addCookie(accessTokenCookie);
-            response.addCookie(refreshTokenCookie);
-            accessTokenCookie.setPath("/");
-            refreshTokenCookie.setPath("/");
+
 
             // 쿼리 파라미터를 URL에 추가
             /*String sendRedirectUrl = String.format(
@@ -74,8 +71,15 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             );
 
             response.sendRedirect(sendRedirectUrl);*/
-            response.sendRedirect("http://localhost:5173/home");
+            // 쿼리 파라미터를 URL에 추가 (주석 해제 가능)
 
+            // 쿠키 설정
+            accessTokenCookie.setPath("/");
+            refreshTokenCookie.setPath("/");
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
+
+            // 리다이렉트 수행
 
         } else if (principal instanceof CustomOAuth2KakaoUser) {
             CustomOAuth2KakaoUser oAuth2User = (CustomOAuth2KakaoUser) principal;

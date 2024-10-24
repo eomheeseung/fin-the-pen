@@ -18,12 +18,10 @@ import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.entity.Users;
 import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
 import project.fin_the_pen.model.user.repository.LoginRepository;
-import project.fin_the_pen.model.usersToken.entity.UsersToken;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -82,7 +80,7 @@ public class LoginService {
                 .filter(find -> encoder.matches(dto.getPassword(), find.getPassword()))
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
 
-        String find = tokenManager.parseBearerToken(request);
+        /*String find = tokenManager.parseBearerToken(request);
 
         if (find == null) {
             return firstLogin(users);
@@ -98,19 +96,8 @@ public class LoginService {
                 tokenRepository.deleteByAccessToken(usersToken.getAccessToken());
             }
             return firstLogin(users);
-        }
+        }*/
 
-
-    }
-
-    @Transactional
-    public boolean logout(HttpServletRequest request) {
-        String findToken = tokenManager.parseBearerToken(request);
-        tokenRepository.deleteByAccessToken(findToken);
-        return true;
-    }
-
-    private SignInResponse firstLogin(Users users) {
         log.info("find users Id: {}", users.getUserId());
 
         SocialType socialType = SocialType.NONE;
@@ -123,6 +110,13 @@ public class LoginService {
 
         // SignInResponse 객체 반환
         return new SignInResponse(users.getName(), users.getUserRole(), token);
+    }
+
+    @Transactional
+    public boolean logout(HttpServletRequest request) {
+        String findToken = tokenManager.parseBearerToken(request);
+        tokenRepository.deleteByAccessToken(findToken);
+        return true;
     }
 
 

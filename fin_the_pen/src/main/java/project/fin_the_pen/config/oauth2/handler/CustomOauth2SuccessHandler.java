@@ -14,11 +14,10 @@ import project.fin_the_pen.config.oauth2.custom.Oauth2UserService;
 import project.fin_the_pen.config.oauth2.socialDomain.SocialType;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -55,18 +54,27 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
             // OAuth2 사용자 정보 처리 후
             String jwtAccessToken = jwtService.createAccessToken(email, SocialType.NAVER);
-            String refreshToken = jwtService.createRefreshToken();
+            String jwtRefreshToken = jwtService.createRefreshToken();
             log.info("application access token:{}", jwtAccessToken);
-            log.info("application refresh token:{}", refreshToken);
+            log.info("application refresh token:{}", jwtRefreshToken);
+
+            Cookie accessTokenCookie = new Cookie("access_token", jwtAccessToken);
+            Cookie refreshTokenCookie = new Cookie("refresh_token", jwtRefreshToken);
+
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
+            accessTokenCookie.setPath("/");
+            refreshTokenCookie.setPath("/");
 
             // 쿼리 파라미터를 URL에 추가
-            String sendRedirectUrl = String.format(
+            /*String sendRedirectUrl = String.format(
                     "http://localhost:5173/home?accessToken=%s&refreshToken=%s",
                     URLEncoder.encode(jwtAccessToken, StandardCharsets.UTF_8),
-                    URLEncoder.encode(refreshToken, StandardCharsets.UTF_8)
+                    URLEncoder.encode(jwtRefreshToken, StandardCharsets.UTF_8)
             );
 
-            response.sendRedirect(sendRedirectUrl);
+            response.sendRedirect(sendRedirectUrl);*/
+            response.sendRedirect("http://localhost:5173/home");
 
 
         } else if (principal instanceof CustomOAuth2KakaoUser) {

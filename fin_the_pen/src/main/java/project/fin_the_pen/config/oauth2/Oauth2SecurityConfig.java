@@ -14,6 +14,9 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.config.oauth2.custom.CustomOAuth2Service;
 import project.fin_the_pen.config.oauth2.custom.Oauth2UserService;
@@ -21,6 +24,9 @@ import project.fin_the_pen.config.oauth2.handler.CustomLogoutSuccessHandler;
 import project.fin_the_pen.config.oauth2.handler.CustomOauth2SuccessHandler;
 import project.fin_the_pen.config.oauth2.handler.KakaoLogoutHandler;
 import project.fin_the_pen.config.oauth2.handler.NaverLogoutHandler;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * TODO
@@ -105,6 +111,20 @@ public class Oauth2SecurityConfig {
     @Bean
     public LogoutSuccessHandler oauth2LogoutSuccessHandler() {
         return new CustomLogoutSuccessHandler();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // React 앱의 도메인 설정
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 모든 요청에 대해 CORS 설정 적용
+
+        return source;
     }
 
 

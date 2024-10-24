@@ -47,12 +47,12 @@ public class ScheduleService {
         boolean flag = false;
 
         try {
-            String extractToken = tokenManager.parseBearerToken(request);
-
-            if (extractToken == null)
-                throw new RuntimeException();
-
-            tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
+//            String extractToken = tokenManager.parseBearerToken(request);
+//
+//            if (extractToken == null)
+//                throw new RuntimeException();
+//
+//            tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
 
             switch (requestDTO.getRepeat().getKindType()) {
                 case "none":

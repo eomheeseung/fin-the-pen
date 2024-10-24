@@ -21,7 +21,9 @@ import project.fin_the_pen.model.user.repository.LoginRepository;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -75,7 +77,7 @@ public class LoginService {
      * @return
      */
     @Transactional
-    public SignInResponse signIn(SignInRequest dto, HttpServletRequest request) {
+    public SignInResponse signIn(SignInRequest dto, HttpServletRequest request, HttpServletResponse response) {
         Users users = crudLoginRepository.findByUserId(dto.getUserId())
                 .filter(find -> encoder.matches(dto.getPassword(), find.getPassword()))
                 .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
@@ -103,13 +105,36 @@ public class LoginService {
         SocialType socialType = SocialType.NONE;
 
         // JWT 생성
-        String token = jwtService.createAccessToken(String.format("%s:%s",
+        String jwtAccessToken = jwtService.createAccessToken(String.format("%s:%s",
                         users.getUserId(),
                         users.getUserRole()),
                 socialType);
 
+        String jwtRefreshToken = jwtService.createRefreshToken();
+
+
+        Cookie accessTokenCookie = new Cookie("access_token", jwtAccessToken);
+        Cookie refreshTokenCookie = new Cookie("refresh_token", jwtRefreshToken);
+
+        // 쿼리 파라미터를 URL에 추가
+            /*String sendRedirectUrl = String.format(
+                    "http://localhost:5173/home?accessToken=%s&refreshToken=%s",
+                    URLEncoder.encode(jwtAccessToken, StandardCharsets.UTF_8),
+                    URLEncoder.encode(jwtRefreshToken, StandardCharsets.UTF_8)
+            );
+
+            response.sendRedirect(sendRedirectUrl);*/
+        // 쿼리 파라미터를 URL에 추가 (주석 해제 가능)
+
+        // 쿠키 설정
+        accessTokenCookie.setPath("/");
+        refreshTokenCookie.setPath("/");
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+
+
         // SignInResponse 객체 반환
-        return new SignInResponse(users.getName(), users.getUserRole(), token);
+        return new SignInResponse(users.getName(), users.getUserRole(), jwtAccessToken);
     }
 
     @Transactional

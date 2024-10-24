@@ -25,7 +25,7 @@ public class JwtService {
         Date accessExpiration = Date.from(
                 Instant
                         .now()
-                        .plus(Long.parseLong(jwtProperties.getAccessExpirationTime()), ChronoUnit.MINUTES));
+                        .plus(Long.parseLong(jwtProperties.getAccessExpirationTime()), ChronoUnit.HOURS));
 
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("socialType", socialType.toString());
@@ -47,7 +47,7 @@ public class JwtService {
         Date refreshExpiration = Date.from(
                 Instant
                         .now()
-                        .plus(Long.parseLong(jwtProperties.getRefreshExpirationTime()), ChronoUnit.MINUTES));
+                        .plus(Long.parseLong(jwtProperties.getRefreshExpirationTime()), ChronoUnit.HOURS));
 
         return Jwts.builder()
                 // HS512 알고리즘을 사용

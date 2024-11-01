@@ -78,6 +78,12 @@ public class LoginService {
                 .build();
     }
 
+    /**
+     * 로그인
+     * @param dto
+     * @param response
+     * @return
+     */
     public Map<String, Object> signIn(SignInRequest dto,
                                       HttpServletResponse response) {
         String userId = dto.getUserId();

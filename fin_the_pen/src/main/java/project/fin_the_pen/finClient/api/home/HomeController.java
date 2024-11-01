@@ -41,10 +41,6 @@ public class HomeController {
         }
     }*/
 
-    /*
-    TODO
-     authentiaction 사용
-     */
     @Operation(summary = "홈 화면", description = "홈 화면")
     @PostMapping("/home/month")
     public ResponseEntity<Object> homeMonth(@RequestBody HomeRequestDto dto,

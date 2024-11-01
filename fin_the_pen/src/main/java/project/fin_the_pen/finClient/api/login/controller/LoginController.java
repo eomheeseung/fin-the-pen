@@ -36,7 +36,9 @@ public class LoginController {
 
     @PostMapping(value = "/sign-in", produces = "application/json")
     @Operation(summary = "로그인 (O)")
-    public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response) {
         try {
             SignInResponse signInResponse = loginService.signIn(signInRequest, request, response);
             return ResponseEntity.ok().body(signInResponse);

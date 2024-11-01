@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +19,13 @@ import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.entity.Users;
 import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
 import project.fin_the_pen.model.user.repository.LoginRepository;
-import project.fin_the_pen.model.usersToken.entity.UsersToken;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -50,10 +53,16 @@ public class LoginService {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
-    // 등록: 그냥 여기서 처리하자.
+    /**
+     * 회원가입
+     * 회원가입하고, 유저의 정보를 보낼 필요가 있나?
+     *
+     * @param userRequestDTO
+     * @return
+     */
     @Transactional
     public UserResponseDTO signUp(UserRequestDTO userRequestDTO) {
-        Users users = crudLoginRepository.save(Users.from(userRequestDTO, encoder));
+        Users users = crudLoginRepository.save(Users.from(userRequestDTO, encoder, SocialType.NONE));
 
         try {
             crudLoginRepository.flush();
@@ -69,38 +78,30 @@ public class LoginService {
                 .build();
     }
 
-    /**
-     * 회원가입
-     *
-     * @param dto
-     * @param request
-     * @return
-     */
-    @Transactional
-    public SignInResponse signIn(SignInRequest dto, HttpServletRequest request) {
-        Users users = crudLoginRepository.findByUserId(dto.getUserId())
-                .filter(find -> encoder.matches(dto.getPassword(), find.getPassword()))
-                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다."));
+    public Map<String, Object> signIn(SignInRequest dto,
+                                      HttpServletResponse response) {
+        String userId = dto.getUserId();
+        String password = dto.getPassword();
 
-        String find = tokenManager.parseBearerToken(request);
+        Optional<Users> optionalUsers = crudLoginRepository.findByUserId(userId)
+                .filter(find -> encoder.matches(password,
+                        find.getPassword()));
 
-        if (find == null) {
-            return firstLogin(users);
+        if (optionalUsers.isEmpty()) {
+            HashMap<String, Object> responseMap = new HashMap<>();
+            responseMap.put("status", HttpStatus.BAD_REQUEST);
+            return responseMap;
         } else {
-            // expire time 전에 재 로그인
-            Optional<UsersToken> findToken = tokenRepository.findUsersToken(find);
+            HashMap<String, Object> responseMap = new HashMap<>();
+            responseMap.put("status", HttpStatus.OK);
 
-            // 토큰이 있고, 토큰 테이블에 저장된 id와 현재 id가 같으면...
-            if (findToken.get().getUserId().equals(dto.getUserId())) {
-                UsersToken usersToken = findToken.get();
-
-                // 가지고 잇는 토큰을 삭제하고, 새로운 토큰발급
-                tokenRepository.deleteByAccessToken(usersToken.getAccessToken());
-            }
-            return firstLogin(users);
+            String accessToken = jwtService.createAccessToken(userId, SocialType.NONE);
+            log.info("new login:{}", accessToken);
+            response.addHeader("Authorization", "Bearer " + accessToken);
+            String refreshToken = jwtService.createRefreshToken();
+            responseMap.put("refreshToken", refreshToken);
+            return responseMap;
         }
-
-
     }
 
     @Transactional

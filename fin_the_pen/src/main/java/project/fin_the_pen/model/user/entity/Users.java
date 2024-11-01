@@ -3,6 +3,7 @@ package project.fin_the_pen.model.user.entity;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import project.fin_the_pen.config.oauth2.socialDomain.SocialType;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.type.UsersType;
 
@@ -52,7 +53,10 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private UsersType userRole;
 
-    public static Users from(UserRequestDTO request, PasswordEncoder encoder) {
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
+
+    public static Users from(UserRequestDTO request, PasswordEncoder encoder, SocialType socialType) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         return Users.builder().userId(request.getUserId())
@@ -61,6 +65,7 @@ public class Users {
                 .baby(LocalDate.now())
                 .date(LocalDate.now())
                 .userRole(UsersType.USER)
+                .socialType(socialType)
                 .phoneNumber(request.getPhoneNumber())
                 .registerDate(LocalDate.now())
                 .build();

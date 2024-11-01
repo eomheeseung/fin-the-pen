@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.model.user.dto.SignInRequest;
-import project.fin_the_pen.model.user.dto.SignInResponse;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -23,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 @Tag(name = "API 테스트 / 로그인")
 public class LoginController {
     private final LoginService loginService;
-    
+
     @PostMapping(value = "/sign-up", produces = "application/json")
     @Operation(summary = "회원 가입 (O)")
     public ResponseEntity<Object> signUp(@RequestBody UserRequestDTO userRequestDTO) {
@@ -35,15 +37,25 @@ public class LoginController {
 
     @PostMapping(value = "/sign-in", produces = "application/json")
     @Operation(summary = "로그인 (O)")
-    public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest, HttpServletRequest request) {
+    public ResponseEntity<Object> signIn(@RequestBody SignInRequest signInRequest,
+                                         HttpServletResponse response) {
+        Map<String, Object> responseMap = loginService.signIn(signInRequest, response);
+
         try {
-            SignInResponse signInResponse = loginService.signIn(signInRequest, request);
-            return ResponseEntity.ok().body(signInResponse);
+
+            Optional<String> status =
+                    Optional.ofNullable(responseMap.get("refreshToken").toString());
+
+            if (status.isEmpty()) {
+                return ResponseEntity.badRequest().body(responseMap);
+            } else {
+                return ResponseEntity.ok(responseMap);
+            }
+
         } catch (IllegalArgumentException | NullPointerException e) {
             log.info(e.getMessage());
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(responseMap);
         }
-//        return ApiResponse.success(loginService.signIn(request));
     }
 
     @DeleteMapping(value = "/logout")

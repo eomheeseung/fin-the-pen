@@ -44,16 +44,17 @@ public class HomeController {
     /*
     TODO
      authentiaction 사용
-
      */
     @Operation(summary = "홈 화면", description = "홈 화면")
     @PostMapping("/home/month")
-    public ResponseEntity<Object> homeMonth(@RequestBody HomeRequestDto dto, HttpServletRequest request) {
+    public ResponseEntity<Object> homeMonth(@RequestBody HomeRequestDto dto,
+                                            HttpServletRequest request) {
         if (dto.getDate() == null) {
             return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
         }
 
-        Map<Object, Object> responseMap = homeService.inquiryMonth(dto, request);
+        Map<Object, Object> responseMap =
+                homeService.inquiryMonth(dto, request);
 
         return ResponseEntity.ok(responseMap);
     }

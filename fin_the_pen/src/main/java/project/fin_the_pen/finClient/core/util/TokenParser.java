@@ -7,11 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Component
-public class TokenManager {
+public class TokenParser {
     public String parseBearerToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
                 .filter(token -> token.startsWith("Bearer "))
-                .map(token -> token.substring(7))
+                .map(token -> token.substring(7).trim())
                 .orElse(null);
     }
 }

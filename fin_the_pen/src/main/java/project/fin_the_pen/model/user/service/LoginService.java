@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.config.oauth2.socialDomain.SocialType;
-import project.fin_the_pen.finClient.core.util.TokenManager;
+import project.fin_the_pen.finClient.core.util.TokenParser;
 import project.fin_the_pen.model.user.dto.SignInRequest;
 import project.fin_the_pen.model.user.dto.SignInResponse;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
@@ -38,7 +38,7 @@ public class LoginService {
     private final CRUDLoginRepository crudLoginRepository;
     private final JwtService jwtService;
     private final UsersTokenRepository tokenRepository;
-    private final TokenManager tokenManager;
+    private final TokenParser tokenParser;
 
 //    @Transactional
 //    @PostConstruct
@@ -106,7 +106,7 @@ public class LoginService {
 
     @Transactional
     public boolean logout(HttpServletRequest request) {
-        String findToken = tokenManager.parseBearerToken(request);
+        String findToken = tokenParser.parseBearerToken(request);
         tokenRepository.deleteByAccessToken(findToken);
         return true;
     }

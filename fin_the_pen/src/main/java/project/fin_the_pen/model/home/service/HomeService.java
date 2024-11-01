@@ -1,11 +1,12 @@
 package project.fin_the_pen.model.home.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
-import project.fin_the_pen.finClient.core.util.TokenManager;
+import project.fin_the_pen.config.jwt.JwtService;
+import project.fin_the_pen.config.oauth2.socialDomain.SocialUserRepository;
+import project.fin_the_pen.finClient.core.util.TokenParser;
 import project.fin_the_pen.model.home.dto.HomeRequestDto;
 import project.fin_the_pen.model.home.dto.HomeWeekResponseDto;
 import project.fin_the_pen.model.home.repository.HomeRepository;
@@ -14,6 +15,7 @@ import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
+import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.DayOfWeek;
@@ -31,15 +33,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HomeService {
     private final HomeRepository homeRepository;
-    private final TokenManager tokenManager;
     private final ReportRepository reportRepository;
     private final CrudScheduleRepository scheduleRepository;
-    private final ObjectMapper objectMapper;
+    private final SocialUserRepository socialUserRepository;
+    private final CRUDLoginRepository loginRepository;
+    private final JwtService jwtService;
+    private final TokenParser tokenParser;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
-    public HashMap<Object, Object> inquiryMonth(HomeRequestDto dto, HttpServletRequest request) {
+
+    public HashMap<Object, Object> inquiryMonth(HomeRequestDto dto,
+                                                HttpServletRequest request) {
+        String userId = getUserId(request);
+
 
         HashMap<Object, Object> responseMap = new HashMap<>();
 
@@ -48,35 +56,30 @@ public class HomeService {
         LocalDate startDate = parseDate.withDayOfMonth(1);
         LocalDate endDate = parseDate.withDayOfMonth(parseDate.lengthOfMonth());
 
-        String userId = dto.getUserId();
+//        String userId = dto.getUserId();
         String calenderDate = dto.getCalenderDate();
         String date = dto.getDate();
 
         // 수입
-        List<String> incomeList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Plus,
+        List<String> incomeList = homeRepository.findAmountByUserIdAndPriceType(userId, PriceType.Plus,
                 startDate.toString(), endDate.toString());
 
         // 지출
-        List<String> expenseList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(),
+        List<String> expenseList = homeRepository.findAmountByUserIdAndPriceType(userId,
                 PriceType.Minus, startDate.toString(), dto.getCalenderDate());
 
         // 지출 예정 금액
-        List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(),
+        List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(userId,
                 PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
 
         // 지출 목표액
-        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(),
-                dto.getUserId());
+        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), userId);
 
         int goalAmount = 0;
 
         if (optionalS.isPresent()) {
             goalAmount = Integer.parseInt(optionalS.get());
         }
-
-
-        // TODO
-        //  Q) 지출 예정이 애매함(시간 값까지 해야 하는지...)
 
         int incomeSum = incomeList
                 .stream()
@@ -107,27 +110,7 @@ public class HomeService {
 
         responseMap.put("available", supplier.get());
 
-
-        // 4번 캘린더의 리스트를 보여주는 것은 controller의 findMonthSchedule에서 처리
-//        responseMap.put("calender", calenderView(dto.getCalenderDate(), dto.getUserId()));
-
-
         List<Schedule> responseArray = scheduleRepository.findByMonthSchedule(date, userId);
-//        LocalDate parseCalenderDate = LocalDate.parse(calenderDate);
-
-        /*List<Schedule> termSchedule = responseArray.stream()
-                .filter(schedule ->
-                        (LocalDate.parse(schedule.getStartDate()).isBefore(parseCalenderDate) &&
-                                LocalDate.parse(schedule.getEndDate()).isAfter(parseCalenderDate)) ||
-                                LocalDate.parse(schedule.getStartDate()).isEqual(parseCalenderDate))
-                .collect(Collectors.toList());
-
-        if (termSchedule.isEmpty()) {
-            responseMap.put("today_schedule", "none");
-        } else {
-            responseMap.put("today_schedule", termSchedule);
-        }*/
-
 
         List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
                 .map(this::createScheduleResponseDTO)
@@ -142,22 +125,24 @@ public class HomeService {
     public HashMap<Object, Object> inquiryWeek(HomeRequestDto dto, HttpServletRequest request) {
         HashMap<Object, Object> responseMap = new HashMap<>();
 
+        String userId = getUserId(request);
+
         // 이제 입력받은 날짜의 월의 첫날과 마지막 날을 구해야 함...
         LocalDate parseDate = LocalDate.parse(dto.getCalenderDate());
         LocalDate startDate = parseDate.withDayOfMonth(1);
         LocalDate endDate = parseDate.withDayOfMonth(parseDate.lengthOfMonth());
 
         // 수입
-        List<String> incomeList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Plus, startDate.toString(), endDate.toString());
+        List<String> incomeList = homeRepository.findAmountByUserIdAndPriceType(userId, PriceType.Plus, startDate.toString(), endDate.toString());
 
         // 지출
-        List<String> expenseList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, startDate.toString(), dto.getCalenderDate());
+        List<String> expenseList = homeRepository.findAmountByUserIdAndPriceType(userId, PriceType.Minus, startDate.toString(), dto.getCalenderDate());
 
         // 지출 예정 금액
-        List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(dto.getUserId(), PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
+        List<String> expenseExpectList = homeRepository.findAmountByUserIdAndPriceType(userId, PriceType.Minus, parseDate.plusDays(1).toString(), endDate.toString());
 
         // 지출 목표액
-        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), dto.getUserId());
+        Optional<String> optionalS = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), userId);
 
         int goalAmount = 0;
 
@@ -214,7 +199,7 @@ public class HomeService {
             responseDto.setWeekOfNumber(week + "주차");
             responseDto.setPeriod(firstDayOfWeek + " ~ " + lastDayOfWeek);
 
-            List<Schedule> findList = scheduleRepository.findByStartDateAndEndDate(dto.getUserId(), firstDayOfWeek.toString(), lastDayOfWeek.toString());
+            List<Schedule> findList = scheduleRepository.findByStartDateAndEndDate(userId, firstDayOfWeek.toString(), lastDayOfWeek.toString());
 
             int plusSum = 0;
             int minusSum = 0;
@@ -244,13 +229,15 @@ public class HomeService {
         List<Schedule> findList = scheduleRepository.findByStartDate(dto.getUserId(), dto.getCalenderDate());
         LocalDateTime nowDateTime = LocalDateTime.now();
 
+        String userId = getUserId(request);
+
         // 시간에 따라서 분리
         int dayIncome = 0; // 수입
         int dayExpense = 0; // 지출
         int expenseExpect = 0; // 지출 예정
         int available = 0;
 
-        Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), dto.getUserId());
+        Optional<String> optionalGoalAmount = reportRepository.findByAmountAndUserIdAndDate(dto.getDate(), userId);
 
         if (!findList.isEmpty()) {
             dayIncome = findList.stream()
@@ -389,6 +376,31 @@ public class HomeService {
                 .amount(schedule.getAmount())
                 .isFixAmount(schedule.isFixAmount())
                 .build();
+    }
+
+    private String getUserId(HttpServletRequest request) {
+        String parseToken = tokenParser.parseBearerToken(request);
+        log.info("홈화면에서 파싱된 토큰:{}", parseToken);
+
+        /*String subject = jwtService.validateTokenAndGetSubject(parseToken);
+
+        log.info("홈화면에서 토큰의 subject 확인:{}", parseToken);
+
+        String socialType = jwtService.getSocialTypeFromToken(parseToken);
+
+        log.info("subject (email), socialType:{}, {}", subject, socialType);
+
+        if (socialType.equals(SocialType.NONE.toString())) {
+            Optional<Users> byUserId = loginRepository.findByUserId(subject);
+
+            log.info("checking home user id:{}", byUserId.get());
+        } else {
+            Optional<SocialUser> bySocialId = socialUserRepository.findBySocialId(subject);
+
+            log.info("checking home social user id:{}", bySocialId.get());
+        }*/
+
+        return jwtService.validateTokenAndGetSubject(parseToken);
     }
 
 }

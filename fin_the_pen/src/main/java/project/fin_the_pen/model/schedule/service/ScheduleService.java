@@ -10,7 +10,7 @@ import project.fin_the_pen.finClient.core.error.customException.FailSaveSchedule
 import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundException;
 import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
-import project.fin_the_pen.finClient.core.util.TokenManager;
+import project.fin_the_pen.finClient.core.util.TokenParser;
 import project.fin_the_pen.model.schedule.dto.*;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
@@ -31,7 +31,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ObjectMapper objectMapper;
     private final UsersTokenRepository tokenRepository;
-    private final TokenManager tokenManager;
+    private final TokenParser tokenParser;
 
     private List convertSnakeList(List<ScheduleResponseDTO> list) {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
@@ -47,7 +47,7 @@ public class ScheduleService {
         boolean flag = false;
 
         try {
-            String extractToken = tokenManager.parseBearerToken(request);
+            String extractToken = tokenParser.parseBearerToken(request);
 
             if (extractToken == null)
                 throw new RuntimeException();
@@ -138,7 +138,7 @@ public class ScheduleService {
         Map<Object, Object> responseMap = new HashMap<>();
 
         try {
-            String accessToken = tokenManager.parseBearerToken(request);
+            String accessToken = tokenParser.parseBearerToken(request);
 
             if (accessToken == null) {
                 throw new RuntimeException();
@@ -171,7 +171,7 @@ public class ScheduleService {
             boolean flag = false;
 
             try {
-                String extractToken = tokenManager.parseBearerToken(request);
+                String extractToken = tokenParser.parseBearerToken(request);
 
                 if (extractToken == null)
                     throw new RuntimeException();
@@ -304,7 +304,7 @@ public class ScheduleService {
 
     public Boolean deleteSchedule(DeleteScheduleDTO dto, HttpServletRequest request) {
         try {
-            String extractToken = tokenManager.parseBearerToken(request);
+            String extractToken = tokenParser.parseBearerToken(request);
 
             if (extractToken == null)
                 throw new RuntimeException();
@@ -364,7 +364,7 @@ public class ScheduleService {
      * @return
      */
     public Map<Object, Object> findMonthSchedule(String date, String userId, HttpServletRequest request) {
-        String accessToken = tokenManager.parseBearerToken(request);
+        String accessToken = tokenParser.parseBearerToken(request);
         Map<Object, Object> responseMap = new HashMap<>();
 
         try {

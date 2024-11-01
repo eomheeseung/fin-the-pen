@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 @Component
 @Aspect
 public class TokenValidationAspect {
-    private final TokenManager tokenManager;
+    private final TokenParser tokenParser;
 
     @Autowired
-    public TokenValidationAspect(TokenManager tokenManager) {
-        this.tokenManager = tokenManager;
+    public TokenValidationAspect(TokenParser tokenParser) {
+        this.tokenParser = tokenParser;
     }
 
     /**
@@ -48,7 +48,7 @@ public class TokenValidationAspect {
         for (Object arg : args) {
             if (arg instanceof HttpServletRequest) {
                 HttpServletRequest request = (HttpServletRequest) arg;
-                String accessToken = tokenManager.parseBearerToken(request);
+                String accessToken = tokenParser.parseBearerToken(request);
 
                 if (accessToken == null) {
                     throw new TokenNotFoundException("Token not found");

@@ -42,8 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         User user = parseUserSpecification(token);
 
         AbstractAuthenticationToken authenticated =
-                UsernamePasswordAuthenticationToken
-                        .authenticated(user, token, user.getAuthorities());
+                UsernamePasswordAuthenticationToken.authenticated(user, token, user.getAuthorities());
 
         authenticated.setDetails(new WebAuthenticationDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticated);
@@ -53,13 +52,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String parseBearerToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
-        log.info("error pointing accessToken value :{}", authorization);
+        log.info("filter parsing accessToken value :{}", authorization);
 
         return Optional.ofNullable(authorization)
                 .filter(token -> token.startsWith("Bearer ")) // Length check
-                .map(token -> token.substring(7)) // Extract the token
+                .map(token -> token.substring(7).trim()) // Extract the token
                 .orElse(null);
     }
+
 
     private User parseUserSpecification(String token) {
         String[] split = Optional.ofNullable(token)
@@ -68,6 +68,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .orElse("anonymous:anonymous")
                 .split(":");
 
-        return new User(split[0], "", List.of(new SimpleGrantedAuthority(split[1])));
+        // 배열 길이를 체크하여 안전하게 User 객체를 생성
+        String username = split.length > 0 ? split[0] : "anonymous"; // 기본값
+        String authority = split.length > 1 ? split[1] : "ROLE_ANONYMOUS"; // 기본 역할
+
+        return new User(username, "", List.of(new SimpleGrantedAuthority(authority)));
     }
+
 }

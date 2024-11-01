@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.fin_the_pen.config.oauth2.socialDomain.SocialType;
 
@@ -18,10 +19,11 @@ import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JwtService {
     private final JwtProperties jwtProperties;
 
-    public String createAccessToken(String userSpecification, SocialType socialType) {
+    public String createAccessToken(String email, SocialType socialType) {
         Date accessExpiration = Date.from(
                 Instant
                         .now()
@@ -30,17 +32,17 @@ public class JwtService {
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("socialType", socialType.toString());
 
+        log.info("토큰 생성 시점에 subject 확인:{}", email);
 
         return Jwts.builder()
-                // HS512 알고리즘을 사용
+                .setClaims(claims)  // Claims 설정
+                .setSubject(email)   // subject 설정 (setClaims 이후에 호출)
                 .signWith(new SecretKeySpec(jwtProperties.getSecretKey().getBytes(),
                         SignatureAlgorithm.HS512.getJcaName()))
-                .setSubject(userSpecification)  // JWT 토큰 제목
-                .setClaims(claims)
-                .setIssuer(jwtProperties.getIssuer())  // JWT 토큰 발급자
-                .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))    // JWT 토큰 발급 시간
-                .setExpiration(accessExpiration)    // JWT 토큰 만료 시간
-                .compact();// JWT 토큰 생성
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
+                .setExpiration(accessExpiration)
+                .compact();
     }
 
     public String createRefreshToken() {

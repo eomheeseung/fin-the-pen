@@ -1,7 +1,6 @@
 package project.fin_the_pen.model.user.repository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import project.fin_the_pen.config.security.TokenProvider;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
@@ -22,7 +21,7 @@ public class LoginRepository {
     EntityManager entityManager;
 
     private final CRUDLoginRepository crudLoginRepository;
-    private final PasswordEncoder passwordEncoder;
+//    private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
     /*public void init() {

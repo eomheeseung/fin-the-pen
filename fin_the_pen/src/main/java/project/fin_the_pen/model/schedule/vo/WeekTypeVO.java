@@ -12,7 +12,7 @@ public class WeekTypeVO {
     @Schema(example = "MONDAY, TUESDAY, FRIDAY")
     private String repeatDayOfWeek;
 
-    @JsonProperty("repeat_value")
+    @JsonProperty("repeat_term")
     @Schema(example = "2")
-    private String value;
+    private String repeatTerm;
 }

@@ -6,18 +6,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
-import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
+import project.fin_the_pen.model.schedule.dto.DeleteScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
+import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.service.ScheduleService;
+import project.fin_the_pen.model.schedule.template.TemplateService;
 import project.fin_the_pen.model.schedule.vo.FindAllScheduleVO;
-import project.fin_the_pen.model.schedule.vo.FindCertainMonthVO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -31,35 +30,46 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ScheduleController {
     private final ScheduleService scheduleService;
     private final ConvertResponse convertResponse;
+    private final TemplateService templateService;
 
     /**
-     * header에 authorization에 "Bearer ~"로 들어온 것을 파싱하고 db와 비교해서 로직 수행
+     * 일정등록
+     * TODO
+     *  register_template : true
+     *  인 경우 일정을 만들면서 템플릿을 만들기만 함...
+     *  템플릿이 만들어진 상태에서 새로운 일정을 등록할 때 템플릿에 어떻게 포함시킬지
      *
      * @param dto
      * @return
      */
     @PostMapping(value = "/createSchedule", produces = "application/json")
-    @Operation(description = "일정을 등록하는 API입니다.  " +
-            "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 <br>" +
+    @Operation(description = "일정을 등록하는 API입니다.  " + "(일정이름, 카테고리, 시작일자 및 시간, 종료일자 및 시간)이 동일하다면 중복된 일정으로 판단 <br>" +
             "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" +
             "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>",
             summary = "일정등록 (O)")
-    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto,
-                                                   HttpServletRequest request) {
+    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto, HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
 
             if (responseMap.get("data").equals(dto.getUserId())) {
-                log.info("일정 - " + dto.getUserId() + " 의 일정 이름: " + dto.getEventName());
-                return ResponseEntity.ok().body(responseMap);
+                log.info("일정: {}", dto.getUserId() + " 의 일정 이름: {}", dto.getEventName());
+
             } else throw new RuntimeException();
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RuntimeException e) {
             // 에러 핸들링 로직 추가
-            log.error("일정 등록 중 에러 발생", e);
+            log.error("일정 등록 중 에러 발생 :{}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/createSchedule", produces = "application/json")
+    @Operation(description = "일정을 등록하는 API입니다. (그전에 등록되어 있는 템플릿을 먼저 불러오기 위해서 login Id를 통해서 템플릿을 조회합니다.)",
+            summary = "일정등록 (O)")
+    public ResponseEntity<Object> registerSchedule(@RequestParam("user_id") String userId, HttpServletRequest request) {
+        return ResponseEntity.ok().body(templateService.viewTemplateList(userId, request));
     }
 
 
@@ -71,11 +81,10 @@ public class ScheduleController {
      * @return
      */
     @PostMapping(value = "/getAllSchedules", produces = "application/json")
-    @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.",
-            summary = "모든 일정 조회 (O)")
+    @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.", summary = "모든 일정 조회 (O)")
     public ResponseEntity<Object> findAllSchedule(@RequestBody FindAllScheduleVO findAllScheduleVO, HttpServletRequest request) {
         try {
-            Map<String, Object> responseMap = scheduleService.findAllSchedule(findAllScheduleVO.getUserId(), request);
+            Map<Object, Object> responseMap = scheduleService.findAllSchedule(findAllScheduleVO.getUserId(), request);
             log.info(responseMap.get("data").toString());
             return convertResponse.getResponseEntity(responseMap);
         } catch (Exception e) {
@@ -83,36 +92,18 @@ public class ScheduleController {
         }
     }
 
-    @PostMapping("/getMonthSchedules")
-    @Operation(description = "user의 login된 id와 date로 해당하는 date의 월별 모든 일정들을 조회합니다.",
-            summary = "월별 조회 (O)")
-    public ResponseEntity<Object> findMonthSchedule(@RequestBody FindCertainMonthVO findCertainMonthVO, HttpServletRequest request) {
-        if (findCertainMonthVO.getDate() == null) {
-            return ResponseEntity.ok().body("현재 등록된 일정은 없습니다.");
-        }
-
-        Map<String, Object> responseMap =
-                scheduleService.findMonthSchedule(findCertainMonthVO.getDate(), findCertainMonthVO.getUserId(), request);
-
-        return convertResponse.getResponseEntity(responseMap);
-    }
-
     @PostMapping("/getMonthSchedules/section")
     public ResponseEntity<Object> findMonthSectionSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
         log.info(map.get("date"));
-        Map<String, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"),
-                map.get("endDate"),
-                map.get("user_id"));
+        Map<Object, Object> responseMap = scheduleService.findMonthSectionSchedule(map.get("startDate"), map.get("endDate"), map.get("user_id"));
 
         return convertResponse.getResponseEntity(responseMap);
     }
 
     @PostMapping("/findCategory")
     @Operation(description = "카테고리로 모든 일정을 조회합니다.", summary = "카테고리 조회")
-    public ResponseEntity<Object> findScheduleCategory(@RequestBody CategoryRequestDTO
-                                                               categoryRequestDTO, HttpSession session) {
-        Map<String, Object> responseMap = scheduleService
-                .findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
+    public ResponseEntity<Object> findScheduleCategory(@RequestBody CategoryRequestDTO categoryRequestDTO, HttpSession session) {
+        Map<Object, Object> responseMap = scheduleService.findScheduleCategory(categoryRequestDTO, session.getAttribute("session").toString());
 
         return convertResponse.getResponseEntity(responseMap);
     }
@@ -120,16 +111,7 @@ public class ScheduleController {
     @PostMapping("/find/contains/name")
     @Operation(description = "일정의 이름에 해당하는 단어(키워드)를 넣으면 match된 모든 일정을 조회합니다.", summary = "일정을 이름으로 검색")
     public ResponseEntity<Object> findByContainsName(@RequestBody ConcurrentHashMap<String, String> map) {
-        Map<String, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
-
-        return convertResponse.getResponseEntity(responseMap);
-    }
-
-    @PostMapping("/report")
-    @Operation(description = "입력된 월의 소비 리포트를 조회합니다.", summary = "리포트 조회")
-    public ResponseEntity<Object> consumeReport(@RequestBody ConsumeReportRequestDTO dto, HttpServletRequest request) {
-        Map<String, Object> responseMap =
-                scheduleService.inquiryReport(dto, request);
+        Map<Object, Object> responseMap = scheduleService.findByContainsName(map.get("name"));
 
         return convertResponse.getResponseEntity(responseMap);
     }
@@ -141,16 +123,16 @@ public class ScheduleController {
      * @return
      */
     @PostMapping("/modifySchedule")
-    @Operation(description = "일정을 수정합니다.", summary = "일정 수정")
-    public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO,
-                                                 HttpServletRequest request) {
+    @Operation(description = "일정을 수정 <br>" +
+            "modify_options에 들어가는 목록<br>" +
+            " - nowFromAfter : 선택된 현재 일정부터 이후까지<br>" +
+            " - exceptNowAfter : 현재 일정 제외하고 이후<br>" +
+            " - all : 모든 일정", summary = "일정 수정")
+    public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
-            Map<Object, Object> responseMap = scheduleService.modifySchedule(modifyScheduleDTO, request);
+            Boolean flag = scheduleService.modifySchedule(modifyScheduleDTO, request);
 
-           /* if (responseMap.get("data").equals(modifyScheduleDTO.getScheduleRequestDTO().getUserId())) {
-                log.info("일정 - " + modifyScheduleDTO.getScheduleRequestDTO().getUserId() + " 의 일정 이름: " + modifyScheduleDTO.getScheduleRequestDTO().getEventName());*/
-                return ResponseEntity.ok().build();
-//            } throw new RuntimeException();
+            return ResponseEntity.ok().body(flag);
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RuntimeException e) {
@@ -160,38 +142,85 @@ public class ScheduleController {
         }
     }
 
-    /*@PostMapping("/deleteSchedule")
-    public boolean deleteSchedule(@RequestBody ConcurrentHashMap<String, String> map) {
-        log.info(map.get("id"));
-        if (scheduleService.deleteSchedule(map.get("id"))) {
-            return true;
+    /*@GetMapping("/template/import/select")
+    @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
+            "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
+            "템플릿을 가져옴.", summary = "카테고리 선택 후 템플릿 가져오기")
+    public ResponseEntity<Object> templateImport(@RequestParam("template_id") String templateId,
+                                                 @RequestParam("is_import") Boolean isImport,
+                                                 HttpServletRequest request) {
+
+        if (!isImport) {
+            return ResponseEntity.ok().build();
         } else {
-            return false;
+            templateService.importAndSaveTemplate(templateId, request);
         }
     }*/
 
-    // 여기를 수정해야 함
-    /*
-     *
-     *
-     * */
-
-
     /**
-     * uuid 하나로만 일정 조회
+     * case3) 얘가 문제
+     * 오류
      *
-     * @param
+     * @param request
      * @return
      */
-//    @PostMapping("/findOne")
-//    @ResponseBody
-//    public ScheduleResponseDTO findOne(@RequestBody ConcurrentHashMap<String, String> map) {
-//        log.info(String.valueOf(map.get("id")));
-//
-//        ScheduleResponseDTO find = scheduleService.findOne(map.get("id"));
-//        log.info(find.getId());
-//
-//        return find;
-//    }
+    /*@GetMapping("/template/is_exists")
+    @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
+            "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
+            "템플릿의 {이름, 카테고리명}을 반환하고, 없다면 {템플릿이 없다고 반환}",
+            summary = "카테고리 선택을 누르고 동일한 정기템플릿이 있는지 확인하고 바인딩")
+    public ResponseEntity<Object> isTemplate(@RequestParam("userId") String userId,
+                                             @RequestParam("category_name") String categoryName,
+                                             @RequestParam("event_name") String eventName,
+                                             HttpServletRequest request) {
+        Map<String, Object> responseMap = templateService.selectedTemplate(userId, categoryName, eventName, request);
+        return ResponseEntity.ok().body(responseMap);
+    }*/
 
+    /**
+     * case4
+     * 오류
+     *
+     * @param templateId
+     * @param templateName
+     * @param request
+     * @return
+     */
+    @PostMapping("/createSchedule/template")
+    @Operation(description = "정기 템플릿을 선택하여 일정을 만드는 경우" +
+            "templateId를 사용해서 response로 템플릿 내부의 데이터들을 가져옴", summary = "정기 템플릿을 선택하여 일정을 만드는 경우")
+    public ResponseEntity<Object> isTemplate(@RequestParam("template_id") String templateId,
+                                             @RequestParam("template_name") String templateName, HttpServletRequest request) {
+        ScheduleResponseDTO responseDto = templateService.responseTemplate(templateId, templateName, request);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    /**
+     * 일정 삭제
+     */
+    @DeleteMapping("/deleteSchedule")
+    @Operation(description = "일정을 삭제합니다. <br>" + "nowFromAfter : 현재일정부터 삭제 <br>" +
+            "exceptNowAfter : 현재를 제외하고 삭제 <br>" + "all : 전체 일정 삭제 <br>" + "none : 현재 일정만 삭제", summary = "일정 삭제")
+
+    public ResponseEntity<Object> deleteSchedule(@RequestBody DeleteScheduleDTO dto, HttpServletRequest request) {
+        try {
+            scheduleService.deleteSchedule(dto, request);
+            return ResponseEntity.ok().build();
+        } catch (DuplicatedScheduleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            // 에러 핸들링 로직 추가
+            log.error("일정 삭제 중 에러 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    /**
+     * 정기 템플릿 (전체보기)
+     */
+    @GetMapping("/template/details")
+    @Operation(description = "일정등록에서 정기템플릿 전체보기를 했을 경우", summary = "정기 템플릿 전체 보기")
+    public ResponseEntity<Object> templateDetailsView(@RequestParam("user_id") String userId, HttpServletRequest request) {
+        return ResponseEntity.ok().body(templateService.viewAllTemplateList(userId, request));
+    }
 }

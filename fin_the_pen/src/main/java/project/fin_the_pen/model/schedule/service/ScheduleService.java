@@ -11,12 +11,7 @@ import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundExc
 import project.fin_the_pen.finClient.core.util.ScheduleModifyFunc;
 import project.fin_the_pen.finClient.core.util.ScheduleTypeFunc;
 import project.fin_the_pen.finClient.core.util.TokenManager;
-import project.fin_the_pen.model.report.ConsumeReportRequestDTO;
-import project.fin_the_pen.model.report.ConsumeReportResponseDTO;
-import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
-import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
-import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
-import project.fin_the_pen.model.schedule.dto.TypeManageDTO;
+import project.fin_the_pen.model.schedule.dto.*;
 import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
@@ -128,14 +123,19 @@ public class ScheduleService {
             throw new RuntimeException(e.getMessage());
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
-//            throw new RuntimeException("등록 오류입니다.");
         }
     }
 
 
-    // 수정 완료
-    public Map<String, Object> findAllSchedule(String userId, HttpServletRequest request) {
-        Map<String, Object> responseMap = new HashMap<>();
+    /**
+     * 모든 일정 조회
+     *
+     * @param userId
+     * @param request
+     * @return
+     */
+    public Map<Object, Object> findAllSchedule(String userId, HttpServletRequest request) {
+        Map<Object, Object> responseMap = new HashMap<>();
 
         try {
             String accessToken = tokenManager.parseBearerToken(request);
@@ -166,7 +166,7 @@ public class ScheduleService {
         return responseMap;
     }
 
-    public Map<Object, Object> modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
+    public Boolean modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
         try {
             boolean flag = false;
 
@@ -216,19 +216,83 @@ public class ScheduleService {
                                 flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "year");
                             }
                         }
-
                         break;
-                    /*case "exceptNowAfter":
+                    case "exceptNowAfter":
+                        if (repeat.getKindType().equals("day")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "day");
+
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "day");
+                            }
+                        } else if (repeat.getKindType().equals("week")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "week");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "week");
+                            }
+                        } else if (repeat.getKindType().equals("month")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "month");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "month");
+                            }
+                        } else if (repeat.getKindType().equals("year")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "year");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "year");
+                            }
+                        }
                         break;
                     case "all":
-                        break;*/
+                        if (repeat.getKindType().equals("day")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "day");
+
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "day");
+                            }
+                        } else if (repeat.getKindType().equals("week")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "week");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "week");
+                            }
+                        } else if (repeat.getKindType().equals("month")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "month");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "month");
+                            }
+                        } else if (repeat.getKindType().equals("year")) {
+                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "year");
+                            } else {
+                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "year");
+                            }
+                        }
+                        break;
                 }
 
-
                 if (flag) {
-                    HashMap<Object, Object> responseMap = new HashMap<>();
-                    responseMap.put("data", objectMapper.convertValue(modifyScheduleDTO.getUserId(), String.class));
-                    return responseMap;
+                    return flag;
                 } else throw new FailSaveScheduleException("일정 수정 실패");
             } catch (TokenNotFoundException e) {
                 throw new RuntimeException();
@@ -238,9 +302,39 @@ public class ScheduleService {
         }
     }
 
-    public Map<String, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
+    public Boolean deleteSchedule(DeleteScheduleDTO dto, HttpServletRequest request) {
+        try {
+            String extractToken = tokenManager.parseBearerToken(request);
+
+            if (extractToken == null)
+                throw new RuntimeException();
+
+            tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
+            String options = dto.getOptions();
+
+            switch (options) {
+                case "nowFromAfter":
+                    scheduleRepository.deleteNowFromAfter(dto);
+                    break;
+                case "exceptNowAfter":
+                    scheduleRepository.deleteExceptNotAfter(dto);
+                    break;
+                case "all":
+                    scheduleRepository.deleteAllSchedule(dto);
+                    break;
+                case "none":
+                    scheduleRepository.deleteSingle(dto);
+            }
+
+        } catch (RuntimeException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public Map<Object, Object> findScheduleCategory(CategoryRequestDTO categoryRequestDTO, String currentSession) {
         List<Schedule> responseArray = scheduleRepository.findScheduleByCategory(categoryRequestDTO, currentSession);
-        Map<String, Object> responseMap = new HashMap<>();
+        Map<Object, Object> responseMap = new HashMap<>();
 
 
         if (responseArray.isEmpty()) {
@@ -269,9 +363,9 @@ public class ScheduleService {
      * @param request
      * @return
      */
-    public Map<String, Object> findMonthSchedule(String date, String userId, HttpServletRequest request) {
+    public Map<Object, Object> findMonthSchedule(String date, String userId, HttpServletRequest request) {
         String accessToken = tokenManager.parseBearerToken(request);
-        Map<String, Object> responseMap = new HashMap<>();
+        Map<Object, Object> responseMap = new HashMap<>();
 
         try {
             if (accessToken == null) {
@@ -317,73 +411,9 @@ public class ScheduleService {
         return responseMap;
     }
 
-    public Map<String, Object> inquiryReport(ConsumeReportRequestDTO dto, HttpServletRequest request) {
-        String accessToken = tokenManager.parseBearerToken(request);
-        Map<String, Object> responseMap = new HashMap<>();
-
-        String userId = dto.getUserId();
-        String date = dto.getDate();
-
-        Map<String, Integer> map = new HashMap<>();
-
-        try {
-            if (accessToken == null) {
-                throw new RuntimeException();
-            }
-
-            Optional<UsersToken> findToken = Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
-                    .orElseThrow(() -> new TokenNotFoundException("token not found")));
-
-            // 현재 토큰으로 로그인 된 사용자의 userId와 클라이언트로부터 전달받은 userId값이 일치하지 않은 경우 error!!!
-            if (!findToken.get().getUserId().equals(userId)) {
-                throw new Exception("error");
-            } else {
-                List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
-
-                if (responseArray.isEmpty()) {
-                    responseMap.put("data", "error");
-                } else {
-
-                    responseArray.forEach(schedule -> {
-                        String category = schedule.getCategory();
-                        Integer amount = Integer.parseInt(schedule.getAmount());
-
-                        if (schedule.getPriceType().equals(PriceType.Minus)) {
-                            map.compute(category, (key, value) -> (value == null) ? amount : value + amount);
-                        }
-                    });
-                }
-
-
-                // Map의 entry를 List로 변환
-                List<Map.Entry<String, Integer>> entryList = new ArrayList<>(map.entrySet());
-
-                // Comparator를 사용하여 value를 기준으로 내림차순 정렬
-                entryList.sort((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()));
-
-                List<Map.Entry<String, Integer>> topEntries = entryList.subList(0, Math.min(5, entryList.size()));
-                int sum = topEntries.stream().mapToInt(Map.Entry::getValue).sum();
-
-                List<ConsumeReportResponseDTO> responseList = new ArrayList<>();
-
-                for (Map.Entry<String, Integer> entry : topEntries) {
-                    int percentage = (int) ((entry.getValue() * 100.0) / sum);
-                    responseList.add(new ConsumeReportResponseDTO(entry.getKey(), entry.getValue(), String.valueOf(percentage)));
-                }
-
-
-                responseMap.put("data", responseList);
-
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("error");
-        }
-        return responseMap;
-    }
-
     private ScheduleResponseDTO createScheduleResponseDTO(Schedule schedule) {
         return ScheduleResponseDTO.builder()
-                .id(schedule.getId())
+                .scheduleId(schedule.getId())
                 .userId(schedule.getUserId())
                 .eventName(schedule.getEventName())
                 .category(schedule.getCategory())
@@ -392,20 +422,20 @@ public class ScheduleService {
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
                 .allDay(schedule.isAllDay())
-//                .repeat(schedule.getRepeat())
+                .repeatOptions(schedule.getRepeatOptions())
                 .period(schedule.getPeriod())
                 .priceType(schedule.getPriceType())
                 .isExclude(schedule.isExclude())
-                .importance(schedule.getImportance())
+                .paymentType(schedule.getPaymentType().toString())
                 .amount(schedule.getAmount())
                 .isFixAmount(schedule.isFixAmount())
                 .build();
     }
 
-    public Map<String, Object> findMonthSectionSchedule(String startDate, String endDate, String userId) {
+    public Map<Object, Object> findMonthSectionSchedule(String startDate, String endDate, String userId) {
         List<Schedule> responseArray = scheduleRepository.findMonthSectionSchedule(startDate, endDate, userId);
 
-        HashMap<String, Object> responseMap = new HashMap<>();
+        HashMap<Object, Object> responseMap = new HashMap<>();
 
         if (responseArray.isEmpty())
             responseMap.put("data", "error");
@@ -433,10 +463,10 @@ public class ScheduleService {
 //        return scheduleRepository.findOneSchedule(uuid);
 //    }
 
-    public Map<String, Object> findByContainsName(String name) {
+    public Map<Object, Object> findByContainsName(String name) {
         List<Schedule> responseArray = scheduleRepository.findByContainsName(name);
 
-        HashMap<String, Object> responseMap = new HashMap<>();
+        HashMap<Object, Object> responseMap = new HashMap<>();
 
         if (responseArray.isEmpty()) {
             responseMap.put("data", "error");

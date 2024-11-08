@@ -1,15 +1,20 @@
 package project.fin_the_pen.model.schedule.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
-import project.fin_the_pen.model.schedule.entity.type.RepeatType;
+import project.fin_the_pen.model.schedule.entity.type.UnitedType;
 import project.fin_the_pen.model.schedule.type.PriceType;
 
 @Data
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+@NoArgsConstructor
 public class ScheduleResponseDTO {
     // schedule의 기본키
-    private Long id;
+    private Long scheduleId;
     private String userId;
     private String eventName;
     private String category;
@@ -18,17 +23,22 @@ public class ScheduleResponseDTO {
     private String startTime;
     private String endTime;
     private boolean allDay;
-    private RepeatType repeat;
+    private UnitedType repeatOptions;
     private PeriodType period;
     private String priceType;
     private boolean isExclude;
-    private String importance;
+    private String paymentType;
     private String amount;
     private boolean isFixAmount;
+    private String repeatKind;
 
     @Builder
-    public ScheduleResponseDTO(Long id, String userId, String eventName, String category, String startDate, String endDate, String startTime, String endTime, boolean allDay, RepeatType repeat, PeriodType period, PriceType priceType, boolean isExclude, String importance, String amount, boolean isFixAmount) {
-        this.id = id;
+    public ScheduleResponseDTO(Long scheduleId, String userId, String eventName, String category,
+                               String startDate, String endDate, String startTime, String endTime, boolean allDay,
+                               UnitedType repeatOptions, PeriodType period, PriceType priceType,
+                               boolean isExclude, String paymentType, String amount, boolean isFixAmount,
+                               String repeatKind) {
+        this.scheduleId = scheduleId;
         this.userId = userId;
         this.eventName = eventName;
         this.category = category;
@@ -37,12 +47,13 @@ public class ScheduleResponseDTO {
         this.startTime = startTime;
         this.endTime = endTime;
         this.allDay = allDay;
-        this.repeat = repeat;
+        this.repeatOptions = repeatOptions;
         this.period = period;
         this.priceType = priceType.getType();
         this.isExclude = isExclude;
-        this.importance = importance;
+        this.paymentType = paymentType;
         this.amount = amount;
         this.isFixAmount = isFixAmount;
+        this.repeatKind = repeatKind;
     }
 }

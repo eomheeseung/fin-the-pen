@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DayTypeVO {
-    @JsonProperty("repeat_value")
+    @JsonProperty("repeat_term")
     @Schema(example = "2")
-    private String value;
+    private String repeatTerm;
 }

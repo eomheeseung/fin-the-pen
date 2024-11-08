@@ -29,7 +29,6 @@ public class TypeManageDTO {
     @Schema(example = "week")
     private String kindType;
 
-
     /*@Schema(description = "반복 횟수", example = "2")
     private String value;*/
 }

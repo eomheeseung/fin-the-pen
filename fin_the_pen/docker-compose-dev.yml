@@ -1,47 +1,53 @@
 version: "3"
 
 services:
-  finthepen-db:
-    container_name: finthepen-db
+  finthepen-dev-db:
+    container_name: finthepen-dev-db
     image: mysql:8.0.34
-    restart: always
+    restart: no
     volumes:
-      - mysql-volume:/var/lib/mysql
+      - mysql-dev-volume:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=finthepen!0102  # root 비밀번호 설정
+      - MYSQL_ROOT_PASSWORD=Finthepen
       - MYSQL_DATABASE=fin_the_pen
     ports:
       - "3307:3306"
     networks:
-      - finthepen-network
+      - finthepen-dev-network
 
-  finthepen-server:
+  finthepen-dev-server:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: finthepen-server
-    restart: always
+    container_name: finthepen-dev-server
+    restart: no
     volumes:
-      - finthepen-volume:/var/log
+      - finthepen-dev-volume:/var/log
     ports:
-      - "8083:8080"
+      - "8082:8080"
     networks:
-      - finthepen-network
+      - finthepen-dev-network
     depends_on:
-      - finthepen-db
-    environment:
-#      - DATABASE_URL=jdbc:mysql://finthepen-db:3306/fin_the_pen
-#      - DATABASE_USERNAME=finthepen
-#      - DATABASE_PASSWORD=finthepen!0102
-      - SPRING_PROFILES_ACTIVE=dev
-    image: finthepen-server-image
+      - finthepen-dev-db
+
+#  finthepen-dev-client:
+#    build:
+#      context: /Users/taeyang/git/fin-the-pen-web
+#      dockerfile: Dockerfile
+#    container_name: finthepen-dev-client
+#    restart: no
+#    ports:
+#      - "5174:5174"
+#    networks:
+#        - finthepen-dev-network
+#    command: ["sh", "-c", "yarn install && yarn dev --host 0.0.0.0"]
 
 networks:
-  finthepen-network:
+  finthepen-dev-network:
     driver: bridge
 
 volumes:
-  mysql-volume:
+  mysql-dev-volume:
     driver: local
-  finthepen-volume:
+  finthepen-dev-volume:
     driver: local

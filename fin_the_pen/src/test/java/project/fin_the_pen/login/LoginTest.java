@@ -25,7 +25,6 @@ public class LoginTest {
         userRequestDTO.setUserId("test");
         userRequestDTO.setPassword("test1234");
         userRequestDTO.setName("테스터1");
-        loginController.join(userRequestDTO);
     }
 
     /*@Test

@@ -2,7 +2,6 @@ package project.fin_the_pen.config.jwt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-@Order(0)
+
 @Component
 @RequiredArgsConstructor
 @Slf4j

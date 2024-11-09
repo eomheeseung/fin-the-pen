@@ -15,7 +15,7 @@ import project.fin_the_pen.model.schedule.dto.ScheduleResponseDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
-import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
+import project.fin_the_pen.model.user.repository.UsersRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.DayOfWeek;
@@ -36,7 +36,7 @@ public class HomeService {
     private final ReportRepository reportRepository;
     private final CrudScheduleRepository scheduleRepository;
     private final SocialUserRepository socialUserRepository;
-    private final CRUDLoginRepository loginRepository;
+    private final UsersRepository loginRepository;
     private final JwtService jwtService;
     private final TokenParser tokenParser;
 

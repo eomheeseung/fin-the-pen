@@ -9,7 +9,7 @@ import project.fin_the_pen.model.user.entity.Users;
 import java.util.Optional;
 
 @Repository
-public interface CRUDLoginRepository extends JpaRepository<Users, Long> {
+public interface UsersRepository extends JpaRepository<Users, Long> {
     @Query("select u from Users u where u.userId = :loginId")
     public Optional<Users> findByUserId(@Param("loginId") String loginId);
 

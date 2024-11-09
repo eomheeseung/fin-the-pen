@@ -29,6 +29,7 @@ public class LoginController {
     @PostMapping(value = "/sign-up", produces = "application/json")
     @Operation(summary = "회원 가입 (O)")
     public ResponseEntity<Object> signUp(@RequestBody UserRequestDTO userRequestDTO) {
+        log.info("회원 가입 method call");
         UserResponseDTO userResponseDTO = loginService.signUp(userRequestDTO);
         return ResponseEntity.ok().body(userResponseDTO);
 //        return ApiResponse.success(loginService.signUp(userRequestDTO));

@@ -47,7 +47,8 @@ public class ScheduleController {
             "매일의 경우 (value,kind_type)만 넣어주면 됩니다.<br>" +
             "특정 주간의 경우 (value, kind_type=week, day_of_XXX=MONDAY, SUNDAY...)으로 넣어주면 됩니다.<br>",
             summary = "일정등록 (O)")
-    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto, HttpServletRequest request) {
+    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto,
+                                                   HttpServletRequest request) {
         try {
             Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
 
@@ -68,7 +69,8 @@ public class ScheduleController {
     @GetMapping(value = "/createSchedule", produces = "application/json")
     @Operation(description = "일정을 등록하는 API입니다. (그전에 등록되어 있는 템플릿을 먼저 불러오기 위해서 login Id를 통해서 템플릿을 조회합니다.)",
             summary = "일정등록 (O)")
-    public ResponseEntity<Object> registerSchedule(@RequestParam("user_id") String userId, HttpServletRequest request) {
+    public ResponseEntity<Object> registerSchedule(@RequestParam("user_id") String userId,
+                                                   HttpServletRequest request) {
         return ResponseEntity.ok().body(templateService.viewTemplateList(userId, request));
     }
 

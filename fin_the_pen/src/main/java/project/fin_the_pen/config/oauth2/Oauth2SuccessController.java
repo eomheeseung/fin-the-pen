@@ -6,59 +6,77 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import project.fin_the_pen.config.oauth2.custom.CustomOAuth2KakaoUser;
+import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.config.oauth2.custom.CustomOAuth2NaverUser;
-import project.fin_the_pen.config.oauth2.socialDomain.SocialType;
-import project.fin_the_pen.config.oauth2.socialDomain.SocialUserResponseDto;
 import project.fin_the_pen.finClient.core.error.customException.NotFoundDataException;
+import project.fin_the_pen.finClient.core.util.TokenParser;
+import project.fin_the_pen.model.user.entity.Users;
+import project.fin_the_pen.model.user.repository.UsersRepository;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 public class Oauth2SuccessController {
+    private final TokenParser tokenParser;
+    private final JwtService jwtService;
+    private final UsersRepository usersRepository;
 
     /**
      * 10-18
      * redirect하고,
      * front에서 fetch요청으로 /oauth2/success/info로 요청을 해야지 사용자의 정보와 자체 토큰을 발행해서 넣어줄 것임
-     * @param authentication
+     *
+     *
+     *
+     * 기존 uri : /oauth2/success/info
+     *
      * @return
      */
-    @GetMapping("/oauth2/success/info")
-    public ResponseEntity<SocialUserResponseDto> successTransferUserInfo(Authentication authentication) {
-        // 사용자 정보 가져오기
-        Optional<String> name = Optional.empty();
-        Optional<String> email = Optional.empty();
-        SocialUserResponseDto socialUserResponseDto = new SocialUserResponseDto();
-        socialUserResponseDto.setSocialType(SocialType.NONE);
+    @GetMapping("/api/user/info")
+    public ResponseEntity<HashMap<String, String>> successTransferUserInfo(HttpServletRequest request,
+                                                                           Authentication authentication) {
 
-        if (authentication.getPrincipal() instanceof CustomOAuth2NaverUser) {
-            CustomOAuth2NaverUser oAuth2User = (CustomOAuth2NaverUser) authentication.getPrincipal();
-            name = Optional.ofNullable(oAuth2User.getFullName());
-            email = Optional.ofNullable(oAuth2User.getEmail());
-            socialUserResponseDto.setSocialType(SocialType.NAVER);
-        } else if (authentication.getPrincipal() instanceof CustomOAuth2KakaoUser) {
-            CustomOAuth2KakaoUser oAuth2User = (CustomOAuth2KakaoUser) authentication.getPrincipal();
-            name = Optional.ofNullable(oAuth2User.getFullName());
-            email = Optional.ofNullable(oAuth2User.getEmail());
-            socialUserResponseDto.setSocialType(SocialType.KAKAO);
+        log.info("oauth2 성공시 사용자의 정보 가져오는 controller call");
+        String parseBearerToken = tokenParser.parseBearerToken(request);
+
+        // email이 id임
+        String userId = jwtService.getEmailFromToken(parseBearerToken);
+        String socialTypeFromToken = jwtService.getSocialTypeFromToken(parseBearerToken);
+
+        HashMap<String, String> responseMap = new HashMap<>();
+        responseMap.put("user_id", userId);
+
+        if (socialTypeFromToken.equalsIgnoreCase("naver")) {
+            CustomOAuth2NaverUser customOAuth2NaverUser = (CustomOAuth2NaverUser) authentication.getPrincipal();
+
+            String name = customOAuth2NaverUser.getFullName();
+
+            responseMap.put("name", name);
+        } else if (socialTypeFromToken.equalsIgnoreCase("kakao")) {
+            CustomOAuth2NaverUser customOAuth2NaverUser = (CustomOAuth2NaverUser) authentication.getPrincipal();
+
+            String name = customOAuth2NaverUser.getFullName();
+
+            responseMap.put("name", name);
+        } else if (socialTypeFromToken.equalsIgnoreCase("none")) {
+            Optional<Users> optionalUsers = usersRepository.findByUserId(userId);
+
+            if (optionalUsers.isPresent()) {
+                Users users = optionalUsers.get();
+                String name = users.getName();
+                responseMap.put("name", name);
+            } else {
+                throw new NotFoundDataException("사용자의 이름을 찾을 수 없습니다.");
+            }
         }
 
-        // SocialUserResponseDto는 사용자의 정보를 담은 DTO 클래스
-        if (name.isPresent()) {
-            socialUserResponseDto.setName(name.get());
-        } else {
-            throw new NotFoundDataException("사용자의 이름이 없습니다.");
-        }
-        if (email.isPresent()) {
-            socialUserResponseDto.setEmail(email.get());
-        } else {
-            throw new NotFoundDataException("사용자의 이메일이 없습니다.");
-        }
+        responseMap.keySet().forEach(key ->
+                log.info(key + ": {}", responseMap.get(key)));
 
-        log.info("호출 성공");
-        return ResponseEntity.ok(socialUserResponseDto);
+        return ResponseEntity.ok(responseMap);
     }
 }

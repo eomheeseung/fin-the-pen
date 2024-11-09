@@ -15,7 +15,7 @@ import project.fin_the_pen.model.user.dto.SignInResponse;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.entity.Users;
-import project.fin_the_pen.model.user.repository.CRUDLoginRepository;
+import project.fin_the_pen.model.user.repository.UsersRepository;
 import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +29,7 @@ import java.util.Optional;
 @Slf4j
 public class LoginService {
     private final PasswordEncoder encoder;
-    private final CRUDLoginRepository crudLoginRepository;
+    private final UsersRepository usersRepository;
     private final JwtService jwtService;
     private final UsersTokenRepository tokenRepository;
     private final TokenParser tokenParser;
@@ -45,10 +45,10 @@ public class LoginService {
      */
     @Transactional
     public UserResponseDTO signUp(UserRequestDTO userRequestDTO) {
-        Users users = crudLoginRepository.save(Users.from(userRequestDTO, encoder, SocialType.NONE));
+        Users users = usersRepository.save(Users.from(userRequestDTO, encoder, SocialType.NONE));
 
         try {
-            crudLoginRepository.flush();
+            usersRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("이미 사용중인 아이디입니다.");
         }
@@ -72,7 +72,7 @@ public class LoginService {
         String userId = dto.getUserId();
         String password = dto.getPassword();
 
-        Optional<Users> optionalUsers = crudLoginRepository.findByUserId(userId)
+        Optional<Users> optionalUsers = usersRepository.findByUserId(userId)
                 .filter(find -> encoder.matches(password,
                         find.getPassword()));
 

@@ -1,4 +1,4 @@
-package project.fin_the_pen.config.oauth2;
+package project.fin_the_pen.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import project.fin_the_pen.config.jwt.JwtAuthenticationFilter;
 import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.config.oauth2.custom.CustomOAuth2Service;
 import project.fin_the_pen.config.oauth2.custom.Oauth2UserService;
@@ -90,7 +92,8 @@ public class Oauth2SecurityConfig {
                         .logoutSuccessHandler(oauth2LogoutSuccessHandler())
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID"));
+                        .deleteCookies("JSESSIONID"))
+                .addFilterBefore(customJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 //                        .failureHandler(oauth2AuthenticationFailureHandler())
 
 
@@ -107,6 +110,11 @@ public class Oauth2SecurityConfig {
         return new CustomLogoutSuccessHandler();
     }
 
+
+    @Bean
+    public JwtAuthenticationFilter customJwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtService);
+    }
 
 
 

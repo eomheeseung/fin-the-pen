@@ -73,7 +73,6 @@ public class JwtService {
         return parseToken(token).get("email").toString();
     }
 
-
     private JwtParser getParser() {
         return Jwts.parserBuilder()
                 .setSigningKey(jwtProperties.getSecretKey().getBytes())

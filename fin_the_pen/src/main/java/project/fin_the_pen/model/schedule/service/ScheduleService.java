@@ -347,9 +347,6 @@ public class ScheduleService {
             log.info("status");
 
 
-            // 현재 토큰으로 로그인 된 사용자의 userId와 클라이언트로부터 전달받은 userId값이 일치하지 않은 경우 error!!!
-
-
             List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
 
             if (responseArray.isEmpty()) {
@@ -467,14 +464,4 @@ public class ScheduleService {
         return callback.modifyCallBack(dto);
     }
 
-    /**
-     * 리턴 받은 list를 get하는 함수
-     *
-     * @param scheduleList
-     * @param jsonArray
-     * @return
-     */
-    /*private JSONArray getJsonArrayBySchedule(List<Schedule> scheduleList, JSONArray jsonArray) {
-        return getJsonArray(scheduleList, jsonArray);
-    }*/
 }

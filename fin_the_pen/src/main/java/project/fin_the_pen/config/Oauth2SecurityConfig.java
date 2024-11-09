@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,7 +31,6 @@ import project.fin_the_pen.config.oauth2.handler.NaverLogoutHandler;
  *  customKakaoUser
  *  customNaverUser
  */
-@Order(1)
 @Configuration
 @EnableWebSecurity
 @Slf4j
@@ -44,6 +42,7 @@ public class Oauth2SecurityConfig {
     private final NaverLogoutHandler naverLogoutHandler;
     private final JwtService jwtService;
     private final OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
+
     private final String[] allowUrls
             = new String[]{"/",
             "/swagger-ui/**",
@@ -57,7 +56,8 @@ public class Oauth2SecurityConfig {
             "/login", "/css/**", "/js/**",
             "/h2-console/**",
             "/login/oauth2/code/naver",
-            "/login/oauth2/code/kakao"};
+            "/login/oauth2/code/kakao"
+    };
 
 
     @Bean

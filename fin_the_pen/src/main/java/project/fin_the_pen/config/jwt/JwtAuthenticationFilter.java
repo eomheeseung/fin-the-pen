@@ -37,6 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+
         String token = parseBearerToken(request);
         User user = parseUserSpecification(token);
 
@@ -58,7 +59,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .map(token -> token.substring(7).trim()) // Extract the token
                 .orElse(null);
     }
-
 
     private User parseUserSpecification(String token) {
         String[] split = Optional.ofNullable(token)

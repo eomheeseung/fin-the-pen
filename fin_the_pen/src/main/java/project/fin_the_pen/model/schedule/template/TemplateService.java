@@ -29,10 +29,12 @@ public class TemplateService {
     /**
      * 간단하게 3개만 보여주는 작업
      *
+     * 11.09 token에서 userId를 가져오게 바꿔야 함..
      * @param userId
      * @return
      */
-    public Map<String, Object> viewTemplateList(String userId, HttpServletRequest request) {
+    public Map<String, Object> viewTemplateList(String userId,
+                                                HttpServletRequest request) {
         List<Template> templates = templateRepository.findByUserId(userId);
 
         List<Template> sortedTemplates = templates.stream()

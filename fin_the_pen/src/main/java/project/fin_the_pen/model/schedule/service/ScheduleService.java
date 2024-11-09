@@ -16,11 +16,11 @@ import project.fin_the_pen.model.schedule.dto.category.CategoryRequestDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.repository.ScheduleRepository;
 import project.fin_the_pen.model.schedule.type.PriceType;
-import project.fin_the_pen.model.usersToken.entity.UsersToken;
-import project.fin_the_pen.model.usersToken.repository.UsersTokenRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ObjectMapper objectMapper;
-    private final UsersTokenRepository tokenRepository;
     private final TokenParser tokenParser;
 
     private List convertSnakeList(List<ScheduleResponseDTO> list) {
@@ -38,21 +37,10 @@ public class ScheduleService {
         return objectMapper.convertValue(list, List.class);
     }
 
-    private ScheduleResponseDTO convertSnakeSingle(ScheduleResponseDTO responseDTO) {
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-        return objectMapper.convertValue(responseDTO, ScheduleResponseDTO.class);
-    }
-
     public Map<Object, Object> registerSchedule(ScheduleRequestDTO requestDTO, HttpServletRequest request) {
         boolean flag = false;
 
         try {
-            String extractToken = tokenParser.parseBearerToken(request);
-
-            if (extractToken == null)
-                throw new RuntimeException();
-
-            tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
 
             switch (requestDTO.getRepeat().getKindType()) {
                 case "none":
@@ -144,14 +132,6 @@ public class ScheduleService {
                 throw new RuntimeException();
             }
 
-            Optional<UsersToken> findToken = tokenRepository.findUsersToken(accessToken)
-                    .map(Optional::of)
-                    .orElseThrow(() -> new TokenNotFoundException("Token not found"));
-
-            findToken
-                    .filter(token -> token.getUserId().equals(userId))
-                    .orElseThrow(() -> new Exception("Error"));
-
             List<Schedule> responseArray = scheduleRepository.findAllSchedule(userId);
 
             responseMap.put("data", responseArray.isEmpty() ? "error" :
@@ -171,12 +151,6 @@ public class ScheduleService {
             boolean flag = false;
 
             try {
-                String extractToken = tokenParser.parseBearerToken(request);
-
-                if (extractToken == null)
-                    throw new RuntimeException();
-
-                tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
                 String options = modifyScheduleDTO.getOptions();
                 TypeManageDTO repeat = modifyScheduleDTO.getRepeat();
 
@@ -309,7 +283,6 @@ public class ScheduleService {
             if (extractToken == null)
                 throw new RuntimeException();
 
-            tokenRepository.findUsersToken(extractToken).orElseThrow(() -> new TokenNotFoundException("Token not found"));
             String options = dto.getOptions();
 
             switch (options) {
@@ -373,37 +346,33 @@ public class ScheduleService {
             }
             log.info("status");
 
-            Optional<UsersToken> findToken = Optional.ofNullable(tokenRepository.findUsersToken(accessToken)
-                    .orElseThrow(() -> new TokenNotFoundException("token not found")));
 
             // 현재 토큰으로 로그인 된 사용자의 userId와 클라이언트로부터 전달받은 userId값이 일치하지 않은 경우 error!!!
-            if (!findToken.get().getUserId().equals(userId)) {
-                throw new Exception("error");
+
+
+            List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
+
+            if (responseArray.isEmpty()) {
+                responseMap.put("data", "error");
             } else {
-                List<Schedule> responseArray = scheduleRepository.findMonthSchedule(date, userId);
 
-                if (responseArray.isEmpty()) {
-                    responseMap.put("data", "error");
-                } else {
+                Map<PriceType, Integer> result = responseArray.stream()
+                        .collect(Collectors.groupingBy(
+                                Schedule::getPriceType,
+                                Collectors.summingInt(schedule -> Integer.parseInt(schedule.getAmount()))
+                        ));
 
-                    Map<PriceType, Integer> result = responseArray.stream()
-                            .collect(Collectors.groupingBy(
-                                    Schedule::getPriceType,
-                                    Collectors.summingInt(schedule -> Integer.parseInt(schedule.getAmount()))
-                            ));
+                int deposit = result.getOrDefault(PriceType.Plus, 0);
+                int withdraw = result.getOrDefault(PriceType.Minus, 0);
 
-                    int deposit = result.getOrDefault(PriceType.Plus, 0);
-                    int withdraw = result.getOrDefault(PriceType.Minus, 0);
+                List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
+                        .map(this::createScheduleResponseDTO)
+                        .collect(Collectors.toList());
 
-                    List<ScheduleResponseDTO> responseDTOList = responseArray.stream()
-                            .map(this::createScheduleResponseDTO)
-                            .collect(Collectors.toList());
-
-                    responseMap.put("data", convertSnakeList(responseDTOList));
-                    responseMap.put("count", responseDTOList.size());
-                    responseMap.put("deposit", deposit);
-                    responseMap.put("withdraw", withdraw);
-                }
+                responseMap.put("data", convertSnakeList(responseDTOList));
+                responseMap.put("count", responseDTOList.size());
+                responseMap.put("deposit", deposit);
+                responseMap.put("withdraw", withdraw);
             }
         } catch (Exception e) {
             throw new RuntimeException("error");

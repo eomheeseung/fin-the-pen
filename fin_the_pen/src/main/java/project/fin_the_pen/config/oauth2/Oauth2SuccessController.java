@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.config.oauth2.custom.CustomOAuth2NaverUser;
@@ -29,6 +29,7 @@ public class Oauth2SuccessController {
      * 10-18
      * redirect하고,
      * front에서 fetch요청으로 /oauth2/success/info로 요청을 해야지 사용자의 정보와 자체 토큰을 발행해서 넣어줄 것임
+     * 여기가 안됌...
      *
      *
      *
@@ -36,7 +37,7 @@ public class Oauth2SuccessController {
      *
      * @return
      */
-    @GetMapping("/api/user/info")
+    @PostMapping("/api/user/info")
     public ResponseEntity<HashMap<String, String>> successTransferUserInfo(HttpServletRequest request,
                                                                            Authentication authentication) {
 

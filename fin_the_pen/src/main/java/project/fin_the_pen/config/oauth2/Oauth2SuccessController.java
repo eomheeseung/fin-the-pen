@@ -29,7 +29,7 @@ public class Oauth2SuccessController {
      * 10-18
      * redirect하고,
      * front에서 fetch요청으로 /oauth2/success/info로 요청을 해야지 사용자의 정보와 자체 토큰을 발행해서 넣어줄 것임
-     * 여기가 안됌...
+     * TODO 여기가 안됌...
      *
      *
      *

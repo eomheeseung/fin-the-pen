@@ -11,7 +11,6 @@ import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.config.oauth2.socialDomain.SocialType;
 import project.fin_the_pen.finClient.core.util.TokenParser;
 import project.fin_the_pen.model.user.dto.SignInRequest;
-import project.fin_the_pen.model.user.dto.SignInResponse;
 import project.fin_the_pen.model.user.dto.UserRequestDTO;
 import project.fin_the_pen.model.user.dto.UserResponseDTO;
 import project.fin_the_pen.model.user.entity.Users;
@@ -39,7 +38,6 @@ public class LoginService {
      * TODO
      *  회원가입하고, 유저의 정보를 보낼 필요가 있나?
      *
-     *
      * @param userRequestDTO
      * @return
      */
@@ -63,6 +61,7 @@ public class LoginService {
 
     /**
      * 로그인
+     *
      * @param dto
      * @param response
      * @return
@@ -84,7 +83,7 @@ public class LoginService {
             HashMap<String, Object> responseMap = new HashMap<>();
             responseMap.put("status", HttpStatus.OK);
 
-            String accessToken = jwtService.createAccessToken(userId, SocialType.NONE);
+            String accessToken = jwtService.createAccessToken(userId, SocialType.NONE, optionalUsers.get().getName());
             log.info("new login:{}", accessToken);
             response.addHeader("Authorization", "Bearer " + accessToken);
             String refreshToken = jwtService.createRefreshToken();
@@ -100,20 +99,20 @@ public class LoginService {
         return true;
     }
 
-    private SignInResponse firstLogin(Users users) {
-        log.info("find users Id: {}", users.getUserId());
-
-        SocialType socialType = SocialType.NONE;
-
-        // JWT 생성
-        String token = jwtService.createAccessToken(String.format("%s:%s",
-                        users.getUserId(),
-                        users.getUserRole()),
-                socialType);
-
-        // SignInResponse 객체 반환
-        return new SignInResponse(users.getName(), users.getUserRole(), token);
-    }
+//    private SignInResponse firstLogin(Users users) {
+//        log.info("find users Id: {}", users.getUserId());
+//
+//        SocialType socialType = SocialType.NONE;
+//
+//        // JWT 생성
+//        String token = jwtService.createAccessToken(String.format("%s:%s",
+//                        users.getUserId(),
+//                        users.getUserRole()),
+//                socialType);
+//
+//        // SignInResponse 객체 반환
+//        return new SignInResponse(users.getName(), users.getUserRole(), token);
+//    }
 
 
     /*public Optional<Users> TempFindUser() {

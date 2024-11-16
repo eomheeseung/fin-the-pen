@@ -33,7 +33,6 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
                                         Authentication authentication) throws IOException, ServletException {
         Object principal = authentication.getPrincipal();
 
-
 //        accessToken 확인 코드
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         String registrationId = oauthToken.getAuthorizedClientRegistrationId();
@@ -50,10 +49,11 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             log.info("naver accessToken :{}", accessToken);
 
             log.info("User logged in with Naver: {}", email);
+            log.info("User logged in with Naver name: {}", name);
             oauth2UserService.saveUser(email, name, SocialType.NAVER);
 
             // OAuth2 사용자 정보 처리 후
-            String jwtAccessToken = jwtService.createAccessToken(email, SocialType.NAVER);
+            String jwtAccessToken = jwtService.createAccessToken(email, SocialType.NAVER, name);
             String jwtRefreshToken = jwtService.createRefreshToken();
             log.info("application access token:{}", jwtAccessToken);
             log.info("application refresh token:{}", jwtRefreshToken);
@@ -62,24 +62,13 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             Cookie refreshTokenCookie = new Cookie("refresh_token", jwtRefreshToken);
 
 
-
-            // 쿼리 파라미터를 URL에 추가
-            /*String sendRedirectUrl = String.format(
-                    "http://localhost:5173/home?accessToken=%s&refreshToken=%s",
-                    URLEncoder.encode(jwtAccessToken, StandardCharsets.UTF_8),
-                    URLEncoder.encode(jwtRefreshToken, StandardCharsets.UTF_8)
-            );
-
-            response.sendRedirect(sendRedirectUrl);*/
-            // 쿼리 파라미터를 URL에 추가 (주석 해제 가능)
-
             // 쿠키 설정
             accessTokenCookie.setPath("/");
             refreshTokenCookie.setPath("/");
             response.addCookie(accessTokenCookie);
             response.addCookie(refreshTokenCookie);
 
-            // 리다이렉트 수행
+            // 이후 리다이렉트 수행
 
         } else if (principal instanceof CustomOAuth2KakaoUser) {
             CustomOAuth2KakaoUser oAuth2User = (CustomOAuth2KakaoUser) principal;
@@ -92,15 +81,6 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 //            log.info("kakao accessToken :{}", accessToken);
             oauth2UserService.saveUser(email, name, SocialType.KAKAO);
         }
-
-
-        // 사용자 정보를 DB에 저장
-
-        // 리다이렉트 URL
-        // http://localhost:5173/home
-        // db에 저장 (O)
-        // json http body
-        // 여기서 token 발행
 
 
         String redirectUrl = "http://localhost:5173/home";

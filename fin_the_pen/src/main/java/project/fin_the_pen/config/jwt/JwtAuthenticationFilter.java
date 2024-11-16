@@ -41,8 +41,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = parseBearerToken(request);
         User user = parseUserSpecification(token);
 
+        log.info("jwt filter - user spec:{}", user.getUsername());
+
         AbstractAuthenticationToken authenticated =
-                UsernamePasswordAuthenticationToken.authenticated(user, token, user.getAuthorities());
+                UsernamePasswordAuthenticationToken.authenticated(user, null, user.getAuthorities());
 
         authenticated.setDetails(new WebAuthenticationDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticated);

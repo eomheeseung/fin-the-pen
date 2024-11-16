@@ -10,22 +10,18 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2Service extends DefaultOAuth2UserService {
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         String clientName = userRequest.getClientRegistration().getClientName();
 
-        if (clientName.equals("Naver")) {
+        if (clientName.equalsIgnoreCase("Naver")) {
             return new CustomOAuth2NaverUser(oAuth2User);
-        } else if (clientName.equals("Kakao")) {
+        } else if (clientName.equalsIgnoreCase("Kakao")) {
             return new CustomOAuth2KakaoUser(oAuth2User);
         }
 
         return new CustomOAuth2NaverUser(oAuth2User);
-
-
-
-
-//        return new CustomOAuth2User(oAuth2User);
     }
 }

@@ -23,7 +23,7 @@ import java.util.HashMap;
 public class JwtService {
     private final JwtProperties jwtProperties;
 
-    public String createAccessToken(String email, SocialType socialType) {
+    public String createAccessToken(String email, SocialType socialType, String userName) {
         Date accessExpiration = Date.from(
                 Instant
                         .now()
@@ -31,18 +31,23 @@ public class JwtService {
 
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("socialType", socialType.toString());
+        claims.put("username", userName);
 
         log.info("토큰 생성 시점에 subject 확인:{}", email);
 
         return Jwts.builder()
                 .setClaims(claims)  // Claims 설정
-                .setSubject(email)   // subject 설정 (setClaims 이후에 호출)
+                .setSubject(email)   // subject 설정 subject를 email로 설정함 (setClaims 이후에 호출)
                 .signWith(new SecretKeySpec(jwtProperties.getSecretKey().getBytes(),
                         SignatureAlgorithm.HS512.getJcaName()))
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(Timestamp.valueOf(LocalDateTime.now()))
                 .setExpiration(accessExpiration)
                 .compact();
+    }
+
+    public String getUsername(String token) {
+        return parseToken(token).get("username").toString();
     }
 
     public String createRefreshToken() {
@@ -73,11 +78,19 @@ public class JwtService {
         return parseToken(token).get("email").toString();
     }
 
+    /*
+    subject를 email로 해서 토큰을 발행했음
+     */
+    public String getSubjectFromToken(String token) {
+        return parseToken(token).getSubject();
+    }
+
     private JwtParser getParser() {
         return Jwts.parserBuilder()
                 .setSigningKey(jwtProperties.getSecretKey().getBytes())
                 .build();
     }
+
 
     public String validateTokenAndGetSubject(String token) {
         return Jwts.parserBuilder()

@@ -53,6 +53,7 @@ public class Oauth2SecurityConfig {
             "/fin-the-pen-web/getMonthSchedules",
             "/signup", "/",
             "/oauth2/authorization/**",
+//            "/api/user/info",
             "/login", "/css/**", "/js/**",
             "/h2-console/**",
             "/login/oauth2/code/naver",

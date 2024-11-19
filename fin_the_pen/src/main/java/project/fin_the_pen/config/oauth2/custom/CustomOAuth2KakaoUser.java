@@ -4,68 +4,70 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import project.fin_the_pen.config.oauth2.socialDomain.SocialType;
 
+import java.util.Collection;
 import java.util.Map;
-
 
 @Slf4j
 @Getter
 public class CustomOAuth2KakaoUser extends CustomOAuth2BaseUser {
-    private final String social = "kakao";
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CustomOAuth2KakaoUser(OAuth2User oAuth2User) {
         super(oAuth2User);
     }
 
     @Override
-    public String getEmail() {
-        Map<String, Object> attributes = oAuth2User.getAttributes();
+    public String getFullName() {
+        Map<String, Object> kakaoAccount = getKakaoAccount();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        log.info("get Email call");
-        TypeReference<Map<String, Object>> typeReferencer = new TypeReference<Map<String, Object>>() {
-        };
+        Object object = kakaoAccount.get("profile");
 
-        Object kakaoAccount = attributes.get("kakao_account");
-        Map<String, Object> account = objectMapper.convertValue(kakaoAccount, typeReferencer);
+        Map<String, Object> profile = objectMapper.convertValue(object, new TypeReference<Map<String, Object>>() {
+        });
 
-        return (String) account.get("email");
+        String nickName = profile.get("nickname").toString();
+        return nickName;
     }
 
-    public String getName() {
-        Map<String, Object> attributes = oAuth2User.getAttributes();
+    private Map<String, Object> getKakaoAccount() {
+        return objectMapper.convertValue(getAttributes().get("kakao_account"), new TypeReference<>() {
+        });
+    }
 
-        // Log for debugging
-        log.info("getName call");
+    public String getPhoneNumber() {
+        Map<String, Object> kakaoAccount = getKakaoAccount();
 
-        // Extracting the profile nickname from the kakao_account attribute
-        if (attributes.containsKey("kakao_account")) {
-            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-            if (kakaoAccount.containsKey("profile")) {
-                Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-                return (String) profile.get("nickname");
-            }
-        }
-        return null;
+        return kakaoAccount.get("phone_number").toString();
     }
 
     @Override
-    public String getFullName() {
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        if (attributes.containsKey("kakao_account")) {  // Kakao
-            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-            if (kakaoAccount.containsKey("profile")) {
-                Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-                log.info(profile.toString());
-                return (String) profile.get("nickname");
-            }
-        }
-        return null;
+    public String getEmail() {
+        Map<String, Object> kakaoAccount = getKakaoAccount();
+
+        return kakaoAccount.get("email").toString();
+    }
+
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return super.getAuthorities();
+    }
+
+    @Override
+    public Map<String, Object> getAttributes() {
+        return super.getAttributes();
     }
 
     @Override
     public String getSocial() {
-        return social;
+        return SocialType.KAKAO.toString();
     }
 }

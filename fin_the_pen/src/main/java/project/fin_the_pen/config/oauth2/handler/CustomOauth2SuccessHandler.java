@@ -37,7 +37,8 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         String registrationId = oauthToken.getAuthorizedClientRegistrationId();
 
-        OAuth2AuthorizedClient client = oAuth2AuthorizedClientService.loadAuthorizedClient(registrationId, oauthToken.getName());
+        OAuth2AuthorizedClient client =
+                oAuth2AuthorizedClientService.loadAuthorizedClient(registrationId, oauthToken.getName());
 
 
         if (principal instanceof CustomOAuth2NaverUser) {
@@ -55,8 +56,8 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             // OAuth2 사용자 정보 처리 후
             String jwtAccessToken = jwtService.createAccessToken(email, SocialType.NAVER, name);
             String jwtRefreshToken = jwtService.createRefreshToken();
-            log.info("application access token:{}", jwtAccessToken);
-            log.info("application refresh token:{}", jwtRefreshToken);
+            log.info("naver 로그인 후 application access token:{}", jwtAccessToken);
+            log.info("naver 로그인 후 application refresh token:{}", jwtRefreshToken);
 
             Cookie accessTokenCookie = new Cookie("access_token", jwtAccessToken);
             Cookie refreshTokenCookie = new Cookie("refresh_token", jwtRefreshToken);
@@ -72,14 +73,38 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
         } else if (principal instanceof CustomOAuth2KakaoUser) {
             CustomOAuth2KakaoUser oAuth2User = (CustomOAuth2KakaoUser) principal;
-            String name = oAuth2User.getName();
-            String email = "test@aaa.com";
-            log.info("User logged in with Kakao: {}", name);
 
-//            String accessToken = client.getAccessToken().getTokenValue();
+            String accessToken = client.getAccessToken().getTokenValue();
+            log.info("kakao oauth2 accessToken :{}", accessToken);
 
-//            log.info("kakao accessToken :{}", accessToken);
+            String email = oAuth2User.getEmail();
+            String name = oAuth2User.getFullName();
+
+            // 나중에 +82 10과 같은 국제번호 처리 어떻게 할 것인지...
+            String phoneNumber = oAuth2User.getPhoneNumber();
+
+            log.info("User logged in with Kakao name: {}", name);
+            log.info("User logged in with Kakao email: {}", email);
+            log.info("User logged in with Kakao phone: {}", phoneNumber);
+
             oauth2UserService.saveUser(email, name, SocialType.KAKAO);
+
+            // OAuth2 사용자 정보 처리 후
+            String jwtAccessToken = jwtService.createAccessToken(email, SocialType.KAKAO, name);
+            String jwtRefreshToken = jwtService.createRefreshToken();
+            log.info("kakao 로그인 후 application access token:{}", jwtAccessToken);
+            log.info("kakao 로그인 후 application refresh token:{}", jwtRefreshToken);
+
+            Cookie accessTokenCookie = new Cookie("access_token", jwtAccessToken);
+            Cookie refreshTokenCookie = new Cookie("refresh_token", jwtRefreshToken);
+
+            // 쿠키 설정
+            accessTokenCookie.setPath("/");
+            refreshTokenCookie.setPath("/");
+            response.addCookie(accessTokenCookie);
+            response.addCookie(refreshTokenCookie);
+
+            // 이후 리다이렉트 수행
         }
 
 

@@ -6,11 +6,19 @@ spring:
       client:
         registration:
           kakao:
-            client-id: 58044d766e3a6a856f75bd256d28a073
-            client-secret: J7UYWTOODX58Up3ilLUb5U7HxaL7LVoK
+#            실제 어플
+#            clientId와 secret만 해당
+#            client-id: 58044d766e3a6a856f75bd256d28a073
+#            client-secret: J7UYWTOODX58Up3ilLUb5U7HxaL7LVoK
+
+#            아래는 테스트용
+            client-id: 308efa48e985750d9aed91349bd1a6b6
+            client-secret: i1TOKg9FIFzmcZULGJr0Z2dC1GFCeHWz
+
+
             redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
-            scope: profile_nickname, profile_image, account_email
+            scope: profile_nickname, profile_image, account_email, phone_number
             #            scope:
             #              - profile
             #              - account_email

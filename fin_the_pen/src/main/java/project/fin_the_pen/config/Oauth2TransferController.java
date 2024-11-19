@@ -8,7 +8,6 @@ import java.io.IOException;
 
 @RestController
 public class Oauth2TransferController {
-
     @GetMapping("/login/naver")
     public void naverLogin(HttpServletResponse response) throws IOException {
         response.sendRedirect("http://localhost:8080/oauth2/authorization/naver");

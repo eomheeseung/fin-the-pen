@@ -18,7 +18,6 @@ public class SocialUser {
     private String socialId;
     private String nickName;
     private int age;
-    private String city;
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -27,15 +26,8 @@ public class SocialUser {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
-    @Column(nullable = true)
-    private String refreshToken;
-
 
     public void authorizeUser() {
         this.role = SocialRole.USER;
-    }
-
-    public void updateRefreshToken(String updateRefreshToken) {
-        this.refreshToken = updateRefreshToken;
     }
 }

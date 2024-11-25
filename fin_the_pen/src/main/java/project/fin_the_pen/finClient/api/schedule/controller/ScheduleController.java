@@ -7,8 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.util.ConvertResponse;
+import project.fin_the_pen.finClient.core.util.TokenParser;
 import project.fin_the_pen.model.schedule.dto.DeleteScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.dto.ScheduleRequestDTO;
@@ -31,6 +33,8 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
     private final ConvertResponse convertResponse;
     private final TemplateService templateService;
+    private final JwtService jwtService;
+    private final TokenParser tokenParser;
 
     /**
      * 일정등록
@@ -50,11 +54,13 @@ public class ScheduleController {
             summary = "일정등록 (O)")
     public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleRequestDTO dto,
                                                    HttpServletRequest request) {
+
         try {
             Map<Object, Object> responseMap = scheduleService.registerSchedule(dto, request);
 
             if (responseMap.get("data").equals(dto.getUserId())) {
-                log.info("일정: {}", dto.getUserId() + " 의 일정 이름: {}", dto.getEventName());
+                log.info("일정: {}", dto.getUserId());
+                log.info("일정 이름: {}", dto.getEventName());
 
             } else throw new RuntimeException();
         } catch (DuplicatedScheduleException e) {
@@ -85,9 +91,13 @@ public class ScheduleController {
      */
     @PostMapping(value = "/getAllSchedules", produces = "application/json")
     @Operation(description = "user의 login된 id로 모든 일정들을 조회합니다.", summary = "모든 일정 조회 (O)")
-    public ResponseEntity<Object> findAllSchedule(@RequestBody FindAllScheduleVO findAllScheduleVO, HttpServletRequest request) {
+    public ResponseEntity<Object> findAllSchedule(@RequestBody FindAllScheduleVO findAllScheduleVO,
+                                                  HttpServletRequest request) {
         try {
-            Map<Object, Object> responseMap = scheduleService.findAllSchedule(findAllScheduleVO.getUserId(), request);
+            // token으로 대체
+            Map<Object, Object> responseMap = scheduleService
+                    .findAllSchedule(jwtService.getSubjectFromToken(tokenParser.parseBearerToken(request)));
+
             log.info(responseMap.get("data").toString());
             return convertResponse.getResponseEntity(responseMap);
         } catch (Exception e) {
@@ -207,8 +217,7 @@ public class ScheduleController {
 
     public ResponseEntity<Object> deleteSchedule(@RequestBody DeleteScheduleDTO dto, HttpServletRequest request) {
         try {
-            scheduleService.deleteSchedule(dto, request);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok().body(scheduleService.deleteSchedule(dto, request));
         } catch (DuplicatedScheduleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (RuntimeException e) {

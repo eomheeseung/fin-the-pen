@@ -46,10 +46,6 @@ public class JwtService {
                 .compact();
     }
 
-    public String getUsername(String token) {
-        return parseToken(token).get("username").toString();
-    }
-
     public String createRefreshToken() {
         Date refreshExpiration = Date.from(
                 Instant
@@ -66,6 +62,10 @@ public class JwtService {
                 .compact();// JWT 토큰 생성
     }
 
+    public String getUsername(String token) {
+        return parseToken(token).get("username").toString();
+    }
+
     public String getSocialTypeFromToken(String token) {
         return parseToken(token).get("socialType").toString();
     }
@@ -74,12 +74,13 @@ public class JwtService {
         return getParser().parseClaimsJws(token).getBody();  // JWT 파싱 및 클레임 반환
     }
 
-    public String getEmailFromToken(String token) {
+   /* public String getEmailFromToken(String token) {
         return parseToken(token).get("email").toString();
-    }
+    }*/
 
     /*
     subject를 email로 해서 토큰을 발행했음
+    email == subject
      */
     public String getSubjectFromToken(String token) {
         return parseToken(token).getSubject();

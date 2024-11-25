@@ -2,7 +2,6 @@ package project.fin_the_pen.model.schedule.service.modify;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.entity.Schedule;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
@@ -26,7 +25,6 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc {
     }
 
     @Override
-    @Transactional
     public void modifySchedule(ModifyScheduleDTO dto) {
         Optional<Template> optionalTemplate = exceptTemplate(dto);
 
@@ -39,9 +37,9 @@ public class ModifyDaySchedule extends ModifySchedule implements ModifyXXXFunc {
         }
     }
 
+
     @Override
     public void templateAfterModify(ModifyScheduleDTO dto, Template template) {
-
         int intervalDays = Integer.parseInt(dto.getRepeat().getDayTypeVO().getRepeatTerm());
         LocalDate criteriaDate = formatDate(dto.getStartDate());
         int endRepeat = 50;

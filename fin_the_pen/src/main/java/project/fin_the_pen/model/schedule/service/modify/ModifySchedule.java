@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import project.fin_the_pen.model.schedule.dto.ModifyScheduleDTO;
 import project.fin_the_pen.model.schedule.entity.embedded.PeriodType;
 import project.fin_the_pen.model.schedule.repository.CrudScheduleRepository;
@@ -48,8 +47,6 @@ public class ModifySchedule {
      *  *** 수정을 하는데 삭제가 됨...
      *
      */
-
-    @Transactional
     public Optional<Template> exceptTemplate(ModifyScheduleDTO dto) {
         // 이미 기존 schedule는 삭제된 상태
         Optional<Template> optionalTemplate =

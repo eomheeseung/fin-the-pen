@@ -88,6 +88,8 @@ public class ScheduleRepository {
      * @return
      */
     public Boolean modifyNowFromAfter(ModifyScheduleDTO dto, String repeatType) {
+
+
         Optional<Schedule> findModifySchedule =
                 crudScheduleRepository.findByIdAndUserId(dto.getUserId(), Long.parseLong(dto.getScheduleId()));
 

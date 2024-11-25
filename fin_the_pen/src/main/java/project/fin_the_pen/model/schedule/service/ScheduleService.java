@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import project.fin_the_pen.config.jwt.JwtService;
 import project.fin_the_pen.finClient.core.error.customException.DuplicatedScheduleException;
 import project.fin_the_pen.finClient.core.error.customException.FailSaveScheduleException;
 import project.fin_the_pen.finClient.core.error.customException.TokenNotFoundException;
@@ -31,14 +32,21 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final ObjectMapper objectMapper;
     private final TokenParser tokenParser;
+    private final JwtService jwtService;
 
     private List convertSnakeList(List<ScheduleResponseDTO> list) {
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         return objectMapper.convertValue(list, List.class);
     }
 
-    public Map<Object, Object> registerSchedule(ScheduleRequestDTO requestDTO, HttpServletRequest request) {
+    public Map<Object, Object> registerSchedule(ScheduleRequestDTO requestDTO,
+                                                HttpServletRequest request) {
         boolean flag = false;
+
+        String tokenFromEmail = jwtService.getSubjectFromToken(tokenParser.parseBearerToken(request));
+        requestDTO.setUserId(tokenFromEmail);
+
+        log.info("error point: {}", requestDTO.getUserId());
 
         try {
 
@@ -119,19 +127,12 @@ public class ScheduleService {
      * 모든 일정 조회
      *
      * @param userId
-     * @param request
      * @return
      */
-    public Map<Object, Object> findAllSchedule(String userId, HttpServletRequest request) {
+    public Map<Object, Object> findAllSchedule(String userId) {
         Map<Object, Object> responseMap = new HashMap<>();
 
         try {
-            String accessToken = tokenParser.parseBearerToken(request);
-
-            if (accessToken == null) {
-                throw new RuntimeException();
-            }
-
             List<Schedule> responseArray = scheduleRepository.findAllSchedule(userId);
 
             responseMap.put("data", responseArray.isEmpty() ? "error" :
@@ -147,6 +148,12 @@ public class ScheduleService {
     }
 
     public Boolean modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
+
+        String tokenFromEmail = jwtService.getSubjectFromToken(tokenParser.parseBearerToken(request));
+        modifyScheduleDTO.setUserId(tokenFromEmail);
+
+        log.info("error point: {}", modifyScheduleDTO.getUserId());
+
         try {
             boolean flag = false;
 
@@ -277,12 +284,9 @@ public class ScheduleService {
     }
 
     public Boolean deleteSchedule(DeleteScheduleDTO dto, HttpServletRequest request) {
+        String subjectFromToken = jwtService.getSubjectFromToken(tokenParser.parseBearerToken(request));
+        dto.setUserId(subjectFromToken);
         try {
-            String extractToken = tokenParser.parseBearerToken(request);
-
-            if (extractToken == null)
-                throw new RuntimeException();
-
             String options = dto.getOptions();
 
             switch (options) {

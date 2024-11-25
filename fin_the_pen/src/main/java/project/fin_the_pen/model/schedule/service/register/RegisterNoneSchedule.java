@@ -136,13 +136,6 @@ public class RegisterNoneSchedule extends RegisterSchedule implements RegisterXX
         }
         // template를 사용하지 않는다면
         else {
-            Template template = createTemplate(userId, category, eventName);
-
-            if (dto.getPriceType().equals(PriceType.Plus)) {
-                template.updateStatement(TemplateBankStatement.DEPOSIT);
-            } else {
-                template.updateStatement(TemplateBankStatement.WITHDRAW);
-            }
 
             try {
                 boolean isDifferent = isDuplicatedSaveSchedule(dto);

@@ -1,6 +1,6 @@
 # fin-the-pen
 
-![logo](https://user-images.githubusercontent.com/.../image.png)
+![logo](https://github.com/eomheeseung/fin-the-pen/issues/2#issue-2711736144)
 
 ## Spring Boot 
 * version : '2.7.7'

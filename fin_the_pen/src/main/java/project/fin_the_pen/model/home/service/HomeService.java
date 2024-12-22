@@ -285,13 +285,13 @@ public class HomeService {
     }
 
 
-    // TODO 홈 - 일정 리스트
-    public Map<Object, Object> findScheduleList() {
+
+   /* public Map<Object, Object> findScheduleList() {
         HashMap<Object, Object> responseMap = new HashMap<>();
 
 
         return responseMap;
-    }
+    }*/
 
     /**
      * 추후에 구현

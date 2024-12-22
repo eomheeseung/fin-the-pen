@@ -20,19 +20,18 @@ public class YearScheduleFunc {
       ex) 2024-11월의 경우
       => apple, kakao 참조
      */
-    public LocalDate parseMonthlyDate(int year, String inputMonth, int ordinalNumber, DayOfWeek dayOfWeek) {
+    public LocalDate parseMonthlyDate(int year,
+                                      String inputMonth,
+                                      int ordinalNumber,
+                                      DayOfWeek dayOfWeek) {
         try {
             int month = Integer.parseInt(inputMonth);
 
             // month의 1일
-            LocalDate firstOfMonth = LocalDate.now().withYear(year).withMonth(month).withDayOfMonth(1);
+            LocalDate firstOfMonth =
+                    LocalDate.now().withYear(year).withMonth(month).withDayOfMonth(1);
 
             log.info("case 2) firstOfMonth : {}", firstOfMonth);
-
-           /* LocalDate date = firstOfMonth
-                    .with(TemporalAdjusters.nextOrSame(dayOfWeek))
-                    .with(TemporalAdjusters.next(dayOfWeek))
-                    .withDayOfMonth((ordinalNumber - 1) * 7 + 1);*/
 
             // month의 시작 요일
             LocalDate firstOfMonthDayOfWeek = firstOfMonth.with(dayOfWeek).plusWeeks(ordinalNumber - 1);
@@ -79,9 +78,7 @@ public class YearScheduleFunc {
 //                .minusWeeks(1);
 
         // 입력된 dayOfWeek에 해당하는 날짜를 찾기
-        LocalDate result =
-                firstDayOfLastWeek.plusDays(dayOfWeek.getValue() - firstDayOfLastWeek.getDayOfWeek().getValue());
-        return result;
+        return firstDayOfLastWeek.plusDays(dayOfWeek.getValue() - firstDayOfLastWeek.getDayOfWeek().getValue());
     }
 
 

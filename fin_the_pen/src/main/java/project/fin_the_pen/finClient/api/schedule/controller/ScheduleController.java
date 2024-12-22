@@ -141,9 +141,11 @@ public class ScheduleController {
             " - nowFromAfter : 선택된 현재 일정부터 이후까지<br>" +
             " - exceptNowAfter : 현재 일정 제외하고 이후<br>" +
             " - all : 모든 일정", summary = "일정 수정")
-    public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
+    public ResponseEntity<Object> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO,
+                                                 HttpServletRequest request) {
         try {
-            Boolean flag = scheduleService.modifySchedule(modifyScheduleDTO, request);
+            Boolean flag =
+                    scheduleService.modifySchedule(modifyScheduleDTO, request);
 
             return ResponseEntity.ok().body(flag);
         } catch (DuplicatedScheduleException e) {
@@ -177,7 +179,7 @@ public class ScheduleController {
      * @param request
      * @return
      */
-    /*@GetMapping("/template/is_exists")
+    @GetMapping("/template/is_exists")
     @Operation(description = "정기 일정을 등록할 때 카테고리 설정에서 설정하고 " +
             "<카테고리 선택>을 누를 경우 DB에 동일한 (일정명, 카테고리)의 템플릿이 존재하는 경우" +
             "템플릿의 {이름, 카테고리명}을 반환하고, 없다면 {템플릿이 없다고 반환}",
@@ -186,9 +188,14 @@ public class ScheduleController {
                                              @RequestParam("category_name") String categoryName,
                                              @RequestParam("event_name") String eventName,
                                              HttpServletRequest request) {
-        Map<String, Object> responseMap = templateService.selectedTemplate(userId, categoryName, eventName, request);
+        String parseBearerToken = tokenParser.parseBearerToken(request);
+        String subjectFromToken = jwtService.getSubjectFromToken(parseBearerToken);
+
+        log.info("template is existed? :{}", subjectFromToken);
+        Map<String, Object> responseMap =
+                templateService.selectedTemplate(subjectFromToken, categoryName, eventName);
         return ResponseEntity.ok().body(responseMap);
-    }*/
+    }
 
     /**
      * case4

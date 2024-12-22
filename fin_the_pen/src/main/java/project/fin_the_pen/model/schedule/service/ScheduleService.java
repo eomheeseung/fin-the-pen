@@ -49,7 +49,6 @@ public class ScheduleService {
         log.info("error point: {}", requestDTO.getUserId());
 
         try {
-
             switch (requestDTO.getRepeat().getKindType()) {
                 case "none":
                     if (requestDTO.getPriceType().equals(PriceType.Plus)) {
@@ -147,6 +146,13 @@ public class ScheduleService {
         return responseMap;
     }
 
+    /**
+     * TODO
+     *  수정필요!
+     * @param modifyScheduleDTO
+     * @param request
+     * @return
+     */
     public Boolean modifySchedule(ModifyScheduleDTO modifyScheduleDTO, HttpServletRequest request) {
 
         String tokenFromEmail = jwtService.getSubjectFromToken(tokenParser.parseBearerToken(request));
@@ -157,130 +163,134 @@ public class ScheduleService {
         try {
             boolean flag = false;
 
-            try {
-                String options = modifyScheduleDTO.getOptions();
-                TypeManageDTO repeat = modifyScheduleDTO.getRepeat();
+            if (!modifyScheduleDTO.isRegisterTemplate()) {
+                try {
+                    String options = modifyScheduleDTO.getOptions();
+                    TypeManageDTO repeat = modifyScheduleDTO.getRepeat();
 
-                switch (options) {
-                    case "nowFromAfter":
-                        if (repeat.getKindType().equals("day")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "day");
+                    switch (options) {
+                        case "nowFromAfter":
+                            if (repeat.getKindType().equals("day")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "day");
 
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "day");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "day");
+                                }
+                            } else if (repeat.getKindType().equals("week")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "week");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "week");
+                                }
+                            } else if (repeat.getKindType().equals("month")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "month");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "month");
+                                }
+                            } else if (repeat.getKindType().equals("year")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "year");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "year");
+                                }
                             }
-                        } else if (repeat.getKindType().equals("week")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "week");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "week");
-                            }
-                        } else if (repeat.getKindType().equals("month")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "month");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "month");
-                            }
-                        } else if (repeat.getKindType().equals("year")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "year");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyNowFromAfter(modifyScheduleDTO, "year");
-                            }
-                        }
-                        break;
-                    case "exceptNowAfter":
-                        if (repeat.getKindType().equals("day")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "day");
+                            break;
+                        case "exceptNowAfter":
+                            if (repeat.getKindType().equals("day")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "day");
 
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "day");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "day");
+                                }
+                            } else if (repeat.getKindType().equals("week")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "week");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "week");
+                                }
+                            } else if (repeat.getKindType().equals("month")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "month");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "month");
+                                }
+                            } else if (repeat.getKindType().equals("year")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "year");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "year");
+                                }
                             }
-                        } else if (repeat.getKindType().equals("week")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "week");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "week");
-                            }
-                        } else if (repeat.getKindType().equals("month")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "month");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "month");
-                            }
-                        } else if (repeat.getKindType().equals("year")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "year");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyExceptNowAfter(modifyScheduleDTO, "year");
-                            }
-                        }
-                        break;
-                    case "all":
-                        if (repeat.getKindType().equals("day")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "day");
+                            break;
+                        case "all":
+                            if (repeat.getKindType().equals("day")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "day");
 
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "day");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "day");
+                                }
+                            } else if (repeat.getKindType().equals("week")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "week");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "week");
+                                }
+                            } else if (repeat.getKindType().equals("month")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "month");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "month");
+                                }
+                            } else if (repeat.getKindType().equals("year")) {
+                                if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
+                                    flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "year");
+                                } else {
+                                    isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
+                                    flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "year");
+                                }
                             }
-                        } else if (repeat.getKindType().equals("week")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "week");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "week");
-                            }
-                        } else if (repeat.getKindType().equals("month")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "month");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "month");
-                            }
-                        } else if (repeat.getKindType().equals("year")) {
-                            if (modifyScheduleDTO.getPriceType().equals(PriceType.Plus)) {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Plus));
-                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "year");
-                            } else {
-                                isType(modifyScheduleDTO, (dto) -> dto.setPriceType(PriceType.Minus));
-                                flag = scheduleRepository.modifyAllSchedule(modifyScheduleDTO, "year");
-                            }
-                        }
-                        break;
+                            break;
+                    }
+
+                    if (flag) {
+                        return flag;
+                    } else throw new FailSaveScheduleException("일정 수정 실패");
+                } catch (TokenNotFoundException e) {
+                    throw new RuntimeException();
                 }
-
-                if (flag) {
-                    return flag;
-                } else throw new FailSaveScheduleException("일정 수정 실패");
-            } catch (TokenNotFoundException e) {
-                throw new RuntimeException();
             }
+
         } catch (Exception e) {
             throw new RuntimeException();
         }
+        return null;
     }
 
     public Boolean deleteSchedule(DeleteScheduleDTO dto, HttpServletRequest request) {

@@ -150,10 +150,11 @@ public class TemplateService {
      * <p>
      * 이 다음에...?
      *
-     * @param request
      * @return
      */
-    public Map<String, Object> selectedTemplate(String userId, String categoryName, String eventName, HttpServletRequest request) {
+    public Map<String, Object> selectedTemplate(String userId,
+                                                String categoryName,
+                                                String eventName) {
         List<Template> findAllList = templateRepository.findByUserId(userId);
 
         TemplateSimpleResponseDto responseDto = new TemplateSimpleResponseDto();
@@ -197,9 +198,9 @@ public class TemplateService {
             }
         }
 
-        if (!isFind) {
-            throw new NotFoundDataException("템플릿이 없습니다.");
-        }
+//        if (!isFind) {
+//            throw new NotFoundDataException("템플릿이 없습니다.");
+//        }
 
         return responseMap;
     }

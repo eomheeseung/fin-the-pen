@@ -59,6 +59,7 @@ public abstract class RegisterSchedule {
         return supplier.get();
     }
 
+
     public boolean isDuplicatedRegular(String userId, String eventName, String category) {
         Optional<Schedule> optionalSchedule =
                 crudScheduleRepository
@@ -72,6 +73,7 @@ public abstract class RegisterSchedule {
         if (findSchedule.isEmpty()) {
             return true;
         }
+
         return false;
     }
 

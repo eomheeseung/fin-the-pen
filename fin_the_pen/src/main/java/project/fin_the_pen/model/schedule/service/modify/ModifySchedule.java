@@ -41,19 +41,13 @@ public class ModifySchedule {
 
 
 
-    /**
-     * TODO
-     *  일정을 수정할 때 template에 포함되지 않을 수도 있다고 alert창을 띄워야 할 것 같음.
-     *  *** 수정을 하는데 삭제가 됨...
-     *
-     */
+
     public Optional<Template> exceptTemplate(ModifyScheduleDTO dto) {
         // 이미 기존 schedule는 삭제된 상태
         Optional<Template> optionalTemplate =
                 getTemplateRepository().findByTemplateNameAndCategoryName(dto.getEventName(), dto.getCategory());
 
         log.info("template 존재 유무:{}", optionalTemplate.isPresent());
-
 
         return optionalTemplate;
     }

@@ -10,11 +10,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * TODO
- *  템플릿이름 / 내부에 들어가는 일정명
- *  이 2개가 달라야 함
- */
+
 @Entity
 @NoArgsConstructor
 @Getter

@@ -19,7 +19,7 @@ public class ModifyScheduleDTO {
      * none: 현재 일정만 수정
      */
     @JsonProperty(value = "modify_options")
-    @Schema(description = "수정하려는 옵션",example = "nowFromAfter")
+    @Schema(description = "수정하려는 옵션", example = "nowFromAfter")
     private String options;
 
     @JsonProperty(value = "user_id")
@@ -94,9 +94,10 @@ public class ModifyScheduleDTO {
     private boolean isFixAmount;
 
     /**
-     *
-     * @JsonProperty(value = "register_template")
-     *     @Schema(description = "템플릿에 등록할 것인지 true이면 등록 / false이면 등록하지 않음", example = "false")
-     *     private boolean registerTemplate;
+     * TODO
+     *  여기부분 확인
      */
+    @JsonProperty(value = "register_template")
+    @Schema(description = "템플릿에 등록할 것인지 true이면 등록 / false이면 등록하지 않음", example = "false")
+    private boolean registerTemplate;
 }

@@ -170,6 +170,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                         }
 
                         // 반복 횟수가 정해진 경우
+                        // 특이사항 해결
                     } else if (!dto.getPeriod().getRepeatNumberOfTime().equals("0")) {
 
                         log.info("MonthAndDay case 2");
@@ -222,6 +223,7 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                              횟수가 아님!
                              */
                         // 아래의 조건을 null이 아닌 none와 같은 string 형식으로 바꾸자
+                        // 특이사항 해결
                     } else if (dto.getPeriod().getRepeatEndLine() != null) {
 
                         log.info("MonthAndDay case 3");
@@ -465,6 +467,8 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                                 dayOfWeek);
                             }
                         }
+
+                        // 특이사항 해결
                     } else if (dto.getPeriod().getRepeatEndLine() != null) {
                         log.info("NthDayOfMonth case 3");
                         LocalDate currentDate = formatDate(dto.getStartDate());
@@ -782,6 +786,8 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
                                                 dayOfWeek);
                             }
                         }
+
+                        // 특이사항 해결
                     } else if (dto.getPeriod().getRepeatEndLine() != null) {
 
                         log.info("LastDayOfMonth case 3");
@@ -900,7 +906,10 @@ public class RegisterYearSchedule extends RegisterSchedule implements RegisterXX
             } catch (Exception e) {
                 return null;
             }
-        } else {
+        }
+
+        // template 사용하지 않음
+        else {
             try {
                 boolean isDifferent = isDuplicatedSaveSchedule(dto);
 
